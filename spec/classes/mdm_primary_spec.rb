@@ -49,8 +49,8 @@ describe 'scaleio::mdm::primary', :type => 'class' do
     it { should contain_exec('scaleio::mdm::primary_login_default').with(
       :command      => 'scli --login --username admin --password admin',
       :notify       => 'Exec[scaleio::mdm::primary_change_pwd]',
-      :subscribe    => 'Exec[scaleio::mdm::primary_add_primary]',
-      :refreshonly  => true,
+      :unless       => 'scli --login --username admin --password foo && scli --logout',
+      :require      => 'Exec[scaleio::mdm::primary_add_primary]',
     )}
     it { should contain_exec('scaleio::mdm::primary_change_pwd').with(
       :command      => 'scli --set_password --old_password admin --new_password foo',
