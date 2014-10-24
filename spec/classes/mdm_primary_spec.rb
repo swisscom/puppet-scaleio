@@ -11,25 +11,25 @@ describe 'scaleio::mdm::primary', :type => 'class' do
 
     it { should contain_exec('scaleio::mdm::primary_add_primary').with(
       :command => 'scli --add_primary_mdm --primary_mdm_ip 1.2.3.4 --accept_license',
-      :unless  => "scli --query_cluster | grep -qE '^Primary IP: 1.2.3.4$'",
+      :unless  => "scli --query_cluster | grep -qE '^ Primary IP: 1.2.3.4$'",
       :require => 'Package[EMC-ScaleIO-mdm]',
       :before  => 'Exec[scaleio::mdm::primary_add_secondary]',
     )}
 
     it { should contain_exec('scaleio::mdm::primary_add_secondary').with(
       :command => '/var/lib/puppet/module_data/scaleio/scli_wrap --add_secondary_mdm --secondary_mdm_ip 1.2.3.5',
-      :unless  => "scli --query_cluster | grep -qE '^Secondary IP: 1.2.3.5$'",
+      :unless  => "scli --query_cluster | grep -qE '^ Secondary IP: 1.2.3.5$'",
       :before  => 'Exec[scaleio::mdm::primary_add_tb]',
     )}
     it { should contain_exec('scaleio::mdm::primary_add_tb').with(
       :command => '/var/lib/puppet/module_data/scaleio/scli_wrap --add_tb --tb_ip 1.2.3.6',
-      :unless => "scli --query_cluster | grep -qE '^Tie-Breaker IP: 1.2.3.6$'",
+      :unless => "scli --query_cluster | grep -qE '^ Tie-Breaker IP: 1.2.3.6$'",
       :before => 'Exec[scaleio::mdm::primary_go_into_cluster_mode]',
     )}
 
     it { should contain_exec('scaleio::mdm::primary_go_into_cluster_mode').with(
       :command => '/var/lib/puppet/module_data/scaleio/scli_wrap --switch_to_cluster_mode',
-      :unless => "scli --query_cluster | grep -qE '^Mode: Cluster, Cluster State: '"
+      :unless => "scli --query_cluster | grep -qE '^ Mode: Cluster, Cluster State: '"
     )}
   end
   context 'with a name' do
@@ -38,7 +38,7 @@ describe 'scaleio::mdm::primary', :type => 'class' do
     }
     it { should contain_exec('scaleio::mdm::primary_rename_system').with(
       :command => '/var/lib/puppet/module_data/scaleio/scli_wrap --rename_system --new_name foo',
-      :unless => "scli --query_cluster | grep -qE '^Name: foo$'",
+      :unless => "scli --query_cluster | grep -qE '^ Name: foo$'",
       :require => 'Exec[scaleio::mdm::primary_go_into_cluster_mode]',
     )}
   end

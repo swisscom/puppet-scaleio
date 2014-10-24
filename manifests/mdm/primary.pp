@@ -14,7 +14,7 @@ class scaleio::mdm::primary {
 
   exec{'scaleio::mdm::primary_add_primary':
     command => "scli --add_primary_mdm --primary_mdm_ip ${scaleio::primary_mdm_ip} --accept_license",
-    unless  => "scli --query_cluster | grep -qE '^Primary IP: ${scaleio::primary_mdm_ip}$'",
+    unless  => "scli --query_cluster | grep -qE '^ Primary IP: ${scaleio::primary_mdm_ip}$'",
     require => Package['EMC-ScaleIO-mdm'],
     before  => Exec['scaleio::mdm::primary_add_secondary'],
   }
@@ -34,20 +34,20 @@ class scaleio::mdm::primary {
 
   exec{'scaleio::mdm::primary_add_secondary':
     command => "${scli_wrap} --add_secondary_mdm --secondary_mdm_ip ${scaleio::secondary_mdm_ip}",
-    unless  => "scli --query_cluster | grep -qE '^Secondary IP: ${scaleio::secondary_mdm_ip}$'",
+    unless  => "scli --query_cluster | grep -qE '^ Secondary IP: ${scaleio::secondary_mdm_ip}$'",
   } -> exec{'scaleio::mdm::primary_add_tb':
     command => "${scli_wrap} --add_tb --tb_ip ${scaleio::tb_ip}",
-    unless  => "scli --query_cluster | grep -qE '^Tie-Breaker IP: ${scaleio::tb_ip}$'",
+    unless  => "scli --query_cluster | grep -qE '^ Tie-Breaker IP: ${scaleio::tb_ip}$'",
   } -> exec{'scaleio::mdm::primary_go_into_cluster_mode':
     command => "${scli_wrap} --switch_to_cluster_mode",
-    unless  => "scli --query_cluster | grep -qE '^Mode: Cluster, Cluster State: '",
+    unless  => "scli --query_cluster | grep -qE '^ Mode: Cluster, Cluster State: '",
   }
 
   if $scaleio::system_name {
     validate_re($scaleio::system_name, '^[a-z0-9_]+$')
     exec{'scaleio::mdm::primary_rename_system':
       command => "${scli_wrap} --rename_system --new_name ${scaleio::system_name}",
-      unless  => "scli --query_cluster | grep -qE '^Name: ${scaleio::system_name}$'",
+      unless  => "scli --query_cluster | grep -qE '^ Name: ${scaleio::system_name}$'",
       require => Exec['scaleio::mdm::primary_go_into_cluster_mode'],
     }
   }
