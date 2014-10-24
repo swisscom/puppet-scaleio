@@ -22,11 +22,11 @@ class scaleio::mdm::primary {
   # login and pwd set dance
   if $scaleio::password != 'admin' {
     exec{'scaleio::mdm::primary_login_default':
-      command     => 'scli --login --username admin --password admin',
+      command     => "scli --login --username admin --password ${scaleio::old_password}",
       unless      => "scli --login --username admin --password ${scaleio::password} && scli --logout",
       require   => Exec['scaleio::mdm::primary_add_primary'],
     } ~> exec{'scaleio::mdm::primary_change_pwd':
-      command     => "scli --set_password --old_password admin --new_password ${scaleio::password}",
+      command     => "scli --set_password --old_password ${scaleio::old_password} --new_password ${scaleio::password}",
       refreshonly => true,
       before      => Exec['scaleio::mdm::primary_add_secondary'],
     }

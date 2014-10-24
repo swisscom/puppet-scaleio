@@ -8,6 +8,8 @@
 # * secondary_mdm_ip: ip of the secondary mdm, if any of the current ips of a host matches this ip, it will be configured as secondary mdm
 # * tb_ip: ip of the tiebreaker, if any of the current ips of a host matches this ip, it will be configured as a tiebreaker
 # * password: for the mdm
+# * old_password: if you want to change the password, you have to provide the
+#                 old one for change.
 # * syslog_ip_port: if set we will configure a syslog server
 # * components: will configure the different components any out of:
 #    - sds
@@ -22,6 +24,7 @@ class scaleio(
   $tb_ip            = undef,
   $license          = undef,
   $password         = 'admin',
+  $old_password     = 'admin',
   $syslog_ip_port   = undef,
   $system_name      = undef,
   $components       = [],

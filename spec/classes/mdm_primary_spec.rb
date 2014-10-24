@@ -58,6 +58,22 @@ describe 'scaleio::mdm::primary', :type => 'class' do
       :refreshonly  => true,
     )}
   end
+  context 'with a newpassword different than admin' do
+    let(:pre_condition){
+      "class{'scaleio': password => 'foo', old_password => 'bla' }"
+    }
+    it { should contain_exec('scaleio::mdm::primary_login_default').with(
+      :command      => 'scli --login --username admin --password bla',
+      :notify       => 'Exec[scaleio::mdm::primary_change_pwd]',
+      :unless       => 'scli --login --username admin --password foo && scli --logout',
+      :require      => 'Exec[scaleio::mdm::primary_add_primary]',
+    )}
+    it { should contain_exec('scaleio::mdm::primary_change_pwd').with(
+      :command      => 'scli --set_password --old_password bla --new_password foo',
+      :before       => 'Exec[scaleio::mdm::primary_add_secondary]',
+      :refreshonly  => true,
+    )}
+  end
 #  context 'with a syslog ip port' do
 #    let(:pre_condition){
 #      "class{'scaleio': syslog_ip_port => '1.2.3.7:8080' }"
