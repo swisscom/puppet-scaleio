@@ -5,7 +5,7 @@ echoerr() { echo "$@" 1>&2; }
 # login
 login_out=$(scli --login --username admin --password <%= scope['scaleio::password'] %> 2>&1)
 if [ $? -gt 0 ]; then
-  echorerr "Error while logging in:\n${login_out}"
+  echoerr "Error while logging in:\n${login_out}"
   exit 129
 fi
 
@@ -16,7 +16,7 @@ ec=$?
 # logout
 logout_out=$(scli --logout 2>&1)
 if [ $? -gt 0 ]; then
-  echorerr "Error while logging out:\n${login_out}"
+  echoerr "Error while logging out:\n${login_out}"
   exit 129
 fi
 exit $ec
