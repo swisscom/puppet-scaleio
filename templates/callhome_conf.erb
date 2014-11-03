@@ -4,21 +4,21 @@ timeout = 600
 rotate = 1000000000
 workdir = /opt/emc/scaleio/callhome/bin/
 email_to = callhomesio@emc.com
-email_from = "<%= scope['scaleio::from_mail_address'] %>"
+email_from = "<%= @from_mail %>"
 event_db = /opt/emc/scaleio/mdm/logs/eventlog.db
 # The User must provide the following parameter in order to use Call-Home mechanism
-username = "<%= scope['scaleio::mail_user'] %>"
-password = "<%= scope['scaleio::mail_user_password'] %>"
-customer_name = "<%= scope['scaleio::customer_name'] %>"
+username = "<%= @user %>"
+password = "<%= scope['scaleio::callhome_password'] %>"
+customer_name = "<%= @customer_name %>"
 
 [smtp]
-host = "<%= scope['scaleio::mail_server_address'] %>"
+host = "<%= @mail_server_address %>"
 port = 25
 tls = no
 username =
 password =
 
 [email_alert]
-email_to = "<%= scope['scaleio::to_mail_address'] %>"
+email_to = "<%= @to_mail %>"
 # Severity can be: warning, error, critical
 severity = warning
