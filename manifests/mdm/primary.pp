@@ -13,7 +13,7 @@ class scaleio::mdm::primary {
   }
 
   exec{'scaleio::mdm::primary_add_primary':
-    command => "scli --add_primary_mdm --primary_mdm_ip ${scaleio::primary_mdm_ip} --accept_license",
+    command => "scli --add_primary_mdm --primary_mdm_ip ${scaleio::primary_mdm_ip} --accept_license; sleep 10",
     unless  => "scli --query_cluster | grep -qE '^ Primary IP: ${scaleio::primary_mdm_ip}$'",
     require => Package['EMC-ScaleIO-mdm'],
     before  => Exec['scaleio::mdm::primary_add_secondary'],
