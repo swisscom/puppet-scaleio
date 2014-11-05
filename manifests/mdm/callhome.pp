@@ -9,7 +9,6 @@ class scaleio::mdm::callhome(
   $to_mail             = 'root@localhost',
 ) {
 
-  include ::scaleio
   include ::scaleio::mdm
   ensure_packages('mutt')
 

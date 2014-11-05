@@ -11,7 +11,7 @@ describe 'scaleio::mdm::callhome', :type => 'class' do
   }
   describe 'with standard' do
     #it { should compile.with_all_deps }
-    it { should contain_class('scaleio') }
+    it { should contain_class('scaleio::mdm') }
     it { should contain_package('EMC-ScaleIO-callhome').with_ensure('installed') }
 
     it { should_not contain_file('/var/lib/puppet/module_data/scaleio/add_callhome_user.sh') }
