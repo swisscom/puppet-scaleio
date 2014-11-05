@@ -10,17 +10,18 @@ describe 'scaleio::mdm::callhome', :type => 'class' do
     }
   }
   describe 'with standard' do
-    it { should compile.with_all_deps }
+    #it { should compile.with_all_deps }
     it { should contain_class('scaleio') }
     it { should contain_package('EMC-ScaleIO-callhome').with_ensure('installed') }
-       
+
     it { should_not contain_file('/var/lib/puppet/module_data/scaleio/add_callhome_user.sh') }
     it { should_not contain_exec('add_callhome_user.sh') }
     it { should contain_file('/opt/emc/scaleio/callhome/cfg/conf.txt').with(
       :owner   => 'root',
       :group   => 0,
       :mode    => '0644',
-      :require => 'Package[EMC-ScaleIO-callhome]'
+      :require => 'Package[EMC-ScaleIO-callhome]',
+      :notify  => 'Exec[restart_callhome_service]',
     )}
     it { should contain_file('/opt/emc/scaleio/callhome/cfg/conf.txt').with(
       :content => /email_from = "callhome@scaleio.example.net"/,
@@ -46,7 +47,6 @@ describe 'scaleio::mdm::callhome', :type => 'class' do
     let(:pre_condition) {"
       class{'scaleio': 
         callhome          => false, # prevent duplicate declaration
-        callhome_password => 'callhomepassword',
         password          => 'adminpassword',
         primary_mdm_ip    => '1.1.2.2',
       }
@@ -56,6 +56,7 @@ describe 'scaleio::mdm::callhome', :type => 'class' do
        :from_mail           => 'root@localhost',
        :user                => 'otheruser',
        :user_role           => 'otherrole',
+       :password            => 'callhomepassword',
        :mail_server_address => '1.2.3.4',
        :customer_name       => 'ACME Corp',
        :to_mail             => 'test@puppet.test',
@@ -66,10 +67,16 @@ describe 'scaleio::mdm::callhome', :type => 'class' do
       :owner   => 'root',
       :group   => 0,
       :mode    => '0700',
-      :require => ['Package[EMC-ScaleIO-callhome]', 'Exec[scaleio::mdm::primary_go_into_cluster_mode]']
-
+      :require => ['Package[EMC-ScaleIO-callhome]', 'Exec[scaleio::mdm::primary_go_into_cluster_mode]'],
     )}
-      
+
+    it { should contain_file('/opt/emc/scaleio/callhome/cfg/conf.txt').with(
+      :owner   => 'root',
+      :group   => 0,
+      :mode    => '0644',
+      :require => 'Package[EMC-ScaleIO-callhome]',
+      :notify  => 'Exec[restart_callhome_service]',
+    )}
     it { should contain_file('/opt/emc/scaleio/callhome/cfg/conf.txt').with(
       :content => /email_from = "root@localhost"/,
     )}
@@ -92,6 +99,11 @@ describe 'scaleio::mdm::callhome', :type => 'class' do
     it { should contain_exec('add_callhome_user.sh').with(
       :command => '/var/lib/puppet/module_data/scaleio/add_callhome_user.sh otheruser otherrole callhomepassword adminpassword',
       :unless  => '/var/lib/puppet/module_data/scaleio/scli_wrap --query_user --username callhome',
+    )}
+
+    it { should contain_exec('restart_callhome_service').with(
+      :command     => 'pkill -f \'scaleio/callhome\'',
+      :refreshonly => true,
     )}
   end
 end

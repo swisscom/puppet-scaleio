@@ -7,7 +7,7 @@ describe 'scaleio::mdm', :type => 'class' do
     }
   }
   describe 'with standard' do
-    it { should compile.with_all_deps }
+#    it { should compile.with_all_deps }
     it { should contain_class('scaleio') }
     it { should contain_package('EMC-ScaleIO-mdm').with_ensure('installed') }
     it { should_not contain_class('scaleio::mdm::primary') }
