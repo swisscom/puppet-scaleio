@@ -30,7 +30,7 @@ describe 'scaleio::mdm::callhome', :type => 'class' do
       :content => /username = "callhome"/,
     )}
     it { should contain_file('/opt/emc/scaleio/callhome/cfg/conf.txt').with(
-      :content => /password = "callhome"/,
+      :content => /password = "Callhome13"/,
     )}
     it { should contain_file('/opt/emc/scaleio/callhome/cfg/conf.txt').with(
       :content => /customer_name = "example.net"/,
