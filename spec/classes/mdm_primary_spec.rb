@@ -42,6 +42,16 @@ describe 'scaleio::mdm::primary', :type => 'class' do
       :require => 'Exec[scaleio::mdm::primary_go_into_cluster_mode]',
     )}
   end
+#  context 'with a protection domain name' do
+#    let(:pre_condition){
+#      "class{'scaleio': system_name => 'foo' }"
+#    }
+#    it { should contain_exec('scaleio::mdm::add_protection_domain').with(
+#      :command => '/var/lib/puppet/module_data/scaleio/scli_wrap --add_protection_domain --protection_domain_name pdo-foo',
+#      :unless  => "scli --query_all | grep -qE '^Protection Domain pdo-foo$'",
+#      :require => 'Exec[scaleio::mdm::primary_go_into_cluster_mode]',
+#    )}
+#  end
   context 'with a password different than admin' do
     let(:pre_condition){
       "class{'scaleio': password => 'foo' }"

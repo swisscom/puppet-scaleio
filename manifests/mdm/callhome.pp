@@ -3,7 +3,7 @@ class scaleio::mdm::callhome(
   $from_mail           = "callhome@${::fqdn}",
   $user                = 'callhome',
   $user_role           = 'Monitor',
-  $password            = 'callhome',
+  $password            = 'Callhome13',
   $mail_server_address = 'localhost',
   $customer_name       = $::domain,
   $to_mail             = 'root@localhost',
