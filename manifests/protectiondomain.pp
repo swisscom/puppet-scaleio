@@ -6,8 +6,10 @@ class scaleio::protectiondomain(
   include ::scaleio::mdm
 
   # Only on Primary
+  notify{"pdo module is executed":}
   if has_ip_address($scaleio::primary_mdm_ip) {
-    scaleio_protectiondomain($name)
+    notify{"pdo module is executed on primary":}
+    scaleio_protectiondomain{$name:}
   }
 
 }
