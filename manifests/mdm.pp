@@ -17,6 +17,7 @@ class scaleio::mdm {
 
   if has_ip_address($scaleio::primary_mdm_ip) {
     include scaleio::mdm::primary
+    include scaleio::protectiondomain
   }
 
   if $scaleio::callhome {
