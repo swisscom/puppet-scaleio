@@ -62,12 +62,7 @@ class scaleio::mdm::primary {
 #    }
 #  }
 
-  if $scaleio::protection_domain {
-    validate_re($scaleio::protection_domain_name, '^[a-z0-9-]+$')
-    exec{'scaleio::mdm::add_protection_domain':
-      command => "${scli_wrap} --add_protection_domain --protection_domain_name pdo-${scaleio::system_name}",
-      unless  => "scli --query_all | grep -qE '^Protection Domain wlpdo-${scaleio::system_name}$'",
-      require => Exec['scaleio::mdm::primary_go_into_cluster_mode'],
-    }
+  if $scaleio::protectiondomain {
+    include scaleio::protectiondomain
   }
 }
