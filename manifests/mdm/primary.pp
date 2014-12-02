@@ -1,6 +1,7 @@
 # setup a primary mdm
 class scaleio::mdm::primary {
   include scaleio::mdm
+  include scaleio::protectiondomain
 
   # requires the license, password
   #validate_re($scaleio::license, '^[A-Z0-9]{38}$')
@@ -62,5 +63,4 @@ class scaleio::mdm::primary {
 #    }
 #  }
 
-  include scaleio::protectiondomain
 }
