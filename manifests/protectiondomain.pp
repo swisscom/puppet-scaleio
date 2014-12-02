@@ -5,5 +5,5 @@ class scaleio::protectiondomain(
 
   # Only on Primary
   notify{'pdo module is executed':}
-  scaleio_protectiondomain{$name:}
+  #scaleio_protectiondomain{$name:}
 }
