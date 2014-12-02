@@ -1,6 +1,6 @@
-# manage the callhome feature
+# manage the protectiondomain
 class scaleio::protectiondomain(
-  $name = $title
+  $name = undef
 ) {
 
   include ::scaleio::mdm
