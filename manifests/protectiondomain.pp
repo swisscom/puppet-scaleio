@@ -1,9 +1,9 @@
 # manage the protectiondomain
 class scaleio::protectiondomain(
-  $name = undef,
+  $pdomain = $title,
 ) {
 
   # Only on Primary
   notify{'pdo module is executed':}
-  #scaleio_protectiondomain{$name:}
+  scaleio_protectiondomain{$pdomain:}
 }
