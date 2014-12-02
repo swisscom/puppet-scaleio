@@ -10,7 +10,7 @@ class scaleio::mdm::callhome(
 ) {
 
   include ::scaleio::mdm
-  ensure_packages('mutt')
+  ensure_packages(['mutt'])
 
   package{'EMC-ScaleIO-callhome':
     ensure => $scaleio::version,

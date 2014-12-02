@@ -17,17 +17,18 @@
 #    - mdm
 #    - tb
 class scaleio(
-  $version          = 'installed',
-  $callhome         = true,
-  $primary_mdm_ip   = undef,
-  $secondary_mdm_ip = undef,
-  $tb_ip            = undef,
-  $license          = undef,
-  $password         = 'admin',
-  $old_password     = 'admin',
-  $syslog_ip_port   = undef,
-  $system_name      = undef,
-  $components       = [],
+  $version           = 'installed',
+  $callhome          = true,
+  $primary_mdm_ip    = undef,
+  $secondary_mdm_ip  = undef,
+  $tb_ip             = undef,
+  $license           = undef,
+  $password          = 'admin',
+  $old_password      = 'admin',
+  $syslog_ip_port    = undef,
+  $system_name       = undef,
+  $protectiondomains = [],
+  $components        = [],
 ) {
 
   ensure_packages(['numactl','python-paramiko'])

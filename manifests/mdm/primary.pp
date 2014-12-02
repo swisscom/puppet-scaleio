@@ -61,7 +61,9 @@ class scaleio::mdm::primary {
 #      require => Exec['scaleio::mdm::primary_go_into_cluster_mode'],
 #    }
 #  }
-  if $scaleio::protectiondomain {
-    include scaleio::protectiondomain
+
+  scaleio_protectiondomain{
+    $scaleio::protectiondomains:
+      ensure => present,
   }
 }
