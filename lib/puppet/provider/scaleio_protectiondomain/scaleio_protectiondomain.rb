@@ -23,16 +23,14 @@ Puppet::Type.type(:scaleio_protectiondomain).provide(:scaleio_protectiondomain) 
     all_domains.each do |pdomains|
       
       # Pull out relevant info
-      if pdomains =~/^Protection domain/
+      if pdomains =~/^Protection Domain/
         found_pdomain = pdomains.split(' ')
         pdomain = found_pdomain[2]
-        capacity = found_pdomain[11] + " GB" 
 
         # Create sds instances hash
         new pdomains_info = { 
 						:name => pdomain,
 						:ensure 	=> :present,
-						:capacity	=> capacity 
 				}
         pdomain_instances << new(pdomains_info)
       end

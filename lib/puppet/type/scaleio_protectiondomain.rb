@@ -16,9 +16,4 @@ Puppet::Type.newtype(:scaleio_protectiondomain) do
       fail("Puppet::Type::ScaleIO_PDomain:: #{value} is not a valid value for new Protection Domain name.") unless value =~ /^[ -~]+$/
     end
   end 
-  
-  newproperty(:capacity) do
-    desc "The Protection Domain capacity"
-  end
-  
 end    
