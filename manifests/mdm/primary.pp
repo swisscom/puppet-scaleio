@@ -62,7 +62,5 @@ class scaleio::mdm::primary {
 #    }
 #  }
 
-  if $scaleio::protectiondomain::name {
-    include scaleio::protectiondomain
-  }
+  include scaleio::protectiondomain
 }
