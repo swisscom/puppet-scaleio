@@ -11,24 +11,32 @@
 # * old_password: if you want to change the password, you have to provide the
 #                 old one for change.
 # * syslog_ip_port: if set we will configure a syslog server
+# * protection_domains: hash with names of protection domains to be configured
+# * storage_pools: storage pool to be created/managed, hash looking as follows:
+#     myPoolName:
+#       protection_domain: myProtectionDomainName
+#       spare_policy: 35%
+# * purge: shall the not defined resources (f.e. protection domain, storage pool etc.) be purged
 # * components: will configure the different components any out of:
 #    - sds
 #    - sdc
 #    - mdm
 #    - tb
 class scaleio(
-  $version           = 'installed',
-  $callhome          = true,
-  $primary_mdm_ip    = undef,
-  $secondary_mdm_ip  = undef,
-  $tb_ip             = undef,
-  $license           = undef,
-  $password          = 'admin',
-  $old_password      = 'admin',
-  $syslog_ip_port    = undef,
-  $system_name       = undef,
-  $protectiondomains = [],
-  $components        = [],
+  $version            = 'installed',
+  $callhome           = true,
+  $primary_mdm_ip     = undef,
+  $secondary_mdm_ip   = undef,
+  $tb_ip              = undef,
+  $license            = undef,
+  $password           = 'admin',
+  $old_password       = 'admin',
+  $syslog_ip_port     = undef,
+  $system_name        = undef,
+  $purge              = false,
+  $protection_domains = {},
+  $storage_pools      = {},
+  $components         = [],
 ) {
 
   ensure_packages(['numactl','python-paramiko'])

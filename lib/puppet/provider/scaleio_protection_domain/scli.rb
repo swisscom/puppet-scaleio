@@ -1,4 +1,4 @@
-Puppet::Type.type(:scaleio_protectiondomain).provide(:scaleio_protectiondomain) do
+Puppet::Type.type(:scaleio_protection_domain).provide(:scaleio_protection_domain) do
 
   desc "Manages ScaleIO Protection Domains."
 
@@ -10,29 +10,28 @@ Puppet::Type.type(:scaleio_protectiondomain).provide(:scaleio_protectiondomain) 
   
   def self.instances
     Puppet.debug("Puppet::Provider::ScaleIO_PDomain:: got to self.instances.")
-    pdomain_instances=[]
-    pdomains_info = []
+    pdomain_instances = []
+    pdomain_info = {}
     begin
-      pdomain_info = scli("--query_all")
+      query_all = scli("--query_all")
     rescue Puppet::ExecutionFailure => e
       raise Puppet::Error, "Error Querying Cluster -> #{e.inspect}"
     end
-    all_domains = pdomain_info.split("\n")
+    lines = query_all.split("\n")
     pdomain =''    
     # Iterate through the Protection Domain block
-    all_domains.each do |pdomains|
+    lines.each do |line|
       
       # Pull out relevant info
-      if pdomains =~/^Protection Domain/
-        found_pdomain = pdomains.split(' ')
-        pdomain = found_pdomain[2]
+      if line =~/^Protection Domain/
+        pdomain = line.split(' ')[2]
 
-        # Create sds instances hash
-        new pdomains_info = { 
+        # Create pdomains instances hash
+        new pdomain_info = { 
 						:name => pdomain,
 						:ensure 	=> :present,
 				}
-        pdomain_instances << new(pdomains_info)
+        pdomain_instances << new(pdomain_info)
       end
     end
     # Return the pdomain instances array
@@ -57,14 +56,14 @@ Puppet::Type.type(:scaleio_protectiondomain).provide(:scaleio_protectiondomain) 
       result = scli("--add_protection_domain", "--protection_domain_name", resource[:name])
     rescue Puppet::ExecutionFailure => e
       raise Puppet::Error, "Error creating Protection Domain #{@resource[:name]} -> #{e.inspect}"
-    end
+		end
     @property_hash[:ensure] = :present
   end
 
 
   def destroy
     Puppet.debug("Puppet::Provider::ScaleIO_PDomain: Destroying Protection Domain #{resource[:name]}")
-    begin
+		begin
       result = scli("--remove_protection_domain", "--protection_domain_name", resource[:name])
     rescue Puppet::ExecutionFailure => e
       raise Puppet::Error, "Error removing Protection Domain #{@resource[:name]} -> #{e.inspect}"

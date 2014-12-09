@@ -40,7 +40,7 @@ class scaleio::mdm::primary {
     unless  => "scli --query_cluster | grep -qE '^ Tie-Breaker IP: ${scaleio::tb_ip}$'",
   } -> exec{'scaleio::mdm::primary_go_into_cluster_mode':
     command => "${scli_wrap} --switch_to_cluster_mode",
-    unless  => "scli --query_cluster | grep -qE '^ Mode: Cluster, Cluster State: '",
+    unless  => 'scli --query_cluster | grep -qE \'^ Mode: Cluster, Cluster State: \'',
   }
 
   if $scaleio::system_name {
@@ -62,8 +62,13 @@ class scaleio::mdm::primary {
 #    }
 #  }
 
-  scaleio_protectiondomain{
-    $scaleio::protectiondomains:
-      ensure => present,
+  create_resources('scaleio_protection_domain', $scaleio::protection_domains, {ensure => present})
+  create_resources('scaleio_storage_pool', $scaleio::storage_pools, {ensure => present})
+
+  resources {
+    'scaleio_protection_domain':
+      purge => $scaleio::purge;
+    'scaleio_storage_pool':
+      purge => $scaleio::purge;
   }
 }
