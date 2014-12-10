@@ -1,45 +1,28 @@
-Puppet::Type.type(:scaleio_storage_pool).provide(:scaleio_storagepool) do
+Puppet::Type.type(:scaleio_storage_pool).provide(:scaleio_storage_pool) do
 
   desc "Manages ScaleIO Storage Pool."
 
   confine :osfamily => :redhat
 
   commands :scli => "/var/lib/puppet/module_data/scaleio/scli_wrap"
-  
+
   mk_resource_methods
   
   def self.instances
-    Puppet.debug("Puppet::Provider::scaleio_storage_pool: got to self.instances.")
+    Puppet.debug('getting instances of storage pools')
     
     # First have to get a list of pdomains
-    pdomain_names = []
-    begin
-      query_all = scli("--query_all")
-    rescue Puppet::ExecutionFailure => e
-      raise Puppet::Error, "Error Querying Cluster -> #{e.inspect}"
-    end
-    lines = query_all.split("\n")
-    pdomain = ''    
-    # Iterate through the Protection Domain block
-    lines.each do |line|
-      
-      # Pull out protection domain name
-      if line =~/^Protection Domain/
-        pdomain = line.split(' ')[2]
-        pdomain_names << pdomain
-      end
-    end
-    
-    
+		pdomains = getProtectionDomains
+
     pdomain_pools = Hash.new {|h,k| h[k] = [] }
  
     # Get a list of storage pools in each pdomain
-    pdomain_names.each do |pdomain|
+    pdomains.each do |pdomain|
       poolNames = []
       begin
         lines = scli("--query_protection_domain", "--protection_domain_name", pdomain).split("\n")
       rescue Puppet::ExecutionFailure => e
-        raise Puppet::Error, "Error querying Protection Domain #{pdomain} -> #{e.inspect}"
+        raise Puppet::Error, "Error querying protection domain #{pdomain} -> #{e.inspect}"
       end
     
       lines.each do |line|
@@ -60,28 +43,39 @@ Puppet::Type.type(:scaleio_storage_pool).provide(:scaleio_storagepool) do
         begin
           pool_query_lines = scli("--query_storage_pool", "--storage_pool_name", pool, "--protection_domain_name", pdomain).split("\n")
         rescue Puppet::ExecutionFailure => e
-          raise Puppet::Error, "Error querying Storagepool #{pool} -> #{e.inspect}"
+          raise Puppet::Error, "Error querying storagepool #{pool} -> #{e.inspect}"
         end
+
+				spare_policy = ""
         pool_query_lines.each do |line|
           if line =~/Spare policy/
 						spare_pct = line.match /([0-9\.]+%)/
-            @spare_policy = spare_pct[1];
+            spare_policy = spare_pct[1];
           end  
         end
         # Create storage pools hash
-        new storage_pool_info = { :name => pool,
-                 :ensure => :present,
-                 :protection_domain => pdomain,
-                 :spare_policy => @spare_policy  }
+        new storage_pool_info = { 
+								:name 							=> "#{pdomain}:#{pool}",
+								:pool_name 					=> pool,
+                :ensure 						=> :present,
+                :protection_domain	=> pdomain,
+                :spare_policy 			=> spare_policy,
+				}
         storage_pool_instances << new(storage_pool_info)
       end
     end
-    Puppet.debug("Puppet::Provider::ScaleIO_Storagepool: Returning Storage Pool array")
+    Puppet.debug('Returning storage pool array')
     storage_pool_instances
   end
 
+	def self.getProtectionDomains
+		pdomains = Puppet::Type.type(:scaleio_protection_domain).instances
+		pdomains.collect {|x| x.parameters[:name].value}
+	end
+
   def self.prefetch(resources)
-    Puppet.debug("Puppet::Provider::ScaleIO_Storagepool: Got to self.prefetch")
+    Puppet.debug('Prefetching storage pools')
+    Puppet.debug('Prefetching storage pools')
     pool = instances
     resources.keys.each do |name|
       if provider = pool.find{ |poolname| poolname.name == name }
@@ -91,39 +85,41 @@ Puppet::Type.type(:scaleio_storage_pool).provide(:scaleio_storagepool) do
   end
   
   def create 
-    Puppet.debug("Puppet::Provider::ScaleIO_Storagepool: Creating Storage Pool #{resource[:name]}")
+    Puppet.debug("Creating storage pool #{@resource[:name]}")
     begin
-      result = scli("--add_storage_pool", "--protection_domain_name", resource[:protection_domain], "--storage_pool_name", resource[:name])
+      result = scli("--add_storage_pool", "--protection_domain_name", @resource[:protection_domain], "--storage_pool_name", @resource[:pool_name])
     rescue Puppet::ExecutionFailure => e
-      raise Puppet::Error, "Error creating Storage Pool #{@resource[:name]} -> #{e.inspect}"
+      raise Puppet::Error, "Error creating storage pool #{@resource[:name]} -> #{e.inspect}"
     end
+		updateSparePolicy(@resource[:spare_policy])
     @property_hash[:ensure] = :present
   end
 
   def destroy
     begin
-			result = scli("--remove_storage_pool", "--protection_domain_name", @property_hash[:protection_domain], "--storage_pool_name", resource[:name])	# TODO: ask if using property hash for removing is correct (resource not working when using purge)
+			result = scli('--remove_storage_pool', '--protection_domain_name', @resource[:protection_domain], '--storage_pool_name', resource[:pool_name])	# TODO: ask if using property hash for removing is correct (resource not working when using purge)
     rescue Puppet::ExecutionFailure => e
-      raise Puppet::Error, "Error Removing Storage Pool #{@resource[:name]} -> #{e.inspect}"
+      raise Puppet::Error, "Error removing storage pool #{@resource[:name]} -> #{e.inspect}"
     end
     @property_hash[:ensure] = :absent
   end
+
+	def spare_policy=(value)
+		updateSparePolicy(value)
+	end
+
+	def updateSparePolicy(value)
+			Puppet.debug("Updating spare policy of pool #{@resource[:name]} to #{value}")
+			begin
+				result = scli('--modify_spare_policy', '--protection_domain_name', @resource[:protection_domain], '--storage_pool_name', @resource[:pool_name], '--spare_percentage', value, '--i_am_sure')
+			rescue Puppet::ExecutionFailure => e
+				raise Puppet::Error, "Error updating spare policy of storage pool #{@resource[:name]} -> #{e.inspect}"
+			end
+	end
   
-  def new_name=(value)
-    Puppet.debug("Puppet::Provider::ScaleIO_Storagepool: Changing Storage Pool name name to #{value}")
-    begin
-      result = scli("--rename_storage_pool", "--protection_domain_name", resource[:protection_domain], "--storage_pool_name", resource[:name], "--new_name", value)
-    rescue Puppet::ExecutionFailure => e
-      raise Puppet::Error, "Error Renaming Storage Pool #{@resource[:name]} to #{value}} -> #{e.inspect}"
-    end
-    @property_hash[:ensure] = :present
-  end
- 
   def exists?
-    Puppet.debug("Puppet::Provider::ScaleIO_Storagepool: checking existence of ScaleIO Storage Pool #{@resource[:name]}")
+    Puppet.debug("Cecking existence of storage pool #{@resource[:name]}")
     @property_hash[:ensure] == :present
   end
-
-
 end
 

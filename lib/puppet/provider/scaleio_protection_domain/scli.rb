@@ -9,7 +9,7 @@ Puppet::Type.type(:scaleio_protection_domain).provide(:scaleio_protection_domain
   mk_resource_methods
   
   def self.instances
-    Puppet.debug("Puppet::Provider::ScaleIO_PDomain:: got to self.instances.")
+    Puppet.debug('Getting instances of protection domains')
     pdomain_instances = []
     pdomain_info = {}
     begin
@@ -28,7 +28,7 @@ Puppet::Type.type(:scaleio_protection_domain).provide(:scaleio_protection_domain
 
         # Create pdomains instances hash
         new pdomain_info = { 
-						:name => pdomain,
+						:name     => pdomain,
 						:ensure 	=> :present,
 				}
         pdomain_instances << new(pdomain_info)
@@ -40,7 +40,7 @@ Puppet::Type.type(:scaleio_protection_domain).provide(:scaleio_protection_domain
     
   
   def self.prefetch(resources)
-    Puppet.debug("Puppet::Provider::ScaleIO_PDomain:: Got to self.prefetch")
+    Puppet.debug('Prefetching protection domains')
     pdomains = instances
     resources.keys.each do |name|
       if provider = pdomains.find{ |pdomain| pdomain.name == name }
@@ -51,7 +51,7 @@ Puppet::Type.type(:scaleio_protection_domain).provide(:scaleio_protection_domain
 
   
   def create 
-    Puppet.debug("Puppet::Provider::ScaleIO_PDomain: Creating Protection Domain #{resource[:name]}")
+    Puppet.debug("Creating protection domain #{resource[:name]}")
     begin
       result = scli("--add_protection_domain", "--protection_domain_name", resource[:name])
     rescue Puppet::ExecutionFailure => e
@@ -62,7 +62,7 @@ Puppet::Type.type(:scaleio_protection_domain).provide(:scaleio_protection_domain
 
 
   def destroy
-    Puppet.debug("Puppet::Provider::ScaleIO_PDomain: Destroying Protection Domain #{resource[:name]}")
+    Puppet.debug("Removing protection domain #{resource[:name]}")
 		begin
       result = scli("--remove_protection_domain", "--protection_domain_name", resource[:name])
     rescue Puppet::ExecutionFailure => e
@@ -71,19 +71,8 @@ Puppet::Type.type(:scaleio_protection_domain).provide(:scaleio_protection_domain
     @property_hash[:ensure] = :absent
   end
   
-  def new_name=(value)
-    Puppet.debug("Puppet::Provider::ScaleIO_Pdomain:: Changing Protection Domain name to #{value}")
-    begin
-      result = scli("--rename_protection_domain", "--protection_domain_name", resource[:name], "--new_name", value)
-    rescue Puppet::ExecutionFailure => e
-      raise Puppet::Error, "Error renaming Protection Domain #{@resource[:name]} -> #{e.inspect}"
-    end
-    @property_hash[:ensure] = :present
-  end
- 
-     
   def exists?
-    Puppet.debug("Puppet::Provider::ScaleIO_PDomain: checking existence of ScaleIO Protection Domain #{@resource[:name]}")
+    Puppet.debug("Checking existence of protection domain #{@resource[:name]}")
     @property_hash[:ensure] == :present
   end
  

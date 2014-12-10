@@ -20,6 +20,6 @@ describe Puppet::Type.type(:scaleio_protection_domain) do
       Puppet::Type.type(:scaleio_protection_domain).new({
         :name       => 'my PDO',
       })
-    }.to raise_error Puppet::ResourceError, /not a valid value for Protection Domain name/
+    }.to raise_error Puppet::ResourceError, /not a valid value for a protection domain name/
   end
 end

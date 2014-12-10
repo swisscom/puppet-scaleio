@@ -2,7 +2,6 @@ require 'spec_helper'
 
 provider_class = Puppet::Type.type(:scaleio_protection_domain).provider(:scaleio_protection_domain)
 all_properties = [
-  :new_name,
 ]
 
 describe provider_class do
@@ -72,7 +71,6 @@ describe provider_class do
 
   describe 'create' do
     it 'creates a protection domain' do
-      provider.class.stubs(:scli).with('--query_all').returns(no_pdo)
       provider.expects(:scli).with('--add_protection_domain', '--protection_domain_name', 'test-PDO').returns([])
       provider.create
     end

@@ -6,7 +6,7 @@ class scaleio::mdm::primary {
   #validate_re($scaleio::license, '^[A-Z0-9]{38}$')
   validate_re($scaleio::password, '^[A-Za-z0-9_]+$')
 
-  $scli_wrap = $scaleio::mdm::scli_wrap
+  $scli_wrap         = $scaleio::mdm::scli_wrap
 
   if empty($scaleio::primary_mdm_ip) or empty($scaleio::secondary_mdm_ip) or empty($scaleio::tb_ip) {
     fail('For a primary mdm all three variables $scaleio::primary_mdm_ip, $scaleio::secondary_mdm_ip and $scaleio::tb_ip must be configured')
@@ -62,8 +62,10 @@ class scaleio::mdm::primary {
 #    }
 #  }
 
-  create_resources('scaleio_protection_domain', $scaleio::protection_domains, {ensure => present})
-  create_resources('scaleio_storage_pool', $scaleio::storage_pools, {ensure => present})
+  # TODO: default pool is created for a new protection domain, but deleted in the next puppet run
+  # TODO: last pool cannot be deleted - results in error
+  create_resources('scaleio_protection_domain', $scaleio::protection_domains, {ensure => present, require => File[$scli_wrap]})
+  create_resources('scaleio_storage_pool', $scaleio::storage_pools, {ensure => present, require => File[$scli_wrap]})
 
   resources {
     'scaleio_protection_domain':

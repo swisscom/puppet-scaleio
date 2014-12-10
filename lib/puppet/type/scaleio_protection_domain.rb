@@ -6,14 +6,7 @@ Puppet::Type.newtype(:scaleio_protection_domain) do
   newparam(:name, :namevar => true) do
     desc "The Protection Domain name"
     validate do |value|
-      fail("Puppet::Type::scaleio_protection_domain:: #{value} is not a valid value for Protection Domain name.") unless value =~ /^[\w\-]+$/
+      fail("#{value} is not a valid value for a protection domain name.") unless value =~ /^[\w\-]+$/
     end
   end
-  
-  newproperty(:new_name) do
-    desc "The new Protection Domain name"  
-    validate do |value|
-      fail("Puppet::Type::scaleio_protection_domain:: #{value} is not a valid value for new Protection Domain name.") unless value =~ /^[\w\-]+$/
-    end
-  end 
 end    
