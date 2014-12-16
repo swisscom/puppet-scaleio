@@ -16,7 +16,7 @@ ec=$?
 # logout
 logout_out=$(scli --logout 2>&1)
 if [ $? -gt 0 ]; then
-  echoerr "Error while logging out:\n${login_out}"
+  echoerr "Error while logging out:\n${logout_out}"
   exit 129
 fi
 exit $ec

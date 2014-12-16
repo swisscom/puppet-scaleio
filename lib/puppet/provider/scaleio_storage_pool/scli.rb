@@ -1,10 +1,10 @@
+require File.expand_path(File.join(File.dirname(__FILE__), '..', 'scli'))
 Puppet::Type.type(:scaleio_storage_pool).provide(:scaleio_storage_pool) do
+  include Puppet::Provider::Scli
 
   desc "Manages ScaleIO Storage Pool."
 
   confine :osfamily => :redhat
-
-  commands :scli => "/var/lib/puppet/module_data/scaleio/scli_wrap"
 
   mk_resource_methods
   
@@ -19,12 +19,8 @@ Puppet::Type.type(:scaleio_storage_pool).provide(:scaleio_storage_pool) do
     # Get a list of storage pools in each pdomain
     pdomains.each do |pdomain|
       poolNames = []
-      begin
-        lines = scli("--query_protection_domain", "--protection_domain_name", pdomain).split("\n")
-      rescue Puppet::ExecutionFailure => e
-        raise Puppet::Error, "Error querying protection domain #{pdomain} -> #{e.inspect}"
-      end
-    
+
+      lines = scli("--query_protection_domain", "--protection_domain_name", pdomain).split("\n")
       lines.each do |line|
 				if line =~/^Storage Pool/
 					poolName = line.split(' ')[2]
@@ -40,13 +36,9 @@ Puppet::Type.type(:scaleio_storage_pool).provide(:scaleio_storage_pool) do
     # Get detailed info for each storage pool
     pdomain_pools.each do |pdomain, pools|
       pools.flatten.each do |pool| 
-        begin
-          pool_query_lines = scli("--query_storage_pool", "--storage_pool_name", pool, "--protection_domain_name", pdomain).split("\n")
-        rescue Puppet::ExecutionFailure => e
-          raise Puppet::Error, "Error querying storagepool #{pool} -> #{e.inspect}"
-        end
-
 				spare_policy = ""
+
+        pool_query_lines = scli("--query_storage_pool", "--storage_pool_name", pool, "--protection_domain_name", pdomain).split("\n")
         pool_query_lines.each do |line|
           if line =~/Spare policy/
 						spare_pct = line.match /([0-9\.]+%)/
@@ -86,21 +78,13 @@ Puppet::Type.type(:scaleio_storage_pool).provide(:scaleio_storage_pool) do
   
   def create 
     Puppet.debug("Creating storage pool #{@resource[:name]}")
-    begin
-      result = scli("--add_storage_pool", "--protection_domain_name", @resource[:protection_domain], "--storage_pool_name", @resource[:pool_name])
-    rescue Puppet::ExecutionFailure => e
-      raise Puppet::Error, "Error creating storage pool #{@resource[:name]} -> #{e.inspect}"
-    end
+    scli("--add_storage_pool", "--protection_domain_name", @resource[:protection_domain], "--storage_pool_name", @resource[:pool_name])
 		updateSparePolicy(@resource[:spare_policy])
     @property_hash[:ensure] = :present
   end
 
   def destroy
-    begin
-			result = scli('--remove_storage_pool', '--protection_domain_name', @resource[:protection_domain], '--storage_pool_name', resource[:pool_name])	# TODO: ask if using property hash for removing is correct (resource not working when using purge)
-    rescue Puppet::ExecutionFailure => e
-      raise Puppet::Error, "Error removing storage pool #{@resource[:name]} -> #{e.inspect}"
-    end
+		scli('--remove_storage_pool', '--protection_domain_name', @resource[:protection_domain], '--storage_pool_name', resource[:pool_name])	# TODO: ask if using property hash for removing is correct (resource not working when using purge)
     @property_hash[:ensure] = :absent
   end
 
@@ -110,11 +94,7 @@ Puppet::Type.type(:scaleio_storage_pool).provide(:scaleio_storage_pool) do
 
 	def updateSparePolicy(value)
 			Puppet.debug("Updating spare policy of pool #{@resource[:name]} to #{value}")
-			begin
-				result = scli('--modify_spare_policy', '--protection_domain_name', @resource[:protection_domain], '--storage_pool_name', @resource[:pool_name], '--spare_percentage', value, '--i_am_sure')
-			rescue Puppet::ExecutionFailure => e
-				raise Puppet::Error, "Error updating spare policy of storage pool #{@resource[:name]} -> #{e.inspect}"
-			end
+	  	result = scli('--modify_spare_policy', '--protection_domain_name', @resource[:protection_domain], '--storage_pool_name', @resource[:pool_name], '--spare_percentage', value, '--i_am_sure')
 	end
   
   def exists?

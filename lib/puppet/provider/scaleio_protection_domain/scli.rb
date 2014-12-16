@@ -1,22 +1,19 @@
+require File.expand_path(File.join(File.dirname(__FILE__), '..', 'scli'))
 Puppet::Type.type(:scaleio_protection_domain).provide(:scaleio_protection_domain) do
+  include Puppet::Provider::Scli
 
   desc "Manages ScaleIO Protection Domains."
 
   confine :osfamily => :redhat
 
-  commands :scli => "/var/lib/puppet/module_data/scaleio/scli_wrap"
-  
   mk_resource_methods
   
   def self.instances
     Puppet.debug('Getting instances of protection domains')
     pdomain_instances = []
     pdomain_info = {}
-    begin
-      query_all = scli("--query_all")
-    rescue Puppet::ExecutionFailure => e
-      raise Puppet::Error, "Error Querying Cluster -> #{e.inspect}"
-    end
+
+    query_all = scli("--query_all")
     lines = query_all.split("\n")
     pdomain =''    
     # Iterate through the Protection Domain block
@@ -52,22 +49,14 @@ Puppet::Type.type(:scaleio_protection_domain).provide(:scaleio_protection_domain
   
   def create 
     Puppet.debug("Creating protection domain #{resource[:name]}")
-    begin
-      result = scli("--add_protection_domain", "--protection_domain_name", resource[:name])
-    rescue Puppet::ExecutionFailure => e
-      raise Puppet::Error, "Error creating Protection Domain #{@resource[:name]} -> #{e.inspect}"
-		end
+    scli("--add_protection_domain", "--protection_domain_name", resource[:name])
     @property_hash[:ensure] = :present
   end
 
 
   def destroy
     Puppet.debug("Removing protection domain #{resource[:name]}")
-		begin
-      result = scli("--remove_protection_domain", "--protection_domain_name", resource[:name])
-    rescue Puppet::ExecutionFailure => e
-      raise Puppet::Error, "Error removing Protection Domain #{@resource[:name]} -> #{e.inspect}"
-    end
+    result = scli("--remove_protection_domain", "--protection_domain_name", resource[:name])
     @property_hash[:ensure] = :absent
   end
   
@@ -75,7 +64,5 @@ Puppet::Type.type(:scaleio_protection_domain).provide(:scaleio_protection_domain
     Puppet.debug("Checking existence of protection domain #{@resource[:name]}")
     @property_hash[:ensure] == :present
   end
- 
-
 end
 

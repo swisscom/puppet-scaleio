@@ -66,11 +66,14 @@ class scaleio::mdm::primary {
   # TODO: last pool cannot be deleted - results in error
   create_resources('scaleio_protection_domain', $scaleio::protection_domains, {ensure => present, require => File[$scli_wrap]})
   create_resources('scaleio_storage_pool', $scaleio::storage_pools, {ensure => present, require => File[$scli_wrap]})
+  create_resources('scaleio_sds', $scaleio::sds, {ensure => present, require => File[$scli_wrap]})
 
   resources {
     'scaleio_protection_domain':
       purge => $scaleio::purge;
     'scaleio_storage_pool':
+      purge => $scaleio::purge;
+    'scaleio_sds':
       purge => $scaleio::purge;
   }
 }

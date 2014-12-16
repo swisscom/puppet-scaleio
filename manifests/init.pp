@@ -16,6 +16,15 @@
 #     myPoolName:
 #       protection_domain: myProtectionDomainName
 #       spare_policy: 35%
+# * sds: hash containing SDS definitions, format:
+#     'sds_name':
+#       protection_domain => 'pdomain1',
+#       ips => ['10.0.0.2', '10.0.0.3'],
+#       port => '7072', # optional
+#       pool_devices => {
+#         'myPool' => ['/tmp/aa', '/tmp/ab'],
+#         'myPool2' => ['/tmp/ac', '/tmp/ad'],
+#       }
 # * purge: shall the not defined resources (f.e. protection domain, storage pool etc.) be purged
 # * components: will configure the different components any out of:
 #    - sds
@@ -36,6 +45,7 @@ class scaleio(
   $purge              = false,
   $protection_domains = {},
   $storage_pools      = {},
+  $sds                = {},
   $components         = [],
 ) {
 
