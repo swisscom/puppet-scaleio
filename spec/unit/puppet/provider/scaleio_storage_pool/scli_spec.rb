@@ -2,22 +2,22 @@ require 'spec_helper'
 
 provider_class = Puppet::Type.type(:scaleio_storage_pool).provider(:scaleio_storage_pool)
 all_properties = [
-	:spare_policy,
+  :spare_policy,
 ]
 
 describe provider_class do
 
-	# load sample cli outputs
+  # load sample cli outputs
   let(:fixtures_cli)    { File.expand_path(File.join(File.dirname(__FILE__),"../../../../fixtures/cli"))}
-  let(:myPool)       		{ File.read(File.join(fixtures_cli,"pool_query_myPDomain_myPool.cli")) }
-  let(:myPool2)       	{ File.read(File.join(fixtures_cli,"pool_query_myPDomain_myPool2.cli")) }
+  let(:myPool)           { File.read(File.join(fixtures_cli,"pool_query_myPDomain_myPool.cli")) }
+  let(:myPool2)         { File.read(File.join(fixtures_cli,"pool_query_myPDomain_myPool2.cli")) }
   let(:myPDomain)       { File.read(File.join(fixtures_cli,"pool_query_myPDomain.cli")) }
 
   let(:resource) {
-    Puppet::Type.type(:scaleio_storage_pool).new({ 
-			:ensure       => :present,
+    Puppet::Type.type(:scaleio_storage_pool).new({
+      :ensure       => :present,
       :name         => 'myPDomain:myNewPool',
-			:spare_policy => '34%',
+      :spare_policy => '34%',
       :provider     => described_class.name,
     })
   }
@@ -27,11 +27,11 @@ describe provider_class do
   describe 'basics' do
     before :each do
       # Create a mock resource
-      @resource 		= stub 'resource'
-			@pool_name		= "myNewPool"
-			@protection_domain = "myPDomain"
-      @name			 		= "#{@protection_domain}:#{@pool_name}"
-      @spare_policy	= "8%"
+      @resource     = stub 'resource'
+      @pool_name    = "myNewPool"
+      @protection_domain = "myPDomain"
+      @name          = "#{@protection_domain}:#{@pool_name}"
+      @spare_policy  = "8%"
       # A catch all; no parameters set
       @resource.stubs(:[]).returns(nil)
       # But set name, ensure
@@ -77,20 +77,20 @@ describe provider_class do
 
   describe 'create' do
     it 'creates a storage pool' do
-      provider.expects(:scli).with('--remove_storage_pool', '--protection_domain_name', 'myPDomain', '--storage_pool_name', 'myNewPool').returns([])
-      provider.destroy
-    end
-  end
-
-  describe 'destroy' do
-    it 'removes a storage pool' do
       provider.expects(:scli).with('--add_storage_pool', '--protection_domain_name', 'myPDomain', '--storage_pool_name', 'myNewPool').returns([])
       provider.expects(:scli).with('--modify_spare_policy', '--protection_domain_name', 'myPDomain', '--storage_pool_name', 'myNewPool', '--spare_percentage', '34%', '--i_am_sure').returns([])
       provider.create
     end
   end
 
-  describe 'updateSparePolicy' do
+  describe 'destroy' do
+    it 'removes a storage pool' do
+      provider.expects(:scli).with('--remove_storage_pool', '--protection_domain_name', 'myPDomain', '--storage_pool_name', 'myNewPool').returns([])
+      provider.destroy
+    end
+  end
+
+  describe 'update' do
     it 'updates the spare policy' do
       provider.expects(:scli).with('--modify_spare_policy', '--protection_domain_name', 'myPDomain', '--storage_pool_name', 'myNewPool', '--spare_percentage', '34%', '--i_am_sure').returns([])
       provider.updateSparePolicy('34%')

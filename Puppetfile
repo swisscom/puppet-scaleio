@@ -1,3 +1,2 @@
-forge "https://forge.puppetlabs.com"
-
-mod 'puppetlabs/stdlib'
+# Add your dependencies here
+mod 'stdlib', :git => 'https://gitlab.swisscloud.io/puppet-forge/stdlib.git'
