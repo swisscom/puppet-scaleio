@@ -16,7 +16,9 @@ class scaleio::mdm {
       require => Package['EMC-ScaleIO-mdm'];
   }
 
-  if has_ip_address($scaleio::primary_mdm_ip) {
+  # Include primary mdm class, if this server shall be the primary, but it has not yet been configured. 
+  # Or if we are running on the actual SIO primary mdm
+  if (has_ip_address($scaleio::primary_mdm_ip) and !str2bool($::scaleio_tb_connection_established)) or str2bool($::scaleio_is_primary_mdm) {
     include scaleio::mdm::primary
   }
 

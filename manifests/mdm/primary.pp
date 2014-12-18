@@ -14,7 +14,7 @@ class scaleio::mdm::primary {
 
   exec{'scaleio::mdm::primary_add_primary':
     command => "scli --add_primary_mdm --primary_mdm_ip ${scaleio::primary_mdm_ip} --accept_license && sleep 10",
-    unless  => "scli --query_cluster | grep -qE '^ Primary IP: ${scaleio::primary_mdm_ip}$'",
+    unless  => "scli --query_cluster | grep -qE '^ (Secondary|Primary) IP: ${scaleio::primary_mdm_ip}$'",
     require => Package['EMC-ScaleIO-mdm'],
     before  => Exec['scaleio::mdm::primary_add_secondary'],
   }
@@ -34,7 +34,7 @@ class scaleio::mdm::primary {
 
   exec{'scaleio::mdm::primary_add_secondary':
     command => "${scli_wrap} --add_secondary_mdm --secondary_mdm_ip ${scaleio::secondary_mdm_ip}",
-    unless  => "scli --query_cluster | grep -qE '^ Secondary IP: ${scaleio::secondary_mdm_ip}$'",
+    unless  => "scli --query_cluster | grep -qE '^ (Secondary|Primary) IP: ${scaleio::secondary_mdm_ip}$'",
   } -> exec{'scaleio::mdm::primary_add_tb':
     command => "${scli_wrap} --add_tb --tb_ip ${scaleio::tb_ip}",
     unless  => "scli --query_cluster | grep -qE '^ Tie-Breaker IP: ${scaleio::tb_ip}$'",
@@ -64,9 +64,9 @@ class scaleio::mdm::primary {
 
   # TODO: default pool is created for a new protection domain, but deleted in the next puppet run
   # TODO: last pool cannot be deleted - results in error
-  create_resources('scaleio_protection_domain', $scaleio::protection_domains, {ensure => present, require => File[$scli_wrap]})
-  create_resources('scaleio_storage_pool', $scaleio::storage_pools, {ensure => present, require => File[$scli_wrap]})
-  create_resources('scaleio_sds', $scaleio::sds, {ensure => present, require => File[$scli_wrap]})
+  create_resources('scaleio_protection_domain', $scaleio::protection_domains, {ensure => present, require => [Exec['scaleio::mdm::primary_add_secondary'], File[$scli_wrap]]})
+  create_resources('scaleio_storage_pool',      $scaleio::storage_pools,      {ensure => present, require => [Exec['scaleio::mdm::primary_add_secondary'], File[$scli_wrap]]})
+  create_resources('scaleio_sds',               $scaleio::sds,                {ensure => present, require => [Exec['scaleio::mdm::primary_add_secondary'], File[$scli_wrap]]})
 
   resources {
     'scaleio_protection_domain':
