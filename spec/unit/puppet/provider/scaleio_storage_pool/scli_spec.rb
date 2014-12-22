@@ -9,7 +9,7 @@ describe provider_class do
 
   # load sample cli outputs
   let(:fixtures_cli)    { File.expand_path(File.join(File.dirname(__FILE__),"../../../../fixtures/cli"))}
-  let(:myPool)           { File.read(File.join(fixtures_cli,"pool_query_myPDomain_myPool.cli")) }
+  let(:myPool)          { File.read(File.join(fixtures_cli,"pool_query_myPDomain_myPool.cli")) }
   let(:myPool2)         { File.read(File.join(fixtures_cli,"pool_query_myPDomain_myPool2.cli")) }
   let(:myPDomain)       { File.read(File.join(fixtures_cli,"pool_query_myPDomain.cli")) }
 
