@@ -12,6 +12,7 @@ describe Puppet::Type.type(:scaleio_storage_pool) do
     @pool = Puppet::Type.type(:scaleio_storage_pool).new({
         :name         => 'test-PDO:myPool',
         :spare_policy => '12%',
+        :ensure       => :present,
       })
     expect(@pool[:name]).to eq('test-PDO:myPool')
   end
@@ -31,6 +32,7 @@ describe Puppet::Type.type(:scaleio_storage_pool) do
       Puppet::Type.type(:scaleio_storage_pool).new({
         :name         => 'myPDO:my Pool',
         :spare_policy => '12%',
+        :ensure       => :present,
       })
     }.to raise_error Puppet::ResourceError, /not a valid value for storage pool/
   end

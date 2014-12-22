@@ -10,6 +10,7 @@ describe Puppet::Type.type(:scaleio_protection_domain) do
 
   it 'should accept valid parameters' do
     @PDO = Puppet::Type.type(:scaleio_protection_domain).new({
+        :ensure       => :present,
         :name         => 'test-PDO',
       })
     expect(@PDO[:name]).to eq('test-PDO')
@@ -18,6 +19,7 @@ describe Puppet::Type.type(:scaleio_protection_domain) do
   it 'should not accept name with whitespaces' do
     expect {
       Puppet::Type.type(:scaleio_protection_domain).new({
+        :ensure     => :present,
         :name       => 'my PDO',
       })
     }.to raise_error Puppet::ResourceError, /not a valid value for a protection domain name/
