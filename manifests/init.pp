@@ -25,6 +25,9 @@
 #         'myPool' => ['/tmp/aa', '/tmp/ab'],
 #         'myPool2' => ['/tmp/ac', '/tmp/ad'],
 #       }
+# * sdc_names: hash containing SDC names, format:
+#     'sdc_ip:
+#       desc: 'mySDCname'
 # * purge: shall the not defined resources (f.e. protection domain, storage pool etc.) be purged
 # * components: will configure the different components any out of:
 #    - sds
@@ -46,6 +49,7 @@ class scaleio(
   $protection_domains = {},
   $storage_pools      = {},
   $sds                = {},
+  $sdc_names          = {},
   $components         = [],
 ) {
 
