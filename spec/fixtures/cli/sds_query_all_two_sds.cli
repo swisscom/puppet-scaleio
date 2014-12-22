@@ -1,0 +1,5 @@
+Query-all-SDS returned 2 SDS nodes.
+
+Protection Domain ade063bf00000000 Name: myPDomain
+SDS ID: cf538d1400000001 Name: mySDS-1 State: Connected, Joined IP: 192.168.56.111 Port: 7072
+SDS ID: cf538d1300000000 Name: mySDS-2 State: Connected, Joined IP: 192.168.56.112 Port: 7072

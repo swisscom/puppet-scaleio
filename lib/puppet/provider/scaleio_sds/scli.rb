@@ -68,7 +68,6 @@ Puppet::Type.type(:scaleio_sds).provide(:scaleio_sds) do
     end
   end
 
-  
   def create 
     Puppet.debug("Creating SDS #{@resource[:name]}")
 
@@ -78,7 +77,7 @@ Puppet::Type.type(:scaleio_sds).provide(:scaleio_sds) do
     @resource[:pool_devices].each do |storage_pool, devices|
       Puppet.debug("Adding devices #{devices} to pool #{storage_pool}")
       devices.each do |device|
-        # act differently when adding the first devive of and sds
+        # act differently when adding the first devive of an sds
         if first_add
           create_sds = ["--add_sds", "--sds_name", @resource[:name], "--protection_domain_name", @resource[:protection_domain]]
           create_sds << "--device_path" << device
@@ -101,7 +100,7 @@ Puppet::Type.type(:scaleio_sds).provide(:scaleio_sds) do
     @property_hash[:ensure] = :absent
   end
   
-  def sds_ip=(value)
+  def ips=(value)
     fail("SDS must have at least one IP address") if value.empty?
   
     # Add new IPs
@@ -147,7 +146,7 @@ Puppet::Type.type(:scaleio_sds).provide(:scaleio_sds) do
     @property_hash[:ensure] = :present
   end
 
-  def sds_port=(value)
+  def port=(value)
     Puppet.debug("Modifying SDS Port to #{value}")
     scli("--modify_sds_port", "--sds_name", @resource[:name], "--new_sds_port", value)
     @property_hash[:ensure] = :present
