@@ -71,6 +71,14 @@ describe provider_class do
     end
   end
 
+  describe 'destroy' do
+    it 'removes a sdc_name' do
+      expect{
+        provider.destroy
+      }.to raise_error Puppet::Error, /Destroying \(unmapping\) an SDC name from an IP is not \(yet\?\) supported by ScaleIO/
+    end
+  end
+
   describe 'update desc' do
     it 'updates the sdc name' do
       provider.expects(:rename_sdc).with('newSDCName').returns([])
