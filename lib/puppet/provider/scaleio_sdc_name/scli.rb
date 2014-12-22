@@ -57,6 +57,7 @@ Puppet::Type.type(:scaleio_sdc_name).provide(:scaleio_sdc_name) do
   # TODO: should set the name (desc) to nothing, unfortunately not (yet?) possible
   def destroy
     Puppet.debug("Destroying SDC name #{@resource[:name]} - not yet implemented")
+    raise Puppet::Error, "Destroying (unmapping) an SDC name from an IP is not (yet?) supported by ScaleIO"
     #@property_hash[:ensure] = :absent
   end
   
