@@ -15,9 +15,9 @@ Puppet::Type.type(:scaleio_sds).provide(:scaleio_sds) do
     
     # Iterate through each SDS block
     query_all_sds_lines.each do |line|
-		  next if line !~/SDS ID/
+      next if line !~/SDS ID/
 
-			# Get information about the SDS
+      # Get information about the SDS
       name = line.match(/Name:(.*)State/m)[1].strip
       ip = line.match(/IP:(.*)Port/m)[1].strip
       ips = ip.split(",").sort!
@@ -25,31 +25,31 @@ Puppet::Type.type(:scaleio_sds).provide(:scaleio_sds) do
 
       # Get devices and pool info for each SDS
       query_sds_lines = scli("--query_sds", "--sds_name", name).split("\n")
-			protection_domain = ''
-			current_path = ''
+      protection_domain = ''
+      current_path = ''
       pool_devices = Hash.new {|h,k| h[k] = [] }
 
-			# First pull out the device path, then the pool it is assigned to
+      # First pull out the device path, then the pool it is assigned to
       query_sds_lines.each do |line|
         if line =~/Protection Domain/
-					protection_domain = line.match(/Name: (.*)/)[1].strip
+          protection_domain = line.match(/Name: (.*)/)[1].strip
         elsif line =~/Path/
-					current_path = line.match(/Path: (.*)  Original/m)[1].strip
+          current_path = line.match(/Path: (.*)  Original/m)[1].strip
         elsif line =~/Storage Pool/
           pool = line.match(/Storage Pool: (.*),/m)[1].strip 
-					pool_devices[pool].push current_path
+          pool_devices[pool].push current_path
         end
       end
 
       # Create sds instances hash
       new sds_instance = { 
-				:name => name,
+        :name => name,
         :ensure => :present,
-				:protection_domain => protection_domain,
-				:ips => ips,
-				:port => port,
-				:pool_devices => pool_devices,
-			}
+        :protection_domain => protection_domain,
+        :ips => ips,
+        :port => port,
+        :pool_devices => pool_devices,
+      }
       sds_instances << new(sds_instance)
     end
     

@@ -20,20 +20,20 @@ describe Puppet::Type.type(:scaleio_sdc_name) do
 
   it 'should require a description' do
     expect {
-			Puppet::Type.type(:scaleio_sdc_name).new({
+      Puppet::Type.type(:scaleio_sdc_name).new({
         :ensure => :present,
         :name   => '172.17.17.1',
-				})
+        })
     }.to raise_error Puppet::ResourceError, /is required/
   end
 
   it 'should require a valid IP as name' do
     expect {
-			Puppet::Type.type(:scaleio_sdc_name).new({
+      Puppet::Type.type(:scaleio_sdc_name).new({
         :ensure => :present,
         :name   => '259.17.17.1',
         :desc   => 'mySDC',
-				})
+        })
     }.to raise_error Puppet::ResourceError, /invalid address/
   end
 end

@@ -7,8 +7,8 @@ all_properties = [
 describe provider_class do
 
   let(:fixtures_cli)    { File.expand_path(File.join(File.dirname(__FILE__),"../../../../fixtures/cli"))}
-  let(:no_pdo)       		{ File.read(File.join(fixtures_cli,"pdo_query_all_no_pdo.cli")) }
-  let(:one_pdo)       	{ File.read(File.join(fixtures_cli,"pdo_query_all_one_pdo.cli")) }
+  let(:no_pdo)           { File.read(File.join(fixtures_cli,"pdo_query_all_no_pdo.cli")) }
+  let(:one_pdo)         { File.read(File.join(fixtures_cli,"pdo_query_all_one_pdo.cli")) }
   let(:two_pdo)       { File.read(File.join(fixtures_cli,"pdo_query_all_two_pdo.cli")) }
 
   let(:resource) {

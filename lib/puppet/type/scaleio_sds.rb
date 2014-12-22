@@ -47,12 +47,12 @@ Puppet::Type.newtype(:scaleio_sds) do
   end
 
   autorequire(:scaleio_storage_pool) do
-		self[:pool_devices].each do |storage_pool, devices|
-    	[ "#{self[:protection_domain]}:#{storage_pool}" ].compact
-		end
+    self[:pool_devices].each do |storage_pool, devices|
+      [ "#{self[:protection_domain]}:#{storage_pool}" ].compact
+    end
   end
 
-	# helper method, pass required parameters
+  # helper method, pass required parameters
   def validate_required(*required_parameters)
     if self[:ensure] == :present
       required_parameters.each do |req_param|

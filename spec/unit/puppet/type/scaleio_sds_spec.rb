@@ -36,67 +36,67 @@ describe Puppet::Type.type(:scaleio_sds) do
 
   it 'should require a protection domain' do
     expect {
-			Puppet::Type.type(:scaleio_sds).new({
+      Puppet::Type.type(:scaleio_sds).new({
         :name              => 'mySDS',
         :ips               => ['172.17.121.10'],
         :pool_devices      => {'myPool' => ['/dev/sda', '/dev/sdb']},
-				})
+        })
     }.to raise_error Puppet::ResourceError, /is required/
   end
 
   it 'should require valid IP(s)' do
     expect {
-			Puppet::Type.type(:scaleio_sds).new({
+      Puppet::Type.type(:scaleio_sds).new({
         :name              => 'mySDS',
         :protection_domain => 'myPDomain',
         :pool_devices      => {'myPool' => ['/dev/sda', '/dev/sdb']},
-				})
+        })
     }.to raise_error Puppet::ResourceError, /is required/
     expect {
-			Puppet::Type.type(:scaleio_sds).new({
+      Puppet::Type.type(:scaleio_sds).new({
         :name              => 'mySDS',
         :protection_domain => 'myPDomain',
         :ips               => ['259.17.121.10'],
         :pool_devices      => {'myPool' => ['/dev/sda', '/dev/sdb']},
-				})
+        })
     }.to raise_error Puppet::ResourceError, /invalid address/
   end
 
   it 'should require pool devices' do
     expect {
-			Puppet::Type.type(:scaleio_sds).new({
+      Puppet::Type.type(:scaleio_sds).new({
         :name              => 'mySDS',
         :protection_domain => 'myPDomain',
         :ips               => ['172.17.121.10'],
-				})
+        })
     }.to raise_error Puppet::ResourceError, /is required/
     expect {
-			Puppet::Type.type(:scaleio_sds).new({
+      Puppet::Type.type(:scaleio_sds).new({
         :name              => 'mySDS',
         :protection_domain => 'myPDomain',
         :ips               => ['172.17.121.10'],
         :pool_devices      => ['/dev/sda', '/dev/sdb'],
-				})
+        })
     }.to raise_error Puppet::ResourceError, /pool_devices should be/
     expect {
-			Puppet::Type.type(:scaleio_sds).new({
+      Puppet::Type.type(:scaleio_sds).new({
         :name              => 'mySDS',
         :protection_domain => 'myPDomain',
         :ips               => ['172.17.121.10'],
         :pool_devices      => '/dev/sda',
-				})
+        })
     }.to raise_error Puppet::ResourceError, /pool_devices should be/
   end
 
   it 'should deny a non digit port' do
     expect {
-		  Puppet::Type.type(:scaleio_sds).new({
+      Puppet::Type.type(:scaleio_sds).new({
         :name              => 'mySDS',
         :protection_domain => 'myPDomain',
         :ips               => ['172.17.121.10'],
         :pool_devices      => {'myPool' => ['/dev/sda', '/dev/sdb']},
         :port              => 'adf'
-				})
+        })
     }.to raise_error Puppet::ResourceError, /not a valid value for SDS port/
   end
 end

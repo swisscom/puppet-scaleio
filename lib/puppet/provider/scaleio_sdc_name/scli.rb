@@ -15,9 +15,9 @@ Puppet::Type.type(:scaleio_sdc_name).provide(:scaleio_sdc_name) do
     
     # Iterate through each SDS block
     query_all_sdc_lines.each do |line|
-		  next if line !~/SDC ID/
+      next if line !~/SDC ID/
 
-			# Get information about the SDC
+      # Get information about the SDC
       name = line.match(/Name:(.*)IP/m)[1].strip
       ip = line.match(/IP:(.*)State/m)[1].strip
 
@@ -25,10 +25,10 @@ Puppet::Type.type(:scaleio_sdc_name).provide(:scaleio_sdc_name) do
 
       # Create sdc name instances hash
       new sdc_name_instance = { 
-				:name => ip,
+        :name => ip,
         :ensure => :present,
-				:desc => name,
-			}
+        :desc => name,
+      }
 
       sdc_name_instances << new(sdc_name_instance)
     end

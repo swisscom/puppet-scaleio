@@ -25,9 +25,9 @@ Puppet::Type.type(:scaleio_protection_domain).provide(:scaleio_protection_domain
 
         # Create pdomains instances hash
         new pdomain_info = { 
-						:name     => pdomain,
-						:ensure 	=> :present,
-				}
+            :name     => pdomain,
+            :ensure   => :present,
+        }
         pdomain_instances << new(pdomain_info)
       end
     end

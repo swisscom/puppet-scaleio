@@ -37,20 +37,20 @@ describe Puppet::Type.type(:scaleio_storage_pool) do
 
   it 'should require spare_policy' do
     expect {
-			Puppet::Type.type(:scaleio_storage_pool).new({
-					:name         => 'test-PDO:myPool',
-					:ensure       => 'present',
-				})
+      Puppet::Type.type(:scaleio_storage_pool).new({
+          :name         => 'test-PDO:myPool',
+          :ensure       => 'present',
+        })
     }.to raise_error Puppet::ResourceError, /is required/
   end
 
   it 'should validate spare_policy' do
     expect {
-			Puppet::Type.type(:scaleio_storage_pool).new({
-					:name         => 'test-PDO:myPool',
+      Puppet::Type.type(:scaleio_storage_pool).new({
+          :name         => 'test-PDO:myPool',
           :spare_policy => '12',
-					:ensure       => 'present',
-				})
+          :ensure       => 'present',
+        })
     }.to raise_error Puppet::ResourceError, /not a valid value for the storage pool spare capacity/
   end
 end

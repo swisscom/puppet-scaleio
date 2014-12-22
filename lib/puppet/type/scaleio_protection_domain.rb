@@ -1,5 +1,5 @@
 Puppet::Type.newtype(:scaleio_protection_domain) do
-	@doc = "Manage ScaleIO Protection Domains"
+  @doc = "Manage ScaleIO Protection Domains"
   
   ensurable
 

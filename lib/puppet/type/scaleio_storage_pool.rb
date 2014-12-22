@@ -61,7 +61,7 @@ Puppet::Type.newtype(:scaleio_storage_pool) do
     [ self[:protection_domain] ].compact
   end
 
-	# helper method, pass required parameters
+  # helper method, pass required parameters
   def validate_required(*required_parameters)
     if self[:ensure] == :present
       required_parameters.each do |req_param|
