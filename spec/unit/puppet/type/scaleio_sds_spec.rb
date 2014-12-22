@@ -14,11 +14,13 @@ describe Puppet::Type.type(:scaleio_sds) do
         :protection_domain => 'myPDomain',
         :ips               => ['172.17.121.10'],
         :pool_devices      => {'myPool' => ['/dev/sda', '/dev/sdb']},
+        :port              => 2342,
       })
     expect(@sds[:name]).to eq('mySDS')
     expect(@sds[:protection_domain]).to eq('myPDomain')
     expect(@sds[:ips]).to eq(['172.17.121.10'])
     expect(@sds[:pool_devices]).to eq({'myPool' => ['/dev/sda', '/dev/sdb']})
+    expect(@sds[:port]).to eq(2342)
   end
 
   it 'should not accept name with whitespaces' do
@@ -84,5 +86,17 @@ describe Puppet::Type.type(:scaleio_sds) do
         :pool_devices      => '/dev/sda',
 				})
     }.to raise_error Puppet::ResourceError, /pool_devices should be/
+  end
+
+  it 'should deny a non digit port' do
+    expect {
+		  Puppet::Type.type(:scaleio_sds).new({
+        :name              => 'mySDS',
+        :protection_domain => 'myPDomain',
+        :ips               => ['172.17.121.10'],
+        :pool_devices      => {'myPool' => ['/dev/sda', '/dev/sdb']},
+        :port              => 'adf'
+				})
+    }.to raise_error Puppet::ResourceError, /not a valid value for SDS port/
   end
 end

@@ -15,7 +15,7 @@ Puppet::Type.newtype(:scaleio_sds) do
   end
 
   newproperty(:ips, :array_matching => :all) do
-    desc "The SDS IP Address/Addresses"
+    desc "The SDS IP address/addresses"
     validate do |value|
       fail("#{value} is not a valid IPv4 address") unless IPAddr.new(value).ipv4?
     end
@@ -25,9 +25,9 @@ Puppet::Type.newtype(:scaleio_sds) do
   end
 
   newproperty(:port) do
-    desc "The SDS Port Address"
+    desc "The SDS port address"
     validate do |value|
-      fail("#{value} is not a valid value for SDS port.") unless value =~/^\d+$/
+      fail("#{value} is not a valid value for SDS port.") unless value.is_a? Integer
     end
   end
 
@@ -39,7 +39,7 @@ Puppet::Type.newtype(:scaleio_sds) do
   end
 
   newparam(:protection_domain) do
-    desc "The Protection Domain name"
+    desc "The protection domain name"
   end
 
   autorequire(:scaleio_protection_domain) do
