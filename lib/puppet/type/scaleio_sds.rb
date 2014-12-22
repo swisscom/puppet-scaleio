@@ -10,7 +10,7 @@ Puppet::Type.newtype(:scaleio_sds) do
   newparam(:name, :namevar => true) do
     desc "The SDS name"
     validate do |value|
-      fail("#{value} is not a valid value for SDS name.") unless value =~ /^[ -~]+$/
+      fail("#{value} is not a valid value for SDS name.") unless value =~ /^[\w\-]+$/
     end
   end
 
