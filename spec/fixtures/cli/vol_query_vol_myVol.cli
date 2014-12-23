@@ -1,0 +1,12 @@
+>> Volume ID: d555c6ab00000000 Name: myVol Thin-provisioned Size: 24.0 GB (24576 MB)
+   Capacity in use: 0 Bytes
+   Trimmed capacity: 0 Bytes
+   Storage Pool f8bd86f600000001 Name: myPool
+   Protection Domain ade063bf00000000 Name: myPDomain
+   Creation time: 2014-12-23 09:38:05
+   Obfuscation is disabled
+   Read bandwidth:  0 IOPS 0 Bytes per-second
+   Write bandwidth: 0 IOPS 0 Bytes per-second
+   Mapped SDCs:
+      SDC ID: b69b74ca00000001 IP: 192.168.56.112
+      SDC ID: b69b74c900000000 IP: 192.168.56.111
