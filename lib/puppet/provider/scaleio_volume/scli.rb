@@ -84,31 +84,39 @@ Puppet::Type.type(:scaleio_volume).provide(:scaleio_volume) do
    @property_hash[:ensure] = :absent
   end
   
+  def protection_domain=(value)
+    fail("Changing the protection domain of a ScaleIO volume is not supported")
+  end
+  
+  def storage_pool=(value)
+    fail("Changing the storage pool of a ScaleIO volume is not supported")
+  end
+  
   def type=(value)
     fail("Changing the type of a ScaleIO volume is not supported")
   end
   
   def size=(value)
     fail("Decreasing the size of a ScaleIO volume is not allowed through Puppet.") if value < @property_hash[:size]
-   	Puppet.debug("Resizing volume #{@resource[:name]} to #{value} GB")
-		scli('--modify_volume_capacity', '--volume_name', @resource[:name], '--size_gb', value)
+     Puppet.debug("Resizing volume #{@resource[:name]} to #{value} GB")
+    scli('--modify_volume_capacity', '--volume_name', @resource[:name], '--size_gb', value)
   end
 
-	def sdc_nodes=(value)
-		# Check for new SDC nodes
-		new_nodes = value - @property_hash[:sdc_nodes]
-		new_nodes.each do |new_node|
-			Puppet.debug("Mapping volume #{@resource[:name]} to SDC node #{new_node}")
-			scli('--map_volume_to_sdc', '--volume_name', @resource[:name], '--sdc_name', new_node, '--allow_multi_map')
-		end
+  def sdc_nodes=(value)
+    # Check for new SDC nodes
+    new_nodes = value - @property_hash[:sdc_nodes]
+    new_nodes.each do |new_node|
+      Puppet.debug("Mapping volume #{@resource[:name]} to SDC node #{new_node}")
+      scli('--map_volume_to_sdc', '--volume_name', @resource[:name], '--sdc_name', new_node, '--allow_multi_map')
+    end
 
-		# Check for nodes to be unmapped from this volume
-		rem_nodes = @property_hash[:sdc_nodes] - value
-		rem_nodes.each do |rem_node|
-			Puppet.debug("Unmapping volume #{@resource[:name]} from SDC node #{rem_node}")
-			scli('--unmap_volume_from_sdc', '--volume_name', @resource[:name], '--sdc_name', rem_node, '--i_am_sure')
-		end
-	end
+    # Check for nodes to be unmapped from this volume
+    rem_nodes = @property_hash[:sdc_nodes] - value
+    rem_nodes.each do |rem_node|
+      Puppet.debug("Unmapping volume #{@resource[:name]} from SDC node #{rem_node}")
+      scli('--unmap_volume_from_sdc', '--volume_name', @resource[:name], '--sdc_name', rem_node, '--i_am_sure')
+    end
+  end
 
   def exists?
     Puppet.debug("Puppet::Provider::ScaleIO_volume: checking existence of ScaleIO volume #{@resource[:name]}")

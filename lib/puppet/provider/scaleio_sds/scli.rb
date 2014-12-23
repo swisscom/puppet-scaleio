@@ -102,7 +102,7 @@ Puppet::Type.type(:scaleio_sds).provide(:scaleio_sds) do
   
   def protection_domain=(value)
     fail("Changing the protection domain of a ScaleIO SDS is not supported")
-	end
+  end
 
   def ips=(value)
     fail("SDS must have at least one IP address") if value.empty?

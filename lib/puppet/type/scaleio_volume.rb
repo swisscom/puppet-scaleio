@@ -14,14 +14,14 @@ Puppet::Type.newtype(:scaleio_volume) do
     end
   end
 
-  newparam(:storage_pool) do
+  newproperty(:storage_pool) do
     desc "The name of the storage pool"
     validate do |value|
       fail("#{value} is not a valid storag pool name") unless value =~ /^[\w\-]+$/
     end
   end
 
-  newparam(:protection_domain) do
+  newproperty(:protection_domain) do
     desc "The name of the protection domain"
     validate do |value|
       fail("#{value} is not a valid protection domain name") unless value =~ /^[\w\-]+$/
@@ -31,7 +31,7 @@ Puppet::Type.newtype(:scaleio_volume) do
   newproperty(:size) do
     desc "The size in GB of the volume"
     validate do |value|
-      fail("#{value} is not a valid size must be an integer and a multiple of 8") unless value.is_a? Integer and value % 8 == 0
+      fail("#{value} is not a valid size must be an integer and a multiple of 8") unless value.is_a? Integer and value % 8 == 0 and value > 0
     end
   end
 
@@ -68,6 +68,5 @@ Puppet::Type.newtype(:scaleio_volume) do
       end
     end
   end
-
 end
 

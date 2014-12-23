@@ -29,6 +29,5 @@ Puppet::Type.newtype(:scaleio_sdc_name) do
       end
     end
   end
-
 end
 

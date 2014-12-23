@@ -38,7 +38,7 @@ Puppet::Type.newtype(:scaleio_sds) do
     end
   end
 
-  newparam(:protection_domain) do
+  newproperty(:protection_domain) do
     desc "The protection domain name"
   end
 
