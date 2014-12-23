@@ -79,6 +79,7 @@ describe provider_class do
     it 'creates a storage pool' do
       provider.expects(:scli).with('--add_storage_pool', '--protection_domain_name', 'myPDomain', '--storage_pool_name', 'myNewPool').returns([])
       provider.expects(:scli).with('--modify_spare_policy', '--protection_domain_name', 'myPDomain', '--storage_pool_name', 'myNewPool', '--spare_percentage', '34%', '--i_am_sure').returns([])
+      provider.expects(:sleep).with(30).returns([])
       provider.create
     end
   end

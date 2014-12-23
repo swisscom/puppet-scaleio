@@ -6,6 +6,8 @@ Puppet::Type.type(:scaleio_storage_pool).provide(:scaleio_storage_pool) do
 
   confine :osfamily => :redhat
 
+	commands :sleep => 'sleep'
+
   mk_resource_methods
 
   def self.instances
@@ -80,6 +82,7 @@ Puppet::Type.type(:scaleio_storage_pool).provide(:scaleio_storage_pool) do
     Puppet.debug("Creating storage pool #{@resource[:name]}")
     scli("--add_storage_pool", "--protection_domain_name", @resource[:protection_domain], "--storage_pool_name", @resource[:pool_name])
     updateSparePolicy(@resource[:spare_policy])
+		sleep(30)	# wait for rebalance after creating pool
     @property_hash[:ensure] = :present
   end
 
