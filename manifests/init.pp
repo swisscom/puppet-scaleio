@@ -28,6 +28,14 @@
 # * sdc_names: hash containing SDC names, format:
 #     'sdc_ip:
 #       desc: 'mySDCname'
+# * volumes: hash containing volumes, format:
+#     'volName':
+#       storage_pool:       'poolName'
+#       protection_domain:  'protDomainName'
+#       size:               504 # volume size in GB
+#       type:               'thin' # either thin or thick
+#       sdc_nodes:          ['node1', 'node2'] # array containing SDC names the volume shall be mapped to 
+#       
 # * purge: shall the not defined resources (f.e. protection domain, storage pool etc.) be purged
 # * components: will configure the different components any out of:
 #    - sds
@@ -50,6 +58,7 @@ class scaleio(
   $storage_pools      = {},
   $sds                = {},
   $sdc_names          = {},
+  $volumes            = {},
   $components         = [],
 ) {
 

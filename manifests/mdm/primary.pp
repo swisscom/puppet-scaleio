@@ -68,6 +68,7 @@ class scaleio::mdm::primary {
   create_resources('scaleio_storage_pool',      $scaleio::storage_pools,      {ensure => present, require => [Exec['scaleio::mdm::primary_add_secondary'], File[$scli_wrap]]})
   create_resources('scaleio_sds',               $scaleio::sds,                {ensure => present, require => [Exec['scaleio::mdm::primary_add_secondary'], File[$scli_wrap]]})
   create_resources('scaleio_sdc_name',          $scaleio::sdc_names,          {ensure => present, require => [Exec['scaleio::mdm::primary_add_secondary'], File[$scli_wrap]]})
+  create_resources('scaleio_volume',            $scaleio::volumes,            {ensure => present, require => [Exec['scaleio::mdm::primary_add_secondary'], File[$scli_wrap]]})
 
   resources {
     'scaleio_protection_domain':
@@ -77,6 +78,8 @@ class scaleio::mdm::primary {
     'scaleio_sds':
       purge => $scaleio::purge;
     'scaleio_sdc_name':
+      purge => $scaleio::purge;
+    'scaleio_volume':
       purge => $scaleio::purge;
   }
 }
