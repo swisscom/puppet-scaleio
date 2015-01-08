@@ -36,7 +36,7 @@ Puppet::Type.type(:scaleio_volume).provide(:scaleio_volume) do
         elsif line =~ /Storage Pool/
           pool = line.match(/Name:(.*)/)[1].strip
         elsif line =~ /SDC ID/
-          sdc_ip = line.match(/IP:(.*)/)[1].strip
+          sdc_ip = line.match(/IP:\s*([\d\.]+)/)[1].strip
 
           # resolved sdc ip to sdc name
           sdc_name = scli("--query_all_sdc").match(/Name:\s*([\w\-]+)\s*IP:\s*#{sdc_ip}/)[1].strip
