@@ -38,8 +38,7 @@ describe 'scaleio::mdm::primary', :type => 'class' do
     }
     it { should contain_exec('scaleio::mdm::primary_rename_system').with(
       :command => '/var/lib/puppet/module_data/scaleio/scli_wrap --rename_system --new_name foo',
-      :unless => "scli --query_cluster | grep -qE '^ Name: foo$'",
-      :require => 'Exec[scaleio::mdm::primary_go_into_cluster_mode]',
+      :unless => "scli --query_cluster | grep -qE '^ Name: foo$'"
     )}
   end
 #  context 'with a protection domain name' do

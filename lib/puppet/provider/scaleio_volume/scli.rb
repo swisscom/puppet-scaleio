@@ -6,6 +6,8 @@ Puppet::Type.type(:scaleio_volume).provide(:scaleio_volume) do
 
   confine :osfamily => :redhat
 
+  commands :sleep => 'sleep'
+
   mk_resource_methods
   
   def self.instances
@@ -72,9 +74,15 @@ Puppet::Type.type(:scaleio_volume).provide(:scaleio_volume) do
 
   def create 
     Puppet.debug("Creating volume #{@resource[:name]}")
+    sleep(20)  # wait for rebalance in case the pool has just been created
     cmd = [] << '--add_volume' << '--protection_domain_name' << @resource[:protection_domain] << '--storage_pool_name' << @resource[:storage_pool] << '--volume_name' << @resource[:name] << '--size_gb' << @resource[:size]
     cmd << '--thin_provisioned' if @resource[:type] == 'thin'
     scli(*cmd)
+
+    @resource[:sdc_nodes].each do |node|
+      Puppet.debug("Mapping volume #{@resource[:name]} to SDC node #{node}")
+      scli('--map_volume_to_sdc', '--volume_name', @resource[:name], '--sdc_name', node, '--allow_multi_map')
+    end
     @property_hash[:ensure] = :present
   end
 

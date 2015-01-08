@@ -35,6 +35,7 @@ class scaleio::mdm::primary {
   exec{'scaleio::mdm::primary_add_secondary':
     command => "${scli_wrap} --add_secondary_mdm --secondary_mdm_ip ${scaleio::secondary_mdm_ip}",
     unless  => "scli --query_cluster | grep -qE '^ (Secondary|Primary) IP: ${scaleio::secondary_mdm_ip}$'",
+    require => [File[$scli_wrap], Package['EMC-ScaleIO-mdm']],
   } -> exec{'scaleio::mdm::primary_add_tb':
     command => "${scli_wrap} --add_tb --tb_ip ${scaleio::tb_ip}",
     unless  => "scli --query_cluster | grep -qE '^ Tie-Breaker IP: ${scaleio::tb_ip}$'",
@@ -48,7 +49,6 @@ class scaleio::mdm::primary {
     exec{'scaleio::mdm::primary_rename_system':
       command => "${scli_wrap} --rename_system --new_name ${scaleio::system_name}",
       unless  => "scli --query_cluster | grep -qE '^ Name: ${scaleio::system_name}$'",
-      require => Exec['scaleio::mdm::primary_go_into_cluster_mode'],
     }
   }
 
@@ -64,26 +64,32 @@ class scaleio::mdm::primary {
 
   # TODO: default pool is created for a new protection domain, but deleted in the next puppet run
   # TODO: last pool cannot be deleted - results in error
-  create_resources('scaleio_protection_domain', $scaleio::protection_domains, {ensure => present, require => [Exec['scaleio::mdm::primary_add_secondary'], File[$scli_wrap]]})
-  create_resources('scaleio_storage_pool',      $scaleio::storage_pools,      {ensure => present, require => [Exec['scaleio::mdm::primary_add_secondary'], File[$scli_wrap]]})
-  create_resources('scaleio_sds',               $scaleio::sds,                {ensure => present, require => [Exec['scaleio::mdm::primary_add_secondary'], File[$scli_wrap]]})
-  create_resources('scaleio_sdc_name',          $scaleio::sdc_names,          {ensure => present, require => [Exec['scaleio::mdm::primary_add_secondary'], File[$scli_wrap]], tag => 'scaleio_tag_sdc_name'})
-  create_resources('scaleio_volume',            $scaleio::volumes,            {ensure => present, require => [Exec['scaleio::mdm::primary_add_secondary'], File[$scli_wrap]], tag => 'scaleio_tag_volume'})
+  create_resources('scaleio_protection_domain', $scaleio::protection_domains, {ensure => present, require => Exec['scaleio::mdm::primary_add_secondary']})
+  create_resources('scaleio_storage_pool',      $scaleio::storage_pools,      {ensure => present, require => Exec['scaleio::mdm::primary_add_secondary']})
+  create_resources('scaleio_sds',               $scaleio::sds,                {ensure => present, require => Exec['scaleio::mdm::primary_add_secondary'], tag => 'scaleio_tag_sds'})
+  create_resources('scaleio_sdc_name',          $scaleio::sdc_names,          {ensure => present, require => Exec['scaleio::mdm::primary_add_secondary'], tag => 'scaleio_tag_sdc_name'})
+  create_resources('scaleio_volume',            $scaleio::volumes,            {ensure => present, require => Exec['scaleio::mdm::primary_add_secondary'], tag => 'scaleio_tag_volume'})
 
   # Make sure that the sdc are renamed before trying to map the volumes to those names
   # This cannot be done with autorequire in the provider as the unique name of the resource 'scaleio_sdc_name' must be the IP and not the name
+  Scaleio_sds<| tag == 'scaleio_tag_sds' |> -> Scaleio_sdc_name<| tag == 'scaleio_tag_sdc_name' |>
   Scaleio_sdc_name<| tag == 'scaleio_tag_sdc_name' |> -> Scaleio_volume<| tag == 'scaleio_tag_volume' |>
 
-  resources {
-    'scaleio_protection_domain':
-      purge => $scaleio::purge;
-    'scaleio_storage_pool':
-      purge => $scaleio::purge;
-    'scaleio_sds':
-      purge => $scaleio::purge;
-    'scaleio_sdc_name':
-      purge => $scaleio::purge;
-    'scaleio_volume':
-      purge => $scaleio::purge;
-  }
+  #resources {
+  #  'scaleio_protection_domain':
+  #    require => Exec['scaleio::mdm::primary_add_secondary'],
+  #    purge => $scaleio::purge;
+  #  'scaleio_storage_pool':
+  #    require => Exec['scaleio::mdm::primary_add_secondary'],
+  #    purge => $scaleio::purge;
+  #  'scaleio_sds':
+  #    require => Exec['scaleio::mdm::primary_add_secondary'],
+  #    purge => $scaleio::purge;
+  #  'scaleio_sdc_name':
+  #    require => Exec['scaleio::mdm::primary_add_secondary'],
+  #    purge => $scaleio::purge;
+  #  'scaleio_volume':
+  #    require => Exec['scaleio::mdm::primary_add_secondary'],
+  #    purge => $scaleio::purge;
+  #}
 }

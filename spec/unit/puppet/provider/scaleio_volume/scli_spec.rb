@@ -110,6 +110,8 @@ describe provider_class do
   describe 'create' do
     it 'creates a volume' do
       provider.expects(:scli).with('--add_volume', '--protection_domain_name', 'myPDomain', '--storage_pool_name', 'myPool', '--volume_name', 'myVol', '--size_gb', 504, '--thin_provisioned').returns([])
+      provider.expects(:scli).with('--map_volume_to_sdc', '--volume_name', 'myVol', '--sdc_name', 'sdc1', '--allow_multi_map').returns([])
+      provider.expects(:scli).with('--map_volume_to_sdc', '--volume_name', 'myVol', '--sdc_name', 'sdc2', '--allow_multi_map').returns([])
       provider.create
     end
   end
