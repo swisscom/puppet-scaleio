@@ -40,10 +40,14 @@ scaleio::mdm::callhome::from_mail: 'from@test.com'
 scaleio::mdm::callhome::to_mail: 'mymail@test.com'
 scaleio::mdm::callhome::mail_server_address: 'mail.server.test.com'
 
-scaleio::protection_domains: {pdo1: {}}
+scaleio::protection_domains: {pdo1: {}, pdo2: {}}
 
 scaleio::storage_pools:
   'pdo1:pool1':
+    spare_policy: 20%
+  'pdo1:pool2':
+    spare_policy: 20%
+  'pdo2:pool3':
     spare_policy: 20%
 
 scaleio::sds:
@@ -52,26 +56,31 @@ scaleio::sds:
     ips: ['10.0.0.11']
     pool_devices:
       'pool1': ['/dev/sdb']
+      'pool2': ['/dev/sdc', '/dev/sdd']
   'sds-2':
     protection_domain: 'pdo1'
     ips: ['10.0.0.12']
     pool_devices:
       'pool1': ['/dev/sdb']
+      'pool2': ['/dev/sdc', '/dev/sdd']
   'sds-3':
     protection_domain: 'pdo1'
     ips: ['10.0.0.13']
     pool_devices:
       'pool1': ['/dev/sdb']
+      'pool2': ['/dev/sdc', '/dev/sdd']
   'sds-4':
     protection_domain: 'pdo1'
     ips: ['10.0.0.14']
     pool_devices:
-      'pool1': ['/dev/sdb']                                                                                                                            
+      'pool1': ['/dev/sdb']    
+      'pool2': ['/dev/sdc', '/dev/sdd']
   'sds-5':                                                                                                                                             
     protection_domain: 'pdo1'                                                                                                                          
     ips: ['10.0.0.15']                                                                                                                              
     pool_devices:                                                                                                                                      
       'pool1': ['/dev/sdb']  
+      'pool2': ['/dev/sdc', '/dev/sdd']
       
 scaleio::sdc_names:                                                                                                                                    
   '10.0.0.11':                                                                                                                                      
