@@ -6,7 +6,7 @@ Facter.add('scaleio_is_primary_mdm') do
     else
       command = "#{command} 2>/dev/null"
     end
-    output = Facter::Core::Execution.exec command
+    output = Facter::Util::Resolution.exec command
     output.nil? ? false : output.include?("Primary IP")
   end
 end
