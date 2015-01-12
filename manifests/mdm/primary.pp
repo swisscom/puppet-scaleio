@@ -49,18 +49,19 @@ class scaleio::mdm::primary {
     exec{'scaleio::mdm::primary_rename_system':
       command => "${scli_wrap} --rename_system --new_name ${scaleio::system_name}",
       unless  => "scli --query_cluster | grep -qE '^ Name: ${scaleio::system_name}$'",
+      require => Exec['scaleio::mdm::primary_go_into_cluster_mode'],
     }
   }
 
-#  if $scaleio::syslog_ip_port {
-#    validate_re($scaleio::syslog_ip_port, '^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){3}:[0-9]+$')
-#    $splitted_ip_port = split($scaleio::syslog_ip_port,':')
-#    exec{'scaleio::mdm::primary_configure_syslog':
-#      command => "scli --start_remote_syslog --remote_syslog_server_ip ${splitted_ip_port[0]} --remote_syslog_server_port ${splitted_ip_port[1]} --syslog_facility 16",
-#      unless  => "TODO: check if configured right",
-#      require => Exec['scaleio::mdm::primary_go_into_cluster_mode'],
-#    }
-#  }
+  if $scaleio::syslog_ip_port {
+    validate_re($scaleio::syslog_ip_port, '^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){3}:[0-9]+$')
+    $splitted_ip_port = split($scaleio::syslog_ip_port,':')
+    exec{'scaleio::mdm::primary_configure_syslog':
+      command => "${scli_wrap} --start_remote_syslog --remote_syslog_server_ip ${splitted_ip_port[0]} --remote_syslog_server_port ${splitted_ip_port[1]}",
+      unless  => "netstat -apn |grep mdm |egrep -q ':${splitted_ip_port[0]}'",
+      require => Exec['scaleio::mdm::primary_go_into_cluster_mode'],
+    }
+  }
 
   # TODO: default pool is created for a new protection domain, but deleted in the next puppet run
   # TODO: last pool cannot be deleted - results in error
