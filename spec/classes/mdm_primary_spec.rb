@@ -83,22 +83,22 @@ describe 'scaleio::mdm::primary', :type => 'class' do
       :refreshonly  => true,
     )}
   end
-#  context 'with a syslog ip port' do
-#    let(:pre_condition){
-#      "class{'scaleio': syslog_ip_port => '1.2.3.7:8080' }"
-#    }
-#    it { should contain_exec('scaleio::mdm::primary_configure_syslog').with(
-#      :command => '/var/lib/puppet/module_data/scaleio/scli_wrap --start_remote_syslog --remote_syslog_server_ip 1.2.3.7 --remote_syslog_server_port 8080 --syslog_facility 16',
-#      #:unless => 'TODO:',
-#      :require => 'Exec[scaleio::mdm::primary_go_into_cluster_mode]',
-#    )}
-#  end
-#  context 'with a wrong license' do
-#    let(:pre_condition){
-#      "class{'scaleio': license => 'dd' }"
-#    }
-#    it { expect { subject.call('fail') }.to raise_error(Puppet::Error) }
-#  end
+  context 'with a syslog ip port' do
+    let(:pre_condition){
+      "class{'scaleio': syslog_ip_port => '1.2.3.7:8080' }"
+    }
+    it { should contain_exec('scaleio::mdm::primary_configure_syslog').with(
+      :command => '/var/lib/puppet/module_data/scaleio/scli_wrap --start_remote_syslog --remote_syslog_server_ip 1.2.3.7 --remote_syslog_server_port 8080',
+      :unless  => "netstat -apn |grep mdm |egrep -q ':8080'",
+      :require => 'Exec[scaleio::mdm::primary_go_into_cluster_mode]',
+    )}
+  end
+  #context 'with a wrong license' do
+  #  let(:pre_condition){
+  #    "class{'scaleio': license => 'dd' }"
+  #  }
+  #  it { expect { subject.call('fail') }.to raise_error(Puppet::Error) }
+  #end
   context 'with a wrong password' do
     let(:pre_condition){
       "class{'scaleio': password => 'd,' }"
