@@ -54,7 +54,7 @@ class scaleio::mdm::primary {
   }
 
   if $scaleio::syslog_ip_port {
-    validate_re($scaleio::syslog_ip_port, '^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){3}:[0-9]+$')
+    validate_re($scaleio::syslog_ip_port, '^[\w\-\.]+:[0-9]+$')
     $splitted_ip_port = split($scaleio::syslog_ip_port,':')
     exec{'scaleio::mdm::primary_configure_syslog':
       command => "${scli_wrap} --start_remote_syslog --remote_syslog_server_ip ${splitted_ip_port[0]} --remote_syslog_server_port ${splitted_ip_port[1]}",
