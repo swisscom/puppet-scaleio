@@ -53,6 +53,7 @@ class scaleio::mdm::primary {
     }
   }
 
+  # TODO: detect when the syslog destination changes
   if $scaleio::syslog_ip_port {
     validate_re($scaleio::syslog_ip_port, '^[\w\-\.]+:[0-9]+$')
     $splitted_ip_port = split($scaleio::syslog_ip_port,':')
@@ -65,6 +66,7 @@ class scaleio::mdm::primary {
 
   # TODO: default pool is created for a new protection domain, but deleted in the next puppet run
   # TODO: last pool cannot be deleted - results in error
+  create_resources('scaleio_user',              $scaleio::users,              {ensure => present, require => [Exec['scaleio::mdm::primary_add_secondary'], File[$scaleio::mdm::add_scaleio_user]]})
   create_resources('scaleio_protection_domain', $scaleio::protection_domains, {ensure => present, require => Exec['scaleio::mdm::primary_add_secondary']})
   create_resources('scaleio_storage_pool',      $scaleio::storage_pools,      {ensure => present, require => Exec['scaleio::mdm::primary_add_secondary']})
   create_resources('scaleio_sds',               $scaleio::sds,                {ensure => present, require => Exec['scaleio::mdm::primary_add_secondary'], tag => 'scaleio_tag_sds'})

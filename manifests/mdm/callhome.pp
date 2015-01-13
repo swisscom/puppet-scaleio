@@ -19,23 +19,12 @@ class scaleio::mdm::callhome(
   # Include primary mdm class, if this server shall be the primary (first setup), but it has not yet been configured (checked if there is no open connection to the tie-breaker),
   # or if we are running on the actual SIO primary mdm
   if (has_ip_address($scaleio::primary_mdm_ip) and !str2bool($::scaleio_tb_connection_established)) or str2bool($::scaleio_is_primary_mdm) {
-    $add_callhome_user = '/var/lib/puppet/module_data/scaleio/add_callhome_user.sh'
-
-    file{$add_callhome_user:
-      source  => 'puppet:///modules/scaleio/add_callhome_user.sh',
-      owner   => root,
-      group   => 0,
-      mode    => '0700',
-      require => [
-        Package['EMC-ScaleIO-callhome'],
-        Exec['scaleio::mdm::primary_go_into_cluster_mode'],
-      ]
-    }
-
-    exec{'add_callhome_user.sh':
-      command => "${add_callhome_user} ${user} ${user_role} ${password} ${::scaleio::password}",
-      unless  => "${::scaleio::mdm::scli_wrap} --query_user --username callhome",
-      before  => File['/opt/emc/scaleio/callhome/cfg/conf.txt'],
+    # add callhome user
+    scaleio_user{$user:
+      role      => $user_role,
+      password  => $password,
+      require   => File[$scaleio::mdm::add_scaleio_user],
+      before    => File['/opt/emc/scaleio/callhome/cfg/conf.txt'];
     }
   }
 

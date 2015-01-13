@@ -11,23 +11,27 @@
 # * old_password: if you want to change the password, you have to provide the
 #                 old one for change.
 # * syslog_ip_port: if set we will configure a syslog server
+# * users: scaleio users to be created
+#     userName:
+#       role     : 'Monitor'   # one of Monitor, Configure, Administrator
+#       password : 'myPw'      # pw to be set when creating the account
 # * protection_domains: hash with names of protection domains to be configured
 # * storage_pools: storage pool to be created/managed, hash looking as follows:
 #     myPoolName:
-#       protection_domain: myProtectionDomainName
-#       spare_policy: 35%
+#       protection_domain : myProtectionDomainName
+#       spare_policy      : 35%
 # * sds: hash containing SDS definitions, format:
 #     'sds_name':
-#       protection_domain => 'pdomain1',
-#       ips => ['10.0.0.2', '10.0.0.3'],
-#       port => '7072', # optional
-#       pool_devices => {
-#         'myPool' => ['/tmp/aa', '/tmp/ab'],
-#         'myPool2' => ['/tmp/ac', '/tmp/ad'],
+#       protection_domain : 'pdomain1',
+#       ips               : ['10.0.0.2', '10.0.0.3'],
+#       port              : '7072', # optional
+#       pool_devices      : {
+#         'myPool'  : ['/tmp/aa', '/tmp/ab'],
+#         'myPool2' : ['/tmp/ac', '/tmp/ad'],
 #       }
 # * sdc_names: hash containing SDC names, format:
 #     'sdc_ip:
-#       desc: 'mySDCname'
+#       desc => 'mySDCname'
 # * volumes: hash containing volumes, format:
 #     'volName':
 #       storage_pool:       'poolName'
@@ -54,6 +58,7 @@ class scaleio(
   $syslog_ip_port     = undef,
   $system_name        = undef,
   $purge              = false,
+  $users              = {},
   $protection_domains = {},
   $storage_pools      = {},
   $sds                = {},

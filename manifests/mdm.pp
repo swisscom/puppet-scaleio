@@ -1,6 +1,7 @@
 # manage a mdm
 class scaleio::mdm {
   $scli_wrap         = '/var/lib/puppet/module_data/scaleio/scli_wrap'
+  $add_scaleio_user  = '/var/lib/puppet/module_data/scaleio/add_scaleio_user'
 
   include ::scaleio
   package{'EMC-ScaleIO-mdm':
@@ -10,6 +11,15 @@ class scaleio::mdm {
   file{
     $scli_wrap:
       content => template('scaleio/scli_wrap.erb'),
+      owner   => root,
+      group   => 0,
+      mode    => '0700',
+      require => Package['EMC-ScaleIO-mdm'];
+  }
+
+  file{
+    $add_scaleio_user:
+      content => template('scaleio/add_scaleio_user.erb'),
       owner   => root,
       group   => 0,
       mode    => '0700',
