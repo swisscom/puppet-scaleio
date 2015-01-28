@@ -21,7 +21,7 @@ Puppet::Type.type(:scaleio_volume).provide(:scaleio_volume) do
 
       # Get information about the volume
       name = line.match(/Name:(.*)Size/m)[1].strip
-      size = line.match(/Size:\s*([\d\.]+)\s*GB/m)[1].strip.to_i
+      size = line.match(/Size:\s*([\d\.]+\sTB\s\()?([\d\.]+)\s*GB/m)[2].strip.to_i
       type = line.match(/([\w]+)-provisioned/m)[1].strip.downcase
       pool=nil
       pdomain=nil
