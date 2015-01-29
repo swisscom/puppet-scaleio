@@ -18,6 +18,7 @@ Puppet::Type.type(:scaleio_volume).provide(:scaleio_volume) do
     # Iterate over all configured volumes
     query_all_volumes_lines.each do |line|
       next if line !~/Volume ID/
+      next if line =~/Snapshot of/
 
       # Get information about the volume
       name = line.match(/Name:(.*)Size/m)[1].strip
