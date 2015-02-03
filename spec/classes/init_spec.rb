@@ -26,7 +26,7 @@ describe 'scaleio', :type => 'class' do
         :secondary_mdm_ip => false,
       }
     }
-    it { expect { subject.call('fail') }.to raise_error(Puppet::Error) }
+    it { expect { subject.call('fail') }.to raise_error() }
   end
   context 'with only secondary ip' do
     let(:params) {
@@ -35,7 +35,7 @@ describe 'scaleio', :type => 'class' do
         :secondary_mdm_ip => '1.2.3.4',
       }
     }
-    it { expect { subject.call('fail') }.to raise_error(Puppet::Error) }
+    it { expect { subject.call('fail') }.to raise_error() }
   end
   context 'with wrong primary ip' do
     let(:params) {
@@ -44,7 +44,7 @@ describe 'scaleio', :type => 'class' do
         :secondary_mdm_ip => '1.2.3.4',
       }
     }
-    it { expect { subject.call('fail') }.to raise_error(Puppet::Error) }
+    it { expect { subject.call('fail') }.to raise_error() }
   end
   context 'with wrong secondary ip' do
     let(:params) {
@@ -53,7 +53,7 @@ describe 'scaleio', :type => 'class' do
         :secondary_mdm_ip => '1.2.3.4a',
       }
     }
-    it { expect { subject.call('fail') }.to raise_error(Puppet::Error) }
+    it { expect { subject.call('fail') }.to raise_error() }
   end
   context 'with wrong tb ip' do
     let(:params) {
@@ -61,6 +61,6 @@ describe 'scaleio', :type => 'class' do
         :tb_ip => '1.2.3.4s',
       }
     }
-    it { expect { subject.call('fail') }.to raise_error(Puppet::Error) }
+    it { expect { subject.call('fail') }.to raise_error() }
   end
 end

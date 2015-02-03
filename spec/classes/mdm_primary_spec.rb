@@ -103,25 +103,25 @@ describe 'scaleio::mdm::primary', :type => 'class' do
     let(:pre_condition){
       "class{'scaleio': password => 'd,' }"
     }
-    it { expect { subject.call('fail') }.to raise_error(Puppet::Error) }
+    it { expect { subject.call('fail') }.to raise_error() }
   end
   context 'with a wrong primary ip' do
     let(:pre_condition){
       "class{'scaleio': primary_mdm_ip => '1.2.3' }"
     }
-    it { expect { subject.call('fail') }.to raise_error(Puppet::Error) }
+    it { expect { subject.call('fail') }.to raise_error() }
   end
   context 'with a wrong secondary ip' do
     let(:pre_condition){
       "class{'scaleio': secondary_mdm_ip => '1.2.3' }"
     }
-    it { expect { subject.call('fail') }.to raise_error(Puppet::Error) }
+    it { expect { subject.call('fail') }.to raise_error() }
   end
   context 'with a wrong tb ip' do
     let(:pre_condition){
       "class{'scaleio': tb_ip => '1.2.3' }"
     }
-    it { expect { subject.call('fail') }.to raise_error(Puppet::Error) }
+    it { expect { subject.call('fail') }.to raise_error() }
   end
 end
 

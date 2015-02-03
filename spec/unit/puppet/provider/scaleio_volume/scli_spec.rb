@@ -100,8 +100,8 @@ describe provider_class do
       expect(instances[0].protection_domain).to match('myPDomain')
       expect(instances[0].storage_pool).to match('myPool')
       expect(instances[0].type).to match('thin')
-      expect(instances[0].size).to match(24)
-      expect(instances[0].sdc_nodes).to match(['sdc2', 'sdc1'])
+      expect(instances[0].size).to eq(24)
+      expect(instances[0].sdc_nodes).to match_array(['sdc2', 'sdc1'])
       expect(instances[2].type).to match('thick')
       expect(instances[2].storage_pool).to match('myPool2')
     end

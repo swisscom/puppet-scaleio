@@ -83,9 +83,9 @@ describe provider_class do
       provider.class.stubs(:scli).with('--query_sds', '--sds_name', 'mySDS-2').returns(mySDS2)
       instances = provider.class.instances
       names     = instances.collect {|x| x.name }
-      expect(instances[0].ips).to match(['192.168.56.111'])
+      expect(instances[0].ips).to match_array(['192.168.56.111'])
       expect(instances[0].port).to match(/^7072$/)
-      expect(instances[0].pool_devices).to match({'myPool' => ['/tmp/ac', '/tmp/aa']})
+      expect(instances[0].pool_devices).to eql({'myPool' => ['/tmp/ac', '/tmp/aa']})
     end
   end
 

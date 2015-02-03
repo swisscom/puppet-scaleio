@@ -22,13 +22,13 @@ describe 'scaleio::sdc', :type => 'class' do
     let(:pre_condition) {
       "class{'scaleio': primary_mdm_ip => '' }"
     }
-    it { expect { subject.call('fail') }.to raise_error(Puppet::Error) }
+    it { expect { subject.call('fail') }.to raise_error() }
   end
   context 'with a missing secondary ip' do
     let(:pre_condition) {
       "class{'scaleio': secondary_mdm_ip => '' }"
     }
-    it { expect { subject.call('fail') }.to raise_error(Puppet::Error) }
+    it { expect { subject.call('fail') }.to raise_error() }
   end
 end
 
