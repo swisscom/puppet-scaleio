@@ -64,7 +64,7 @@ describe 'scaleio::mdm::callhome', :type => 'class' do
     it { should contain_scaleio_user('otheruser').with(
       :password  => 'callhomepassword',
       :role      => 'otherrole',
-      :require   => 'File[/var/lib/puppet/module_data/scaleio/add_scaleio_user]',
+      :require   => ['Exec[scaleio::mdm::primary_add_secondary]', 'File[/var/lib/puppet/module_data/scaleio/add_scaleio_user]'],
       :before    => 'File[/opt/emc/scaleio/callhome/cfg/conf.txt]',
     )}
 

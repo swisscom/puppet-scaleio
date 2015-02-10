@@ -23,7 +23,7 @@ class scaleio::mdm::callhome(
     scaleio_user{$user:
       role      => $user_role,
       password  => $password,
-      require   => File[$scaleio::mdm::add_scaleio_user],
+      require   => [Exec['scaleio::mdm::primary_add_secondary'], File[$scaleio::mdm::add_scaleio_user]],
       before    => File['/opt/emc/scaleio/callhome/cfg/conf.txt'];
     }
   }
