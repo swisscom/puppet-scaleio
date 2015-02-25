@@ -63,6 +63,7 @@ Puppet::Type.type(:scaleio_user).provide(:scaleio_user) do
 
 
   def destroy
+    Puppet.debug("Removing ScaleIO user #{resource[:name]}")
     scli('--delete_user', '--username', @resource[:name])
     @property_hash[:ensure] = :absent
   end

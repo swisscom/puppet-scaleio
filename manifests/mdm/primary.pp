@@ -53,15 +53,26 @@ class scaleio::mdm::primary {
     }
   }
 
-  # TODO: detect when the syslog destination changes
   if $scaleio::syslog_ip_port {
     validate_re($scaleio::syslog_ip_port, '^[\w\-\.]+:[0-9]+$')
     $splitted_ip_port = split($scaleio::syslog_ip_port,':')
-    exec{'scaleio::mdm::primary_configure_syslog':
-      command => "${scli_wrap} --start_remote_syslog --remote_syslog_server_ip ${splitted_ip_port[0]} --remote_syslog_server_port ${splitted_ip_port[1]}",
-      unless  => "netstat -apn |grep mdm |egrep -q ':${splitted_ip_port[1]}'",
-      require => Exec['scaleio::mdm::primary_go_into_cluster_mode'],
+
+    scaleio_syslog{$splitted_ip_port[0]:
+      port    => $splitted_ip_port[1],
+      require => Exec['scaleio::mdm::primary_add_secondary']
     }
+  }
+
+  if size($scaleio::mgmt_addresses) > 0 {
+    $mgmt_addresses = join($scaleio::mgmt_addresses, ',')
+  } else {
+    $mgmt_addresses = "${scaleio::primary_mdm_ip},${scaleio::secondary_mdm_ip}"
+  }
+
+  exec{'scaleio::mdm::set_mgmt_addresses':
+    command => "${scli_wrap} --modify_management_ip --mdm_management_ip ${mgmt_addresses}",
+    unless  => "scli --query_cluster |sed 's/\s*//g' | grep -qE '^ManagementIP:${mgmt_addresses}$'",
+    require => Exec['scaleio::mdm::primary_go_into_cluster_mode'],
   }
 
   # TODO: default pool is created for a new protection domain, but deleted in the next puppet run

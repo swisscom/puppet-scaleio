@@ -69,7 +69,6 @@ Puppet::Type.type(:scaleio_storage_pool).provide(:scaleio_storage_pool) do
 
   def self.prefetch(resources)
     Puppet.debug('Prefetching storage pools')
-    Puppet.debug('Prefetching storage pools')
     pool = instances
     resources.keys.each do |name|
       if provider = pool.find{ |poolname| poolname.name == name }

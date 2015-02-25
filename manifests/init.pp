@@ -11,6 +11,7 @@
 # * old_password: if you want to change the password, you have to provide the
 #                 old one for change.
 # * syslog_ip_port: if set we will configure a syslog server
+# * mgmt_addresses: array of ip addresses to be configured as SIO management addresses
 # * users: scaleio users to be created
 #     userName:
 #       role     : 'Monitor'   # one of Monitor, Configure, Administrator
@@ -58,6 +59,7 @@ class scaleio(
   $syslog_ip_port     = undef,
   $system_name        = undef,
   $purge              = false,
+  $mgmt_addresses     = [],
   $users              = {},
   $protection_domains = {},
   $storage_pools      = {},
