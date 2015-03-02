@@ -19,12 +19,12 @@ describe 'scaleio::mdm::primary', :type => 'class' do
     it { should contain_exec('scaleio::mdm::primary_add_secondary').with(
       :command => '/var/lib/puppet/module_data/scaleio/scli_wrap --add_secondary_mdm --secondary_mdm_ip 1.2.3.5',
       :unless  => "scli --query_cluster | grep -qE '^ (Secondary|Primary) IP: 1.2.3.5$'",
-      :before  => 'Exec[scaleio::mdm::primary_add_tb]',
+      :before  => ['Exec[scaleio::mdm::primary_add_tb]'],
     )}
     it { should contain_exec('scaleio::mdm::primary_add_tb').with(
       :command => '/var/lib/puppet/module_data/scaleio/scli_wrap --add_tb --tb_ip 1.2.3.6',
       :unless => "scli --query_cluster | grep -qE '^ Tie-Breaker IP: 1.2.3.6$'",
-      :before => 'Exec[scaleio::mdm::primary_go_into_cluster_mode]',
+      :before => ['Exec[scaleio::mdm::primary_go_into_cluster_mode]'],
     )}
 
     it { should contain_exec('scaleio::mdm::primary_go_into_cluster_mode').with(

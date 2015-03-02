@@ -20,7 +20,7 @@ describe 'scaleio::mdm::callhome', :type => 'class' do
       :group   => 0,
       :mode    => '0644',
       :require => 'Package[EMC-ScaleIO-callhome]',
-      :notify  => 'Exec[restart_callhome_service]',
+      :notify  => ['Exec[restart_callhome_service]'],
     )}
     it { should contain_file('/opt/emc/scaleio/callhome/cfg/conf.txt').with(
       :content => /email_from = "callhome@scaleio.example.net"/,
@@ -73,7 +73,7 @@ describe 'scaleio::mdm::callhome', :type => 'class' do
       :group   => 0,
       :mode    => '0644',
       :require => 'Package[EMC-ScaleIO-callhome]',
-      :notify  => 'Exec[restart_callhome_service]',
+      :notify  => ['Exec[restart_callhome_service]'],
     )}
     it { should contain_file('/opt/emc/scaleio/callhome/cfg/conf.txt').with(
       :content => /email_from = "root@localhost"/,
