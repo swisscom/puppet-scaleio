@@ -23,22 +23,22 @@ describe 'scaleio::mdm::callhome', :type => 'class' do
       :notify  => ['Exec[restart_callhome_service]'],
     )}
     it { should contain_file('/opt/emc/scaleio/callhome/cfg/conf.txt').with(
-      :content => /email_from = "callhome@scaleio.example.net"/,
+      :content => /email_from = callhome@scaleio.example.net/,
     )}
     it { should contain_file('/opt/emc/scaleio/callhome/cfg/conf.txt').with(
-      :content => /username = "callhome"/,
+      :content => /username = callhome/,
     )}
     it { should contain_file('/opt/emc/scaleio/callhome/cfg/conf.txt').with(
-      :content => /password = "Callhome13"/,
+      :content => /password = Callhome13/,
     )}
     it { should contain_file('/opt/emc/scaleio/callhome/cfg/conf.txt').with(
       :content => /customer_name = "example.net"/,
     )}
     it { should contain_file('/opt/emc/scaleio/callhome/cfg/conf.txt').with(
-      :content => /host = "localhost"/,
+      :content => /host = localhost/,
     )}
     it { should contain_file('/opt/emc/scaleio/callhome/cfg/conf.txt').with(
-      :content => /email_to = "root@localhost"/,
+      :content => /email_to = root@localhost/,
     )}    
   end
 
@@ -76,22 +76,22 @@ describe 'scaleio::mdm::callhome', :type => 'class' do
       :notify  => ['Exec[restart_callhome_service]'],
     )}
     it { should contain_file('/opt/emc/scaleio/callhome/cfg/conf.txt').with(
-      :content => /email_from = "root@localhost"/,
+      :content => /email_from = root@localhost/,
     )}
     it { should contain_file('/opt/emc/scaleio/callhome/cfg/conf.txt').with(
-      :content => /username = "otheruser"/,
+      :content => /username = otheruser/,
     )}
     it { should contain_file('/opt/emc/scaleio/callhome/cfg/conf.txt').with(
-      :content => /password = "callhomepassword"/,
+      :content => /password = callhomepassword/,
     )}
     it { should contain_file('/opt/emc/scaleio/callhome/cfg/conf.txt').with(
       :content => /customer_name = "ACME Corp"/,
     )}
     it { should contain_file('/opt/emc/scaleio/callhome/cfg/conf.txt').with(
-      :content => /host = "1.2.3.4"/,
+      :content => /host = 1.2.3.4/,
     )}
     it { should contain_file('/opt/emc/scaleio/callhome/cfg/conf.txt').with(
-      :content => /email_to = "test@puppet.test"/,
+      :content => /email_to = test@puppet.test/,
     )}
     
     it { should contain_exec('restart_callhome_service').with(
