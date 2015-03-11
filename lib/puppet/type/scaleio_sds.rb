@@ -47,9 +47,11 @@ Puppet::Type.newtype(:scaleio_sds) do
   end
 
   autorequire(:scaleio_storage_pool) do
+    pools = []
     self[:pool_devices].each do |storage_pool, devices|
-      [ "#{self[:protection_domain]}:#{storage_pool}" ].compact
+      pools << "#{self[:protection_domain]}:#{storage_pool}"
     end
+    pools
   end
 
   # helper method, pass required parameters

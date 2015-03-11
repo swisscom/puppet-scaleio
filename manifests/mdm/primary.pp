@@ -78,16 +78,14 @@ class scaleio::mdm::primary {
   # TODO: default pool is created for a new protection domain, but deleted in the next puppet run
   # TODO: last pool cannot be deleted - results in error
   create_resources('scaleio_user',              $scaleio::users,              {ensure => present, require => [Exec['scaleio::mdm::primary_add_secondary'], File[$scaleio::mdm::add_scaleio_user]]})
-  create_resources('scaleio_protection_domain', $scaleio::protection_domains, {ensure => present, require => Exec['scaleio::mdm::primary_add_secondary'], tag => 'scaleio_tag_pdo'})
-  create_resources('scaleio_storage_pool',      $scaleio::storage_pools,      {ensure => present, require => Exec['scaleio::mdm::primary_add_secondary'], tag => 'scaleio_tag_pool'})
+  create_resources('scaleio_protection_domain', $scaleio::protection_domains, {ensure => present, require => Exec['scaleio::mdm::primary_add_secondary']})
+  create_resources('scaleio_storage_pool',      $scaleio::storage_pools,      {ensure => present, require => Exec['scaleio::mdm::primary_add_secondary']})
   create_resources('scaleio_sds',               $scaleio::sds,                {ensure => present, require => Exec['scaleio::mdm::primary_add_secondary'], tag => 'scaleio_tag_sds'})
   create_resources('scaleio_sdc_name',          $scaleio::sdc_names,          {ensure => present, require => Exec['scaleio::mdm::primary_add_secondary'], tag => 'scaleio_tag_sdc_name'})
   create_resources('scaleio_volume',            $scaleio::volumes,            {ensure => present, require => Exec['scaleio::mdm::primary_add_secondary'], tag => 'scaleio_tag_volume'})
 
   # Make sure that the sdc are renamed before trying to map the volumes to those names
   # This cannot be done with autorequire in the provider as the unique name of the resource 'scaleio_sdc_name' must be the IP and not the name
-  Scaleio_sds<| tag == 'scaleio_tag_pdo' |> -> Scaleio_sdc_name<| tag == 'scaleio_tag_pool' |>
-  Scaleio_sds<| tag == 'scaleio_tag_pool' |> -> Scaleio_sdc_name<| tag == 'scaleio_tag_sds' |>
   Scaleio_sds<| tag == 'scaleio_tag_sds' |> -> Scaleio_sdc_name<| tag == 'scaleio_tag_sdc_name' |>
   Scaleio_sdc_name<| tag == 'scaleio_tag_sdc_name' |> -> Scaleio_volume<| tag == 'scaleio_tag_volume' |>
 
