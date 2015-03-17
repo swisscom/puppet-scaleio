@@ -36,6 +36,29 @@ Puppet::Type.newtype(:scaleio_sds) do
     validate do |value|
       fail("pool_devices should be a hash with the pool name as key and an array with the devices as value.") unless value.class == Hash
     end
+    def insync?(is)
+      sync = true
+
+      # Check for new pools on that SDS
+      should.each do |storage_pool, devices|
+        if !is.has_key?(storage_pool)
+          sync = false
+        end
+      end
+
+      is.each do |storage_pool, devices|
+        # Check for removed pools on that SDS
+        if should.has_key?(storage_pool)
+          # Check for modified device list on that pool
+          if devices.sort != should[storage_pool].sort
+            sync = false
+          end
+        else
+          sync = false
+        end
+      end
+      sync
+    end
   end
 
   newproperty(:protection_domain) do
