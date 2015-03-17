@@ -19,7 +19,7 @@ Puppet::Type.type(:scaleio_syslog).provide(:scaleio_syslog) do
     # Iterate through the syslog destinations
     lines.each do |line|
       if line =~ /Host:/
-        destinationInfo = line.match(/Host:\s*([\w\.]+)\s*Port:\s*([0-9]+)\s*Facility:\s*([0-9]+)/)
+        destinationInfo = line.match(/Host:\s*([\w\.-]+)\s*Port:\s*([0-9]+)\s*Facility:\s*([0-9]+)/)
 
         # Create syslog instances hash
         new destination = {
