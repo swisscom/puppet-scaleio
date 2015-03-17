@@ -92,6 +92,16 @@ describe 'scaleio::mdm::primary', :type => 'class' do
       :require => 'Exec[scaleio::mdm::primary_add_secondary]',
     )}
   end
+  context 'with a syslog ip port - support version 1.30' do
+    let(:pre_condition){
+      "class{'scaleio': syslog_ip_port => '1.2.3.7:8080', version => '1.30-2134' }"
+    }
+    it { should contain_exec('scaleio::mdm::primary_configure_syslog').with(
+        :command => '/var/lib/puppet/module_data/scaleio/scli_wrap --start_remote_syslog --remote_syslog_server_ip 1.2.3.7 --remote_syslog_server_port 8080',
+        :unless  => "netstat -apn |grep mdm |egrep -q ':8080'",
+        :require => 'Exec[scaleio::mdm::primary_add_secondary]',
+    )}
+  end
   context 'with management addresses' do
     let(:pre_condition){
       "class{'scaleio': mgmt_addresses => ['1.2.3.4', '1.2.3.5'] }"

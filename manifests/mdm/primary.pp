@@ -59,9 +59,9 @@ class scaleio::mdm::primary {
 
     if $scaleio::version =~ /^1.30-/ {
       exec{'scaleio::mdm::primary_configure_syslog':
-      command => "${scli_wrap} --start_remote_syslog --remote_syslog_server_ip ${splitted_ip_port[0]} --remote_syslog_server_port ${splitted_ip_port[1]}",
-      unless  => "netstat -apn |grep mdm |egrep -q ':${splitted_ip_port[1]}'",
-      require => Exec['scaleio::mdm::primary_add_secondary'],
+        command => "${scli_wrap} --start_remote_syslog --remote_syslog_server_ip ${splitted_ip_port[0]} --remote_syslog_server_port ${splitted_ip_port[1]}",
+        unless  => "netstat -apn |grep mdm |egrep -q ':${splitted_ip_port[1]}'",
+        require => Exec['scaleio::mdm::primary_add_secondary'],
       }
     }
     else {
