@@ -1,3 +1,5 @@
+require 'puppet/parameter/boolean'
+
 Puppet::Type.newtype(:scaleio_storage_pool) do
   @doc = "Manage ScaleIO Storage Pools"
 
@@ -33,6 +35,13 @@ Puppet::Type.newtype(:scaleio_storage_pool) do
     validate do |value|
       raise ArgumentError, "#{value} is not a valid value for the storage pool spare capacity (f.e. 34%)." unless value =~ /^[0-9]{1,2}%$/
     end
+  end
+
+  # This is a parameter as zeropadding, as updating zero padding is no more allowed once the pool has devices 
+  newparam(:zeropadding, :boolean => true) do
+    desc "Should zero padding be enabled?"
+
+    defaultto true
   end
 
   # Our title_patterns method for mapping titles to namevars for supporting composite namevars.

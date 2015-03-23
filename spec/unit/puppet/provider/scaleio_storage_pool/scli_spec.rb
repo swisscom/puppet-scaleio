@@ -39,6 +39,7 @@ describe provider_class do
       @resource.stubs(:[]).with(:pool_name).returns @pool_name
       @resource.stubs(:[]).with(:protection_domain).returns @protection_domain
       @resource.stubs(:[]).with(:ensure).returns :present
+      @resource.stubs(:[]).with(:zeropadding).returns true
       @resource.stubs(:ref).returns "Scaleio_storage_pool[#{@name}]"
       @provider = provider_class.new(@resource)
     end
@@ -79,6 +80,7 @@ describe provider_class do
     it 'creates a storage pool' do
       provider.expects(:scli).with('--add_storage_pool', '--protection_domain_name', 'myPDomain', '--storage_pool_name', 'myNewPool').returns([])
       provider.expects(:scli).with('--modify_spare_policy', '--protection_domain_name', 'myPDomain', '--storage_pool_name', 'myNewPool', '--spare_percentage', '34%', '--i_am_sure').returns([])
+      provider.expects(:scli).with('--modify_zero_padding_policy', '--protection_domain_name', 'myPDomain', '--storage_pool_name', 'myNewPool', '--enable_zero_padding').returns([])
       provider.expects(:sleep).with(30).returns([])
       provider.create
     end

@@ -50,7 +50,7 @@ Puppet::Type.type(:scaleio_storage_pool).provide(:scaleio_storage_pool) do
         # Create storage pools hash
         new storage_pool_info = {
                 :name               => "#{pdomain}:#{pool}",
-                :pool_name           => pool,
+                :pool_name          => pool,
                 :ensure             => :present,
                 :protection_domain  => pdomain,
                 :spare_policy       => spare_policy,
@@ -81,6 +81,12 @@ Puppet::Type.type(:scaleio_storage_pool).provide(:scaleio_storage_pool) do
     Puppet.debug("Creating storage pool #{@resource[:name]}")
     scli("--add_storage_pool", "--protection_domain_name", @resource[:protection_domain], "--storage_pool_name", @resource[:pool_name])
     updateSparePolicy(@resource[:spare_policy])
+
+    # Should zero padding be enabled?
+    if @resource[:zeropadding]
+      enable_zeropadding()
+    end
+
     sleep(30)  # wait for rebalance after creating pool
     @property_hash[:ensure] = :present
   end
@@ -95,8 +101,12 @@ Puppet::Type.type(:scaleio_storage_pool).provide(:scaleio_storage_pool) do
   end
 
   def updateSparePolicy(value)
-      Puppet.debug("Updating spare policy of pool #{@resource[:name]} to #{value}")
-      result = scli('--modify_spare_policy', '--protection_domain_name', @resource[:protection_domain], '--storage_pool_name', @resource[:pool_name], '--spare_percentage', value, '--i_am_sure')
+    Puppet.debug("Updating spare policy of pool #{@resource[:name]} to #{value}")
+    result = scli('--modify_spare_policy', '--protection_domain_name', @resource[:protection_domain], '--storage_pool_name', @resource[:pool_name], '--spare_percentage', value, '--i_am_sure')
+  end
+
+  def enable_zeropadding()
+    scli("--modify_zero_padding_policy", "--protection_domain_name", @resource[:protection_domain], "--storage_pool_name", @resource[:pool_name], "--enable_zero_padding")
   end
 
   def exists?
