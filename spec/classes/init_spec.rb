@@ -8,7 +8,7 @@ describe 'scaleio', :type => 'class' do
   }
   describe 'with standard' do
     it { should contain_package('numactl').with_ensure('present') }
-    it { should contain_package('python-paramiko').with_ensure('present') }
+    it { should contain_package('python').with_ensure('present') }
   end
   context 'on the primary mdm node' do
     let(:facts){
