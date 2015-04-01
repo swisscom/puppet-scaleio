@@ -69,7 +69,7 @@ class scaleio(
   $components         = [],
 ) {
 
-  ensure_packages(['numactl','python-paramiko'])
+  ensure_packages(['numactl','python'])
 
   # both must be set and if they are they should be valid
   if $primary_mdm_ip or $secondary_mdm_ip {
