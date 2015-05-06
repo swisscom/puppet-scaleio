@@ -7,6 +7,8 @@ describe 'scaleio::mdm::callhome', :type => 'class' do
       :fqdn       => 'scaleio.example.net',
       :domain     => 'example.net',
       :ipaddress  => '1.1.2.2',
+      :architecture => 'x86_64',
+      :operatingsystem => 'RedHat',
     }
   }
   describe 'with standard' do

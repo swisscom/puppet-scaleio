@@ -4,8 +4,13 @@ describe 'scaleio::mdm', :type => 'class' do
   let(:facts){
     {
       :interfaces => 'eth0',
+      :architecture => 'x86_64',
+      :operatingsystem => 'RedHat',
     }
   }
+
+  let(:pre_condition){"Exec{ path => '/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin' }"}
+
   describe 'with standard' do
 #    it { should compile.with_all_deps }
     it { should contain_class('scaleio') }
@@ -18,6 +23,8 @@ describe 'scaleio::mdm', :type => 'class' do
       {
         :interfaces => 'eth0',
         :ipaddress => '1.2.3.4',
+        :architecture => 'x86_64',
+        :operatingsystem => 'RedHat',
       }
     }
     it { should contain_class('scaleio::mdm::primary') }
@@ -27,16 +34,19 @@ describe 'scaleio::mdm', :type => 'class' do
       {
         :interfaces => 'eth0,eth10',
         :ipaddress_eth10 => '1.2.3.4',
+        :architecture => 'x86_64',
+        :operatingsystem => 'RedHat',
       }
     }
     it { should contain_class('scaleio::mdm::primary') }
   end
   context 'without callhome' do
-    let(:pre_condition){
+    let(:pre_condition){[
       "class{'scaleio':
         callhome => false,
-       }"
-    }
+       }",
+       "Exec{ path => '/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin' }"
+    ]}
     it { should_not contain_class('scaleio::mdm::callhome') }
   end
 end

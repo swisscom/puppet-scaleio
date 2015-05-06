@@ -4,6 +4,7 @@ class scaleio::mdm {
   $add_scaleio_user  = '/var/lib/puppet/module_data/scaleio/add_scaleio_user'
 
   include ::scaleio
+  include ::consul
   package{'EMC-ScaleIO-mdm':
     ensure => $scaleio::version,
   }
@@ -30,6 +31,11 @@ class scaleio::mdm {
   # or if we are running on the actual SIO primary mdm
   if (has_ip_address($scaleio::primary_mdm_ip) and !str2bool($::scaleio_tb_connection_established)) or str2bool($::scaleio_is_primary_mdm) {
     include scaleio::mdm::primary
+  } else {
+      consul_kv{'scaleio/cluster_setup_secondary':
+        value   => 'ready',
+        require => Package['EMC-ScaleIO-mdm']
+      }
   }
 
   if $scaleio::callhome {

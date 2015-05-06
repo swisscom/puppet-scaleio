@@ -4,8 +4,13 @@ describe 'scaleio::tb', :type => 'class' do
   let(:facts){
     {
       :interfaces => 'eth0',
+      :architecture => 'x86_64',
+      :operatingsystem => 'RedHat',
     }
   }
+
+  let(:pre_condition){"Exec{ path => '/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin' }"}
+
   describe 'with standard' do
     it { should compile.with_all_deps }
     it { should contain_class('scaleio') }

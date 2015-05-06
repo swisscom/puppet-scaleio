@@ -32,6 +32,12 @@ class scaleio::mdm::primary {
     }
   }
 
+  ensure_resource( 'consul_kv_blocker', 'scaleio/cluster_setup/secondary', {tries => 50, try_sleep => 10})
+  Consul_kv_blocker['scaleio/cluster_setup/secondary'] ->Exec['scaleio::mdm::primary_add_secondary']
+  ensure_resource( 'consul_kv_blocker', 'scaleio/cluster_setup/tiebreaker', {tries => 50, try_sleep => 10})
+  Consul_kv_blocker['scaleio/cluster_setup/tiebreaker'] ->Exec['scaleio::mdm::primary_add_tb']
+
+
   exec{'scaleio::mdm::primary_add_secondary':
     command => "${scli_wrap} --add_secondary_mdm --secondary_mdm_ip ${scaleio::secondary_mdm_ip}",
     unless  => "scli --query_cluster | grep -qE '^ (Secondary|Primary) IP: ${scaleio::secondary_mdm_ip}$'",

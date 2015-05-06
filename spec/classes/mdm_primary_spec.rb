@@ -4,6 +4,8 @@ describe 'scaleio::mdm::primary', :type => 'class' do
   let(:facts){
     {
       :interfaces => 'eth0',
+      :architecture => 'x86_64',
+      :operatingsystem => 'RedHat',
     }
   }
   describe 'with standard' do

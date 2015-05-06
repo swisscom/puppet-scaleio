@@ -4,6 +4,8 @@ describe 'scaleio', :type => 'class' do
   let(:facts){
     {
       :interfaces => 'eth0',
+      :architecture => 'x86_64',
+      :operatingsystem => 'RedHat',
     }
   }
   describe 'with standard' do
@@ -15,6 +17,8 @@ describe 'scaleio', :type => 'class' do
       {
         :interfaces     => 'eth0',
         :ipaddress_eth0 => '1.2.3.4',
+        :architecture => 'x86_64',
+        :operatingsystem => 'RedHat',
       }
     }
     it { should contain_class('scaleio::mdm') }
