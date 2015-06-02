@@ -43,6 +43,15 @@ describe 'scaleio::mdm::callhome', :type => 'class' do
   end
 
   describe 'with other params' do
+    let(:facts){
+      {
+        :interfaces => 'eth0',
+        :fqdn       => 'scaleio.example.net',
+        :domain     => 'example.net',
+        :ipaddress  => '1.1.2.2',
+        :scaleio_is_primary_mdm => 'true',
+      }
+    }
     let(:pre_condition) {"
       class{'scaleio': 
         callhome          => false, # prevent duplicate declaration

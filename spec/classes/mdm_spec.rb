@@ -18,6 +18,7 @@ describe 'scaleio::mdm', :type => 'class' do
       {
         :interfaces => 'eth0',
         :ipaddress => '1.2.3.4',
+        :scaleio_is_primary_mdm => 'true',
       }
     }
     it { should contain_class('scaleio::mdm::primary') }
@@ -27,6 +28,7 @@ describe 'scaleio::mdm', :type => 'class' do
       {
         :interfaces => 'eth0,eth10',
         :ipaddress_eth10 => '1.2.3.4',
+        :scaleio_is_primary_mdm => 'true',
       }
     }
     it { should contain_class('scaleio::mdm::primary') }

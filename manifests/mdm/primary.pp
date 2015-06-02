@@ -8,13 +8,13 @@ class scaleio::mdm::primary {
 
   $scli_wrap         = $scaleio::mdm::scli_wrap
 
-  if empty($scaleio::primary_mdm_ip) or empty($scaleio::secondary_mdm_ip) or empty($scaleio::tb_ip) {
-    fail('For a primary mdm all three variables $scaleio::primary_mdm_ip, $scaleio::secondary_mdm_ip and $scaleio::tb_ip must be configured')
+  if size($scaleio::real_mdm_ips) < 2 or size($scaleio::real_tb_ips) < 1 {
+    fail('For a primary mdm at least two MDMs and one tiebreaker must be configured')
   }
 
   exec{'scaleio::mdm::primary_add_primary':
-    command => "scli --add_primary_mdm --primary_mdm_ip ${scaleio::primary_mdm_ip} --accept_license && sleep 10",
-    unless  => "scli --query_cluster | grep -qE '^ (Secondary|Primary) IP: ${scaleio::primary_mdm_ip}$'",
+    command => "scli --add_primary_mdm --primary_mdm_ip ${scaleio::real_mdm_ips[0]} --accept_license && sleep 10",
+    unless  => "scli --query_cluster | grep -qE '^ Primary IP: (([0-9]+.?))+$'",
     require => Package['EMC-ScaleIO-mdm'],
     before  => Exec['scaleio::mdm::primary_add_secondary'],
   }
@@ -33,13 +33,15 @@ class scaleio::mdm::primary {
   }
 
   exec{'scaleio::mdm::primary_add_secondary':
-    command => "${scli_wrap} --add_secondary_mdm --secondary_mdm_ip ${scaleio::secondary_mdm_ip}",
-    unless  => "scli --query_cluster | grep -qE '^ (Secondary|Primary) IP: ${scaleio::secondary_mdm_ip}$'",
+    command => "${scli_wrap} --add_secondary_mdm --secondary_mdm_ip ${scaleio::real_mdm_ips[1]}",
+    unless  => "scli --query_cluster | grep -qE '^ Secondary IP: (([0-9]+.?))+$'",
     require => [File[$scli_wrap], Package['EMC-ScaleIO-mdm']],
-  } -> exec{'scaleio::mdm::primary_add_tb':
-    command => "${scli_wrap} --add_tb --tb_ip ${scaleio::tb_ip}",
-    unless  => "scli --query_cluster | grep -qE '^ Tie-Breaker IP: ${scaleio::tb_ip}$'",
-  } -> exec{'scaleio::mdm::primary_go_into_cluster_mode':
+  } ->
+  exec{'scaleio::mdm::primary_add_tb':
+    command => "${scli_wrap} --add_tb --tb_ip ${scaleio::real_tb_ips[0]}",
+    unless  => "scli --query_cluster | grep -qE '^ Tie-Breaker IP: (([0-9]+.?))+$'",
+  } ->
+  exec{'scaleio::mdm::primary_go_into_cluster_mode':
     command => "${scli_wrap} --switch_to_cluster_mode",
     unless  => 'scli --query_cluster | grep -qE \'^ Mode: Cluster, Cluster State: \'',
   }
@@ -75,7 +77,7 @@ class scaleio::mdm::primary {
   if size($scaleio::mgmt_addresses) > 0 {
     $mgmt_addresses = join($scaleio::mgmt_addresses, ',')
   } else {
-    $mgmt_addresses = "${scaleio::primary_mdm_ip},${scaleio::secondary_mdm_ip}"
+    $mgmt_addresses = join($scaleio::real_mdm_ips, ',')
   }
 
   exec{'scaleio::mdm::set_mgmt_addresses':
