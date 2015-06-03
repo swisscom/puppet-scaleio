@@ -8,13 +8,13 @@ class scaleio::mdm::primary {
 
   $scli_wrap         = $scaleio::mdm::scli_wrap
 
-  if empty($scaleio::primary_mdm_ip) or empty($scaleio::secondary_mdm_ip) or empty($scaleio::tb_ip) {
-    fail('For a primary mdm all three variables $scaleio::primary_mdm_ip, $scaleio::secondary_mdm_ip and $scaleio::tb_ip must be configured')
+  if size($scaleio::real_mdm_ips) < 2 or size($scaleio::real_tb_ips) < 1 {
+    fail('For a primary mdm at least two MDMs and one tiebreaker must be configured')
   }
 
   exec{'scaleio::mdm::primary_add_primary':
-    command => "scli --add_primary_mdm --primary_mdm_ip ${scaleio::primary_mdm_ip} --accept_license && sleep 10",
-    unless  => "scli --query_cluster | grep -qE '^ (Secondary|Primary) IP: ${scaleio::primary_mdm_ip}$'",
+    command => "scli --add_primary_mdm --primary_mdm_ip ${scaleio::real_mdm_ips[0]} --accept_license && sleep 10",
+    unless  => "scli --query_cluster | grep -qE '^ Primary IP: (([0-9]+.?))+$'",
     require => Package['EMC-ScaleIO-mdm'],
     before  => Exec['scaleio::mdm::primary_add_secondary'],
   }
@@ -32,20 +32,23 @@ class scaleio::mdm::primary {
     }
   }
 
-  ensure_resource( 'consul_kv_blocker', 'scaleio/cluster_setup/secondary', {tries => 50, try_sleep => 10})
-  Consul_kv_blocker['scaleio/cluster_setup/secondary'] ->Exec['scaleio::mdm::primary_add_secondary']
-  ensure_resource( 'consul_kv_blocker', 'scaleio/cluster_setup/tiebreaker', {tries => 50, try_sleep => 10})
-  Consul_kv_blocker['scaleio/cluster_setup/tiebreaker'] ->Exec['scaleio::mdm::primary_add_tb']
-
+  if $scaleio::use_consul {
+    ensure_resource( 'consul_kv_blocker', 'scaleio/cluster_setup/secondary', {tries => 120, try_sleep => 30})
+    Consul_kv_blocker['scaleio/cluster_setup/secondary'] ->Exec['scaleio::mdm::primary_add_secondary']
+    ensure_resource( 'consul_kv_blocker', 'scaleio/cluster_setup/tiebreaker', {tries => 120, try_sleep => 30})
+    Consul_kv_blocker['scaleio/cluster_setup/tiebreaker'] ->Exec['scaleio::mdm::primary_add_tb']
+  }
 
   exec{'scaleio::mdm::primary_add_secondary':
-    command => "${scli_wrap} --add_secondary_mdm --secondary_mdm_ip ${scaleio::secondary_mdm_ip}",
-    unless  => "scli --query_cluster | grep -qE '^ (Secondary|Primary) IP: ${scaleio::secondary_mdm_ip}$'",
+    command => "${scli_wrap} --add_secondary_mdm --secondary_mdm_ip ${scaleio::real_mdm_ips[1]}",
+    unless  => "scli --query_cluster | grep -qE '^ Secondary IP: (([0-9]+.?))+$'",
     require => [File[$scli_wrap], Package['EMC-ScaleIO-mdm']],
-  } -> exec{'scaleio::mdm::primary_add_tb':
-    command => "${scli_wrap} --add_tb --tb_ip ${scaleio::tb_ip}",
-    unless  => "scli --query_cluster | grep -qE '^ Tie-Breaker IP: ${scaleio::tb_ip}$'",
-  } -> exec{'scaleio::mdm::primary_go_into_cluster_mode':
+  } ->
+  exec{'scaleio::mdm::primary_add_tb':
+    command => "${scli_wrap} --add_tb --tb_ip ${scaleio::real_tb_ips[0]}",
+    unless  => "scli --query_cluster | grep -qE '^ Tie-Breaker IP: (([0-9]+.?))+$'",
+  } ->
+  exec{'scaleio::mdm::primary_go_into_cluster_mode':
     command => "${scli_wrap} --switch_to_cluster_mode",
     unless  => 'scli --query_cluster | grep -qE \'^ Mode: Cluster, Cluster State: \'',
   }
@@ -81,7 +84,7 @@ class scaleio::mdm::primary {
   if size($scaleio::mgmt_addresses) > 0 {
     $mgmt_addresses = join($scaleio::mgmt_addresses, ',')
   } else {
-    $mgmt_addresses = "${scaleio::primary_mdm_ip},${scaleio::secondary_mdm_ip}"
+    $mgmt_addresses = join($scaleio::real_mdm_ips, ',')
   }
 
   exec{'scaleio::mdm::set_mgmt_addresses':
@@ -95,7 +98,7 @@ class scaleio::mdm::primary {
   create_resources('scaleio_user',              $scaleio::users,              {ensure => present, require => [Exec['scaleio::mdm::primary_add_secondary'], File[$scaleio::mdm::add_scaleio_user]]})
   create_resources('scaleio_protection_domain', $scaleio::protection_domains, {ensure => present, require => Exec['scaleio::mdm::primary_add_secondary']})
   create_resources('scaleio_storage_pool',      $scaleio::storage_pools,      {ensure => present, require => Exec['scaleio::mdm::primary_add_secondary']})
-  create_resources('scaleio_sds',               $scaleio::sds,                {ensure => present, require => Exec['scaleio::mdm::primary_add_secondary'], tag => 'scaleio_tag_sds'})
+  create_resources('scaleio_sds',               $scaleio::sds,                {ensure => present, require => Exec['scaleio::mdm::primary_add_secondary'], tag => 'scaleio_tag_sds', use_consul => $scaleio::use_consul})
   create_resources('scaleio_sdc_name',          $scaleio::sdc_names,          {ensure => present, require => Exec['scaleio::mdm::primary_add_secondary'], tag => 'scaleio_tag_sdc_name'})
   create_resources('scaleio_volume',            $scaleio::volumes,            {ensure => present, require => Exec['scaleio::mdm::primary_add_secondary'], tag => 'scaleio_tag_volume'})
 

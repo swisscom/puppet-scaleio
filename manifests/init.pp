@@ -7,6 +7,9 @@
 # * primary_mdm_ip: ip of the primary mdm, if any of the current ips of a host matches this ip, it will be configured as primary mdm
 # * secondary_mdm_ip: ip of the secondary mdm, if any of the current ips of a host matches this ip, it will be configured as secondary mdm
 # * tb_ip: ip of the tiebreaker, if any of the current ips of a host matches this ip, it will be configured as a tiebreaker
+# * mdm_ips: a list of IPs, which will be mdms. On first setup, the first entry in the list will be the primary mdm. 
+#   The initial ScaleIO configuration will be done on this host.
+# * tb_ips: a list of IPs, which will be tiebreakers. On first setup, the first entry in the list will be the actively used tb. 
 # * password: for the mdm
 # * old_password: if you want to change the password, you have to provide the
 #                 old one for change.
@@ -47,12 +50,19 @@
 #    - sdc
 #    - mdm
 #    - tb
+# * use_consul: shall consul be used:
+#    - to wait for secondary mdm being ready for setup
+#    - to wait for tiebreak being ready for setup
+#    - to wait for SDSs being ready for adding to cluster
+#
 class scaleio(
   $version            = 'installed',
   $callhome           = true,
   $primary_mdm_ip     = undef,
   $secondary_mdm_ip   = undef,
   $tb_ip              = undef,
+  $mdm_ips            = false,
+  $tb_ips             = false,
   $license            = undef,
   $password           = 'admin',
   $old_password       = 'admin',
@@ -67,21 +77,44 @@ class scaleio(
   $sdc_names          = {},
   $volumes            = {},
   $components         = [],
+  $use_consul         = [],
 ) {
 
   ensure_packages(['numactl','python'])
 
+  # extract all local ip addresses of all interfaces
+  $interface_names = split($::interfaces, ',')
+  $interfaces_addresses = split(inline_template('<%=
+    @interface_names.reject{ |ifc| ifc == "lo" }.map{ |ifc| scope.lookupvar("ipaddress_#{ifc}") }.join(" ")%>'),
+    ' ')
+
+  $real_mdm_ips = $mdm_ips ? {
+    false   => [$primary_mdm_ip, $secondary_mdm_ip],
+    default => mdm_ips,
+  }
+
   # both must be set and if they are they should be valid
-  if $primary_mdm_ip or $secondary_mdm_ip {
-    validate_re($primary_mdm_ip, '^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){3}$')
-    validate_re($secondary_mdm_ip, '^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){3}$')
-    if $primary_mdm_ip == $secondary_mdm_ip {
-      fail('$primary_mdm_ip and $secondary_mdm_ip can\'t be the same!')
-    }
+  validate_re($real_mdm_ips[0], '^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){3}$')
+  validate_re($real_mdm_ips[1], '^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){3}$')
+  if $real_mdm_ips[0] == $real_mdm_ips[1] {
+    fail('$primary_mdm_ip and $secondary_mdm_ip can\'t be the same!')
   }
-  if $tb_ip {
-    validate_re($tb_ip, '^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){3}$')
+
+  $real_tb_ips = $tb_ips ? {
+    false   => [$tb_ip],
+    default => tb_ips,
   }
+
+  if $real_tb_ips[0] {
+    validate_re($real_tb_ips[0], '^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){3}$')
+  }
+
+  # check whether one of the local IPs matches with one of the defined MDM IPs
+  # => if so, install MDM on this host
+  $current_mdm_ip = intersection($real_mdm_ips, $interfaces_addresses)
+  # check whether one of the local IPs matches with one of the defined tb IPs
+  # => if so, install tb on this host
+  $current_tb_ip = intersection($real_tb_ips, $interfaces_addresses)
 
   if 'sdc' in $components {
     include scaleio::sdc
@@ -89,10 +122,10 @@ class scaleio(
   if 'sds' in $components {
     include scaleio::sds
   }
-  if 'mdm' in $components or ($primary_mdm_ip and has_ip_address($primary_mdm_ip)) or ($secondary_mdm_ip and has_ip_address($secondary_mdm_ip)) {
+  if 'mdm' in $components or (size($current_mdm_ip) >= 1 and has_ip_address($current_mdm_ip[0])) {
     include scaleio::mdm
   }
-  if 'tb' in $components or ($tb_ip and has_ip_address($tb_ip)) {
+  if 'tb' in $components or (size($current_tb_ip) >= 1 and has_ip_address($current_tb_ip[0])) {
     include scaleio::tb
   }
 

@@ -80,9 +80,12 @@ Puppet::Type.type(:scaleio_volume).provide(:scaleio_volume) do
     cmd << '--thin_provisioned' if @resource[:type] == 'thin'
     scli(*cmd)
 
+    sdc_names = get_all_sdc_names()
     @resource[:sdc_nodes].each do |node|
-      Puppet.debug("Mapping volume #{@resource[:name]} to SDC node #{node}")
-      scli('--map_volume_to_sdc', '--volume_name', @resource[:name], '--sdc_name', node, '--allow_multi_map')
+      if(sdc_names.include?(new_node))
+        Puppet.debug("Mapping volume #{@resource[:name]} to SDC node #{node}")
+        scli('--map_volume_to_sdc', '--volume_name', @resource[:name], '--sdc_name', node, '--allow_multi_map')
+      end
     end
     @property_hash[:ensure] = :present
   end
@@ -112,11 +115,15 @@ Puppet::Type.type(:scaleio_volume).provide(:scaleio_volume) do
   end
 
   def sdc_nodes=(value)
+    sdc_names = get_all_sdc_names()
+
     # Check for new SDC nodes
     new_nodes = value - @property_hash[:sdc_nodes]
     new_nodes.each do |new_node|
-      Puppet.debug("Mapping volume #{@resource[:name]} to SDC node #{new_node}")
-      scli('--map_volume_to_sdc', '--volume_name', @resource[:name], '--sdc_name', new_node, '--allow_multi_map')
+      if(sdc_names.include?(new_node))
+        Puppet.debug("Mapping volume #{@resource[:name]} to SDC node #{new_node}")
+        scli('--map_volume_to_sdc', '--volume_name', @resource[:name], '--sdc_name', new_node, '--allow_multi_map')
+      end
     end
 
     # Check for nodes to be unmapped from this volume
@@ -125,6 +132,24 @@ Puppet::Type.type(:scaleio_volume).provide(:scaleio_volume) do
       Puppet.debug("Unmapping volume #{@resource[:name]} from SDC node #{rem_node}")
       scli('--unmap_volume_from_sdc', '--volume_name', @resource[:name], '--sdc_name', rem_node, '--i_am_sure')
     end
+  end
+
+  def get_all_sdc_names()
+    sdc_names=[]
+    query_all_sdc_lines = scli('--query_all_sdc').split("\n")
+    
+    # Iterate through each SDS block
+    query_all_sdc_lines.each do |line|
+      next if line !~/SDC ID/
+
+      # Get information about the SDC
+      name = line.match(/Name:(.*)IP/m)[1].strip
+
+      next if name =~ /^N\/A$/
+
+      sdc_names << name
+    end
+    sdc_names
   end
 
   def exists?

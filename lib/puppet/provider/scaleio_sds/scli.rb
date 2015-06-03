@@ -1,3 +1,4 @@
+#require 'puppet/provider/blocker'
 require File.expand_path(File.join(File.dirname(__FILE__), '..', 'scli'))
 Puppet::Type.type(:scaleio_sds).provide(:scaleio_sds) do 
   include Puppet::Provider::Scli
@@ -10,6 +11,7 @@ Puppet::Type.type(:scaleio_sds).provide(:scaleio_sds) do
   
   def self.instances
     Puppet.debug("Getting SDS instances.")
+
     sds_instances=[]
     query_all_sds_lines = scli('--query_all_sds').split("\n")
     
@@ -70,6 +72,17 @@ Puppet::Type.type(:scaleio_sds).provide(:scaleio_sds) do
 
   def create 
     Puppet.debug("Creating SDS #{@resource[:name]}")
+    # Check if SDS is available/installed
+    if(@resource[:use_consul])
+      first_ip = @resource[:ips][0]
+      consul_key = "scaleio/cluster_setup/sds/#{first_ip}"
+      if(!port_open?(first_ip, 7072))
+        consul_max_tries(consul_key, 48)
+        @property_hash[:ensure] = :absent
+        return
+      end
+      consul_delete_key(consul_key)
+    end
 
     first_add = true  # act differently when adding the first devive of and sds
 

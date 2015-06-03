@@ -21,10 +21,10 @@ Puppet::Type.type(:scaleio_sdc_name).provide(:scaleio_sdc_name) do
       name = line.match(/Name:(.*)IP/m)[1].strip
       ip = line.match(/IP:(.*)State/m)[1].strip
 
-      next if name =~ /^N\/A$/
+      # next if name =~ /^N\/A$/
 
       # Create sdc name instances hash
-      new sdc_name_instance = { 
+      new sdc_name_instance = {
         :name => ip,
         :ensure => :present,
         :desc => name,
@@ -50,8 +50,8 @@ Puppet::Type.type(:scaleio_sdc_name).provide(:scaleio_sdc_name) do
 
   def create 
     Puppet.debug("Creating SDC name #{@resource[:name]}")
-    rename_sdc(@resource[:desc])
-    @property_hash[:ensure] = :present
+    # rename_sdc(@resource[:desc])  # Do not try to rename an SDC if it does not exist
+    @property_hash[:ensure] = :absent
   end
 
   # TODO: should set the name (desc) to nothing, unfortunately not (yet?) possible

@@ -5,8 +5,11 @@ class scaleio::tb {
   package{'EMC-ScaleIO-tb':
     ensure => $scaleio::version,
   }
-  consul_kv{'scaleio/cluster_setup_tiebreaker':
-    value   => 'ready',
-    require => Package['EMC-ScaleIO-tb']
+
+  if $scaleio::use_consul {
+    consul_kv{'scaleio/cluster_setup/tiebreaker':
+      value   => 'ready',
+      require => Package['EMC-ScaleIO-tb']
+    }
   }
 }

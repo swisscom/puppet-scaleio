@@ -25,6 +25,7 @@ describe 'scaleio::mdm', :type => 'class' do
         :ipaddress => '1.2.3.4',
         :architecture => 'x86_64',
         :operatingsystem => 'RedHat',
+        :scaleio_is_primary_mdm => 'true',
       }
     }
     it { should contain_class('scaleio::mdm::primary') }
@@ -36,6 +37,7 @@ describe 'scaleio::mdm', :type => 'class' do
         :ipaddress_eth10 => '1.2.3.4',
         :architecture => 'x86_64',
         :operatingsystem => 'RedHat',
+        :scaleio_is_primary_mdm => 'true',
       }
     }
     it { should contain_class('scaleio::mdm::primary') }
