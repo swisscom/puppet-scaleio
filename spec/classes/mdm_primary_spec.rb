@@ -18,7 +18,7 @@ describe 'scaleio::mdm::primary', :type => 'class' do
     it { should contain_exec('scaleio::mdm::primary_add_primary').with(
       :command => 'scli --add_primary_mdm --primary_mdm_ip 1.2.3.4 --accept_license && sleep 10',
       :unless  => "scli --query_cluster | grep -qE '^ Primary IP: (([0-9]+.?))+$'",
-      :require => 'Package[EMC-ScaleIO-mdm]',
+      :require => 'Package::Verifiable[EMC-ScaleIO-mdm]',
       :before  => 'Exec[scaleio::mdm::primary_add_secondary]',
     )}
 

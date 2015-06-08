@@ -12,8 +12,8 @@ class scaleio::mdm::callhome(
   include ::scaleio::mdm
   ensure_packages(['mutt'])
 
-  package{'EMC-ScaleIO-callhome':
-    ensure => $scaleio::version,
+  package::verifiable{'EMC-ScaleIO-callhome':
+    version => $scaleio::version,
   }
 
   # Include primary mdm class, if this server shall be the primary (first setup), but it has not yet been configured (checked if there is no open connection to the tie-breaker),
@@ -33,7 +33,7 @@ class scaleio::mdm::callhome(
     owner   => root,
     group   => 0,
     mode    => '0644',
-    require => Package['EMC-ScaleIO-callhome'];
+    require => Package::Verifiable['EMC-ScaleIO-callhome'];
   } ~> exec{'restart_callhome_service':
     command     => 'pkill -f \'scaleio/callhome\'',
     refreshonly => true,

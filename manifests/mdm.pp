@@ -5,8 +5,9 @@ class scaleio::mdm {
 
   include ::scaleio
   include ::consul
-  package{'EMC-ScaleIO-mdm':
-    ensure => $scaleio::version,
+  
+  package::verifiable{'EMC-ScaleIO-mdm':
+    version => $scaleio::version
   }
 
   file{
@@ -15,7 +16,7 @@ class scaleio::mdm {
       owner   => root,
       group   => 0,
       mode    => '0700',
-      require => Package['EMC-ScaleIO-mdm'];
+      require => Package::Verifiable['EMC-ScaleIO-mdm'];
   }
 
   file{
@@ -24,7 +25,7 @@ class scaleio::mdm {
       owner   => root,
       group   => 0,
       mode    => '0700',
-      require => Package['EMC-ScaleIO-mdm'];
+      require => Package::Verifiable['EMC-ScaleIO-mdm'];
   }
 
   # Include primary mdm class, if this server shall be the primary (first setup), but it has not yet been configured (checked if there is no open connection to the tie-breaker),
@@ -35,7 +36,7 @@ class scaleio::mdm {
   }elsif ($scaleio::use_consul and has_ip_address($scaleio::real_mdm_ips[1]) and str2bool($::scaleio_mdm_clustersetup_needed)) {
       consul_kv{'scaleio/cluster_setup/secondary':
         value   => 'ready',
-        require => Package['EMC-ScaleIO-mdm']
+        require => Package::Verifiable['EMC-ScaleIO-mdm']
       }
   }
 

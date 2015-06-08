@@ -10,12 +10,12 @@ describe 'scaleio::sdc', :type => 'class' do
   describe 'with standard' do
     #it { should compile.with_all_deps }
     it { should contain_class('scaleio') }
-    it { should contain_package('EMC-ScaleIO-sdc').with_ensure('installed') }
+    it { should contain_package__verifiable('EMC-ScaleIO-sdc').with_version('installed') }
 
     it { should contain_exec('scaleio::sdc_add_mdm').with(
       :command  => '/bin/emc/scaleio/drv_cfg --add_mdm --ip 1.2.3.4,1.2.3.5 --file /bin/emc/scaleio/drv_cfg.txt',
       :unless   => 'grep -qE \'^mdm 1.2.3.4,1.2.3.5$\' /bin/emc/scaleio/drv_cfg.txt',
-      :require  => 'Package[EMC-ScaleIO-sdc]'
+      :require  => 'Package::Verifiable[EMC-ScaleIO-sdc]'
     )}
   end
   context 'with a missing primary ip' do

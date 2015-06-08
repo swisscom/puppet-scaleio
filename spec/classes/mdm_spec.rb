@@ -14,7 +14,7 @@ describe 'scaleio::mdm', :type => 'class' do
   describe 'with standard' do
 #    it { should compile.with_all_deps }
     it { should contain_class('scaleio') }
-    it { should contain_package('EMC-ScaleIO-mdm').with_ensure('installed') }
+    it { should contain_package__verifiable('EMC-ScaleIO-mdm').with_version('installed') }
     it { should_not contain_class('scaleio::mdm::primary') }
     it { should contain_class('scaleio::mdm::callhome') }
     it { should_not contain_consul_kv('scaleio/cluster_setup/secondary')}
@@ -67,7 +67,7 @@ describe 'scaleio::mdm', :type => 'class' do
     }
     it { should contain_consul_kv('scaleio/cluster_setup/secondary').with(
         :value   => 'ready',
-        :require => 'Package[EMC-ScaleIO-mdm]'
+        :require => 'Package::Verifiable[EMC-ScaleIO-mdm]'
       )}
   end
 end

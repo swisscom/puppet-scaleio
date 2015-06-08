@@ -9,7 +9,7 @@ describe 'scaleio::sds', :type => 'class' do
   describe 'with standard' do
     it { should compile.with_all_deps }
     it { should contain_class('scaleio') }
-    it { should contain_package('EMC-ScaleIO-sds').with_ensure('installed') }
+    it { should contain_package__verifiable('EMC-ScaleIO-sds').with_version('installed') }
   end
 end
 
