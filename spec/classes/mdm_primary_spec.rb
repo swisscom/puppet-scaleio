@@ -9,6 +9,10 @@ describe 'scaleio::mdm::primary', :type => 'class' do
     }
   }
   describe 'with standard' do
+
+    it { should_not contain_consul_kv_blocker('scaleio/cluster_setup/secondary')}    
+    it { should_not contain_consul_kv_blocker('scaleio/cluster_setup/tiebreaker')}
+
     it { should contain_class('scaleio::mdm') }
 
     it { should contain_exec('scaleio::mdm::primary_add_primary').with(
@@ -144,6 +148,25 @@ describe 'scaleio::mdm::primary', :type => 'class' do
       "class{'scaleio': tb_ip => '1.2.3' }"
     }
     it { expect { subject.call('fail') }.to raise_error() }
+  end
+
+  context 'with consul' do
+   let(:facts){
+      {
+        :interfaces => 'eth0',
+        :architecture => 'x86_64',
+        :operatingsystem => 'RedHat',
+        :fqdn => 'consul.example.com'
+      }
+    }
+    it { should contain_consul_kv_blocker('scaleio/cluster_setup/secondary').with(
+      :tries => 120,
+      :try_sleep => 30
+    )}    
+    it { should contain_consul_kv_blocker('scaleio/cluster_setup/tiebreaker').with(
+      :tries => 120,
+      :try_sleep => 30
+    )}
   end
 end
 

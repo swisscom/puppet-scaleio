@@ -66,7 +66,6 @@ describe provider_class do
 
   describe 'create' do
     it 'creates a sdc_name' do
-      provider.expects(:rename_sdc).with('mySDC').returns([])
       provider.create
     end
   end

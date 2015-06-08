@@ -82,7 +82,7 @@ Puppet::Type.type(:scaleio_volume).provide(:scaleio_volume) do
 
     sdc_names = get_all_sdc_names()
     @resource[:sdc_nodes].each do |node|
-      if(sdc_names.include?(new_node))
+      if(sdc_names.include?(node))
         Puppet.debug("Mapping volume #{@resource[:name]} to SDC node #{node}")
         scli('--map_volume_to_sdc', '--volume_name', @resource[:name], '--sdc_name', node, '--allow_multi_map')
       end

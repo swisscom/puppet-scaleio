@@ -33,7 +33,7 @@ Puppet::Type.newtype(:scaleio_sds) do
     end
   end  
 
-  newparam(:use_consul, :boolean => true) do
+  newparam(:useconsul, :boolean => true) do
     desc "Use consul to wait for SDS being available"
 
     defaultto false

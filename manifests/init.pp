@@ -77,7 +77,7 @@ class scaleio(
   $sdc_names          = {},
   $volumes            = {},
   $components         = [],
-  $use_consul         = [],
+  $use_consul         = false,
 ) {
 
   ensure_packages(['numactl','python'])

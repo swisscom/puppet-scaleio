@@ -72,8 +72,9 @@ Puppet::Type.type(:scaleio_sds).provide(:scaleio_sds) do
 
   def create 
     Puppet.debug("Creating SDS #{@resource[:name]}")
+
     # Check if SDS is available/installed
-    if(@resource[:use_consul])
+    if @resource[:useconsul]
       first_ip = @resource[:ips][0]
       consul_key = "scaleio/cluster_setup/sds/#{first_ip}"
       if(!port_open?(first_ip, 7072))

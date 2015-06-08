@@ -15,6 +15,7 @@ describe Puppet::Type.type(:scaleio_sds) do
         :ips               => ['172.17.121.10'],
         :pool_devices      => {'myPool' => ['/dev/sda', '/dev/sdb']},
         :port              => 2342,
+        :useconsul         => true,
         :ensure            => :present,
       })
     expect(@sds[:name]).to eq('mySDS')

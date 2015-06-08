@@ -49,8 +49,9 @@ Puppet::Type.type(:scaleio_sdc_name).provide(:scaleio_sdc_name) do
   end
 
   def create 
+    # Do not try to rename an SDC if it does not exist
+    # Once it exists, it will be done using desc=
     Puppet.debug("Creating SDC name #{@resource[:name]}")
-    # rename_sdc(@resource[:desc])  # Do not try to rename an SDC if it does not exist
     @property_hash[:ensure] = :absent
   end
 

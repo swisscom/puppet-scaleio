@@ -109,8 +109,15 @@ describe provider_class do
 
   describe 'create' do
     it 'creates a volume' do
+      provider.expects(:get_all_sdc_names).returns(['sdc1', 'sdc2'])
       provider.expects(:scli).with('--add_volume', '--protection_domain_name', 'myPDomain', '--storage_pool_name', 'myPool', '--volume_name', 'myVol', '--size_gb', 504, '--thin_provisioned').returns([])
       provider.expects(:scli).with('--map_volume_to_sdc', '--volume_name', 'myVol', '--sdc_name', 'sdc1', '--allow_multi_map').returns([])
+      provider.expects(:scli).with('--map_volume_to_sdc', '--volume_name', 'myVol', '--sdc_name', 'sdc2', '--allow_multi_map').returns([])
+      provider.create
+    end
+    it 'creates a volume only on connected sdc node' do
+      provider.expects(:get_all_sdc_names).returns(['sdc2'])
+      provider.expects(:scli).with('--add_volume', '--protection_domain_name', 'myPDomain', '--storage_pool_name', 'myPool', '--volume_name', 'myVol', '--size_gb', 504, '--thin_provisioned').returns([])
       provider.expects(:scli).with('--map_volume_to_sdc', '--volume_name', 'myVol', '--sdc_name', 'sdc2', '--allow_multi_map').returns([])
       provider.create
     end
@@ -167,18 +174,21 @@ describe provider_class do
   describe 'update sdc_nodes' do
     it 'removes obsolte sdc node' do
       provider.instance_variable_get(:@property_hash)[:sdc_nodes] = ['sdc1', 'sdc2']
+      provider.expects(:get_all_sdc_names).returns(['sdc1', 'sdc2'])
       provider.expects(:scli).with('--unmap_volume_from_sdc', '--volume_name', 'myVol', '--sdc_name', 'sdc2', '--i_am_sure').returns([])
       provider.sdc_nodes = ['sdc1']
     end
 
     it 'adds new sdc nodes' do
       provider.instance_variable_get(:@property_hash)[:sdc_nodes] = ['sdc1', 'sdc2']
+      provider.expects(:get_all_sdc_names).returns(['sdc1', 'sdc2', 'sdc3'])
       provider.expects(:scli).with('--map_volume_to_sdc', '--volume_name', 'myVol', '--sdc_name', 'sdc3', '--allow_multi_map').returns([])
       provider.sdc_nodes = ['sdc1', 'sdc3', 'sdc2']
     end
 
     it 'does nothing' do
       provider.instance_variable_get(:@property_hash)[:sdc_nodes] = ['sdc1', 'sdc2']
+      provider.expects(:get_all_sdc_names).returns(['sdc1', 'sdc2'])
       provider.sdc_nodes = ['sdc2', 'sdc1']
     end
   end

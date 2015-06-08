@@ -52,6 +52,8 @@ describe 'scaleio::mdm::callhome', :type => 'class' do
         :domain     => 'example.net',
         :ipaddress  => '1.1.2.2',
         :scaleio_is_primary_mdm => 'true',
+        :architecture => 'x86_64',
+        :operatingsystem => 'RedHat',
       }
     }
     let(:pre_condition) {"
