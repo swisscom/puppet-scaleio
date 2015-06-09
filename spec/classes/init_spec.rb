@@ -67,4 +67,38 @@ describe 'scaleio', :type => 'class' do
     }
     it { expect { subject.call('fail') }.to raise_error() }
   end
+  context 'with standby mdms' do
+    let(:facts){
+      {
+        :interfaces     => 'eth0',
+        :ipaddress_eth0 => '1.2.3.4',
+        :architecture => 'x86_64',
+        :operatingsystem => 'RedHat',
+      }
+    }
+    let(:params) {
+      {
+        :mdm_ips => ['1.2.3.4','1.2.3.5','1.2.3.6','1.2.3.7'],
+        :tb_ips => ['1.2.3.8','1.2.3.9'],
+      }
+    }
+    it { should contain_class('scaleio::mdm') }
+  end
+  context 'with standby tbs' do
+    let(:facts){
+      {
+        :interfaces     => 'eth0',
+        :ipaddress_eth0 => '1.2.3.8',
+        :architecture => 'x86_64',
+        :operatingsystem => 'RedHat',
+      }
+    }
+    let(:params) {
+      {
+        :mdm_ips => ['1.2.3.4','1.2.3.5','1.2.3.6','1.2.3.7'],
+        :tb_ips => ['1.2.3.8','1.2.3.9'],
+      }
+    }
+    it { should contain_class('scaleio::tb') }
+  end
 end

@@ -90,7 +90,7 @@ class scaleio(
 
   $real_mdm_ips = $mdm_ips ? {
     false   => [$primary_mdm_ip, $secondary_mdm_ip],
-    default => mdm_ips,
+    default => $mdm_ips,
   }
 
   # both must be set and if they are they should be valid
@@ -102,7 +102,7 @@ class scaleio(
 
   $real_tb_ips = $tb_ips ? {
     false   => [$tb_ip],
-    default => tb_ips,
+    default => $tb_ips,
   }
 
   if $real_tb_ips[0] {

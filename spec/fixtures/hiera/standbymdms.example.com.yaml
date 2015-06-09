@@ -1,0 +1,5 @@
+---
+scaleio::mdm_ips: ['1.2.3.4', '1.2.3.5', '1.2.3.6']
+scaleio::tb_ips: ['1.2.3.7', '1.2.3.8']
+
+scaleio::license: HDJ96HJE5K7KDIKDPO57223MMDTGJ09MDDZ6KK

@@ -70,5 +70,24 @@ describe 'scaleio::mdm', :type => 'class' do
         :require => 'Package::Verifiable[EMC-ScaleIO-mdm]'
       )}
   end
+
+  context 'using standby MDMs' do
+    let(:facts){
+      {
+        :interfaces => 'eth0',
+        :ipaddress => '1.2.3.5',
+        :architecture => 'x86_64',
+        :operatingsystem => 'RedHat',
+        :fqdn => 'standbymdms.example.com',
+        :scaleio_mdm_clustersetup_needed => 'true'
+      }
+    }
+    it { should contain_exec('scaleio::mdm::setup_failover').with(
+      :command => "/opt/emc/scaleio/mdm_failover/bin/delete_service.sh ; ps -ef |grep '[m]dm_failover.py' |awk '{print \$2}' |xargs -r kill ; /opt/emc/scaleio/mdm_failover/bin/mdm_failover_post_install.py --mdms_list='[1.2.3.4]+[1.2.3.5]+[1.2.3.6]' --tbs_list='[1.2.3.7]+[1.2.3.8]' --username=admin --password='admin'",
+      :unless  => "fgrep \"mdms': '[1.2.3.4]+[1.2.3.5]+[1.2.3.6]\" /opt/emc/scaleio/mdm_failover/cfg/conf.txt |fgrep \"tbs': '[1.2.3.7]+[1.2.3.8]\" |fgrep 'admin'",
+      :require => 'Package::Verifiable[EMC-ScaleIO-mdm]',
+      :returns => [ 0, '', ' ']
+      )}
+  end
 end
 

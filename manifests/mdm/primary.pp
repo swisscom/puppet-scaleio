@@ -98,7 +98,7 @@ class scaleio::mdm::primary {
   create_resources('scaleio_user',              $scaleio::users,              {ensure => present, require => [Exec['scaleio::mdm::primary_add_secondary'], File[$scaleio::mdm::add_scaleio_user]]})
   create_resources('scaleio_protection_domain', $scaleio::protection_domains, {ensure => present, require => Exec['scaleio::mdm::primary_add_secondary']})
   create_resources('scaleio_storage_pool',      $scaleio::storage_pools,      {ensure => present, require => Exec['scaleio::mdm::primary_add_secondary']})
-  create_resources('scaleio_sds',               $scaleio::sds,                {ensure => present, require => Exec['scaleio::mdm::primary_add_secondary'], tag => 'scaleio_tag_sds', use_consul => $scaleio::use_consul})
+  create_resources('scaleio_sds',               $scaleio::sds,                {ensure => present, require => Exec['scaleio::mdm::primary_add_secondary'], tag => 'scaleio_tag_sds', useconsul => $scaleio::use_consul})
   create_resources('scaleio_sdc_name',          $scaleio::sdc_names,          {ensure => present, require => Exec['scaleio::mdm::primary_add_secondary'], tag => 'scaleio_tag_sdc_name'})
   create_resources('scaleio_volume',            $scaleio::volumes,            {ensure => present, require => Exec['scaleio::mdm::primary_add_secondary'], tag => 'scaleio_tag_volume'})
 

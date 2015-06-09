@@ -40,6 +40,24 @@ class scaleio::mdm {
       }
   }
 
+  # If there are more than two MDMs defined, then we have to setup
+  # standy MDMs using the MDM failover script
+  if size($scaleio::real_mdm_ips) > 2 or size($scaleio::real_tb_ips) > 1 {
+
+    # prepare input for mdm_failover_post_install
+    $failover_mdms_joined = join($::scaleio::real_mdm_ips, ']+[')
+    $failover_mdms = "[${failover_mdms_joined}]"
+    $failover_tbs_joined = join($::scaleio::real_tb_ips, ']+[')
+    $failover_tbs = "[${failover_tbs_joined}]"
+
+    exec{'scaleio::mdm::setup_failover':
+      command => "/opt/emc/scaleio/mdm_failover/bin/delete_service.sh ; ps -ef |grep '[m]dm_failover.py' |awk '{print \$2}' |xargs -r kill ; /opt/emc/scaleio/mdm_failover/bin/mdm_failover_post_install.py --mdms_list='${failover_mdms}' --tbs_list='${failover_tbs}' --username=admin --password='${::scaleio::password}'",
+      unless  => "fgrep \"mdms': '${failover_mdms}\" /opt/emc/scaleio/mdm_failover/cfg/conf.txt |fgrep \"tbs': '${failover_tbs}\" |fgrep '${::scaleio::password}'",
+      require => Package::Verifiable['EMC-ScaleIO-mdm'],
+      returns => [ 0, '', ' ']
+    }
+  }
+
   if $scaleio::callhome {
     include scaleio::mdm::callhome
   }
