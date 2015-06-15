@@ -19,6 +19,13 @@ class scaleio::mdm::primary {
     before  => Exec['scaleio::mdm::primary_add_secondary'],
   }
 
+  if $scaleio::use_consul {
+    ensure_resource( 'consul_kv_blocker', 'scaleio/cluster_setup/secondary', {tries => 120, try_sleep => 30})
+    Consul_kv_blocker['scaleio/cluster_setup/secondary'] ->Exec['scaleio::mdm::primary_add_primary']
+    ensure_resource( 'consul_kv_blocker', 'scaleio/cluster_setup/tiebreaker', {tries => 120, try_sleep => 30})
+    Consul_kv_blocker['scaleio/cluster_setup/tiebreaker'] ->Exec['scaleio::mdm::primary_add_tb']
+  }
+
   # login and pwd set dance
   if $scaleio::password != 'admin' {
     exec{'scaleio::mdm::primary_login_default':
@@ -30,13 +37,6 @@ class scaleio::mdm::primary {
       refreshonly => true,
       before      => Exec['scaleio::mdm::primary_add_secondary'],
     }
-  }
-
-  if $scaleio::use_consul {
-    ensure_resource( 'consul_kv_blocker', 'scaleio/cluster_setup/secondary', {tries => 120, try_sleep => 30})
-    Consul_kv_blocker['scaleio/cluster_setup/secondary'] ->Exec['scaleio::mdm::primary_add_secondary']
-    ensure_resource( 'consul_kv_blocker', 'scaleio/cluster_setup/tiebreaker', {tries => 120, try_sleep => 30})
-    Consul_kv_blocker['scaleio/cluster_setup/tiebreaker'] ->Exec['scaleio::mdm::primary_add_tb']
   }
 
   exec{'scaleio::mdm::primary_add_secondary':
