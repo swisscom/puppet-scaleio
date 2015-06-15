@@ -1,7 +1,9 @@
 # manage a tb
 class scaleio::tb {
   include ::scaleio
-  require ::consul
+  if $scaleio::use_consul {
+    require ::consul
+  }
   package::verifiable{'EMC-ScaleIO-tb':
     version => $scaleio::version,
   }

@@ -4,8 +4,11 @@ class scaleio::mdm {
   $add_scaleio_user  = '/var/lib/puppet/module_data/scaleio/add_scaleio_user'
 
   include ::scaleio
-  include ::consul
-  
+
+  if $scaleio::use_consul {
+    include ::consul
+  }
+
   package::verifiable{'EMC-ScaleIO-mdm':
     version => $scaleio::version
   }
