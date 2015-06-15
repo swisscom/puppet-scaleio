@@ -23,7 +23,7 @@ describe 'scaleio::tb', :type => 'class' do
     let(:facts){
       {
         :interfaces => 'eth0',
-        :ipaddress => '1.2.3.4',
+        :ipaddress => '1.2.3.6',
         :architecture => 'x86_64',
         :operatingsystem => 'RedHat',
         :fqdn => 'consul.example.com'
