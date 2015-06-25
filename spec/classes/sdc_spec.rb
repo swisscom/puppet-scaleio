@@ -23,6 +23,7 @@ describe 'scaleio::sdc', :type => 'class' do
       :unless  => "grep -qE '^mdm 1.2.3.4,1.2.3.5$' /bin/emc/scaleio/drv_cfg.txt",
       :require  => 'Package::Verifiable[EMC-ScaleIO-sdc]'
     )}
+    it { should_not contain_file_line ( 'scaleio_lvm_types') }
   end
   context 'with a missing primary ip' do
     let(:pre_condition) {
@@ -35,6 +36,17 @@ describe 'scaleio::sdc', :type => 'class' do
       "class{'scaleio': secondary_mdm_ip => '' }"
     }
     it { expect { subject.call('fail') }.to raise_error() }
+  end
+  context 'with lvm config' do
+    let(:pre_condition){
+      "class{'scaleio': lvm => true }"
+    }
+    it { should contain_file_line('scaleio_lvm_types').with(
+      :ensure => 'present',
+      :path   => '/etc/lvm/lvm.conf',
+      :line   => '    types = [ "scini", 16 ]',
+      :match  => 'types\s*=\s*\['
+    )}
   end
 end
 

@@ -50,6 +50,7 @@
 #    - sdc
 #    - mdm
 #    - tb
+# * lvm: add scini types to lvm.conf to be able to create lvm pv on SIO volumes
 # * use_consul: shall consul be used:
 #    - to wait for secondary mdm being ready for setup
 #    - to wait for tiebreak being ready for setup
@@ -77,6 +78,7 @@ class scaleio(
   $sdc_names          = {},
   $volumes            = {},
   $components         = [],
+  $lvm                = false,
   $use_consul         = false,
 ) {
 

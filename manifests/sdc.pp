@@ -24,4 +24,14 @@ class scaleio::sdc {
     unless  => "grep -qE '^mdm ${mdm_ips_joined}$' /bin/emc/scaleio/drv_cfg.txt",
     require => 'Package::Verifiable[EMC-ScaleIO-sdc]',
   }
+
+  if $::scaleio::lvm {
+    file_line { 'scaleio_lvm_types':
+      ensure => present,
+      path   => '/etc/lvm/lvm.conf',
+      line   => '    types = [ "scini", 16 ]',
+      match  => 'types\s*=\s*\[',
+    }
+  }
+
 }
