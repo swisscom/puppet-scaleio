@@ -15,7 +15,7 @@ describe 'scaleio::tb', :type => 'class' do
     it { should compile.with_all_deps }
     it { should contain_class('scaleio') }
     it { should contain_package__verifiable('EMC-ScaleIO-tb').with_version('installed') }
-    it { should_not contain_consul_kv('scaleio/cluster_setup/tiebreaker')}
+    it { should_not contain_consul_kv('scaleio/sysname/cluster_setup/tiebreaker')}
   end
 
 
@@ -29,7 +29,7 @@ describe 'scaleio::tb', :type => 'class' do
         :fqdn => 'consul.example.com'
       }
     }
-    it { should contain_consul_kv('scaleio/cluster_setup/tiebreaker').with(
+    it { should contain_consul_kv('scaleio/sysname/cluster_setup/tiebreaker').with(
         :value   => 'ready',
         :require => 'Package::Verifiable[EMC-ScaleIO-tb]'
       )}

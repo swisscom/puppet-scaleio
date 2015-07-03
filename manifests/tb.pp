@@ -9,7 +9,7 @@ class scaleio::tb {
   }
 
   if $scaleio::use_consul and has_ip_address($scaleio::real_tb_ips[0]) {
-    consul_kv{'scaleio/cluster_setup/tiebreaker':
+    consul_kv{"scaleio/${::scaleio::system_name}/cluster_setup/tiebreaker":
       value   => 'ready',
       require => Package::Verifiable['EMC-ScaleIO-tb']
     }

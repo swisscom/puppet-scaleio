@@ -10,8 +10,8 @@ describe 'scaleio::mdm::primary', :type => 'class' do
   }
   describe 'with standard' do
 
-    it { should_not contain_consul_kv_blocker('scaleio/cluster_setup/secondary')}    
-    it { should_not contain_consul_kv_blocker('scaleio/cluster_setup/tiebreaker')}
+    it { should_not contain_consul_kv_blocker('scaleio/sysname/cluster_setup/secondary')}
+    it { should_not contain_consul_kv_blocker('scaleio/sysname/cluster_setup/tiebreaker')}
 
     it { should contain_class('scaleio::mdm') }
 
@@ -159,11 +159,11 @@ describe 'scaleio::mdm::primary', :type => 'class' do
         :fqdn => 'consul.example.com'
       }
     }
-    it { should contain_consul_kv_blocker('scaleio/cluster_setup/secondary').with(
+    it { should contain_consul_kv_blocker('scaleio/sysname/cluster_setup/secondary').with(
       :tries => 120,
       :try_sleep => 30
     )}    
-    it { should contain_consul_kv_blocker('scaleio/cluster_setup/tiebreaker').with(
+    it { should contain_consul_kv_blocker('scaleio/sysname/cluster_setup/tiebreaker').with(
       :tries => 120,
       :try_sleep => 30
     )}

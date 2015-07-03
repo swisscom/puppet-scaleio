@@ -17,7 +17,7 @@ describe 'scaleio::mdm', :type => 'class' do
     it { should contain_package__verifiable('EMC-ScaleIO-mdm').with_version('installed') }
     it { should_not contain_class('scaleio::mdm::primary') }
     it { should contain_class('scaleio::mdm::callhome') }
-    it { should_not contain_consul_kv('scaleio/cluster_setup/secondary')}
+    it { should_not contain_consul_kv('scaleio/sysname/cluster_setup/secondary')}
   end
   context 'on the primary' do
     let(:facts){
@@ -30,7 +30,7 @@ describe 'scaleio::mdm', :type => 'class' do
       }
     }
     it { should contain_class('scaleio::mdm::primary') }
-    it { should_not contain_consul_kv('scaleio/cluster_setup/secondary')}
+    it { should_not contain_consul_kv('scaleio/sysname/cluster_setup/secondary')}
   end
   context 'on the primary with ip on a different interface' do
     let(:facts){
@@ -65,7 +65,7 @@ describe 'scaleio::mdm', :type => 'class' do
         :scaleio_mdm_clustersetup_needed => 'true'
       }
     }
-    it { should contain_consul_kv('scaleio/cluster_setup/secondary').with(
+    it { should contain_consul_kv('scaleio/sysname/cluster_setup/secondary').with(
         :value   => 'ready',
         :require => 'Package::Verifiable[EMC-ScaleIO-mdm]'
       )}
