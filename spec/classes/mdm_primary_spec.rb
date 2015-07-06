@@ -174,7 +174,7 @@ describe 'scaleio::mdm::primary', :type => 'class' do
     }
     it { should contain_scaleio_user('monitoring').with(
       :role      => 'Monitor',
-      :password  => 'monitor',
+      :password  => 'Monitor1',
       :require   => ['Exec[scaleio::mdm::primary_add_secondary]', 'File[/var/lib/puppet/module_data/scaleio/add_scaleio_user]']
     )}
   end
