@@ -16,6 +16,7 @@ describe 'scaleio::mdm', :type => 'class' do
     it { should contain_class('scaleio') }
     it { should contain_package__verifiable('EMC-ScaleIO-mdm').with_version('installed') }
     it { should_not contain_class('scaleio::mdm::primary') }
+    it { should_not contain_class('sudo::rule') }
     it { should contain_class('scaleio::mdm::callhome') }
     it { should_not contain_consul_kv('scaleio/sysname/cluster_setup/secondary')}
   end
@@ -88,6 +89,24 @@ describe 'scaleio::mdm', :type => 'class' do
       :require => 'Package::Verifiable[EMC-ScaleIO-mdm]',
       :returns => [ 0, '', ' ']
       )}
+  end
+
+  context 'with external monitoring user' do
+    let(:pre_condition){[
+      "class{'scaleio':
+        external_monitoring_user => 'monitor'
+       }",
+       "Exec{ path => '/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin' }"
+    ]}
+    it { should contain_file('/var/lib/puppet/module_data/scaleio/scli_wrap_monitoring').with(
+        :owner   => 'root',
+        :group   => 0,
+        :mode    => '0700',
+        :require => 'Package::Verifiable[EMC-ScaleIO-mdm]';
+    )}
+    it { should contain_sudo__rule('ScaleIO-monitoring').with(
+        :line => "monitor ALL=(ALL) NOPASSWD: /var/lib/puppet/module_data/scaleio/scli_wrap_monitoring"
+    )}
   end
 end
 

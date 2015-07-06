@@ -13,6 +13,8 @@
 # * password: for the mdm
 # * old_password: if you want to change the password, you have to provide the
 #                 old one for change.
+# * monitoring_passwd: password for mionitoring user
+# * external_monitoring_user: external monitoring software user (eq splunk user)i that allow running scli cmd for monitoring
 # * syslog_ip_port: if set we will configure a syslog server
 # * mgmt_addresses: array of ip addresses to be configured as SIO management addresses
 # * users: scaleio users to be created
@@ -57,29 +59,31 @@
 #    - to wait for SDSs being ready for adding to cluster
 #
 class scaleio(
-  $version            = 'installed',
-  $callhome           = true,
-  $primary_mdm_ip     = undef,
-  $secondary_mdm_ip   = undef,
-  $tb_ip              = undef,
-  $mdm_ips            = false,
-  $tb_ips             = false,
-  $license            = undef,
-  $password           = 'admin',
-  $old_password       = 'admin',
-  $syslog_ip_port     = undef,
-  $system_name        = undef,
-  $purge              = false,
-  $mgmt_addresses     = [],
-  $users              = {},
-  $protection_domains = {},
-  $storage_pools      = {},
-  $sds                = {},
-  $sdc_names          = {},
-  $volumes            = {},
-  $components         = [],
-  $lvm                = false,
-  $use_consul         = false,
+  $version                  = 'installed',
+  $callhome                 = true,
+  $primary_mdm_ip           = undef,
+  $secondary_mdm_ip         = undef,
+  $tb_ip                    = undef,
+  $mdm_ips                  = false,
+  $tb_ips                   = false,
+  $license                  = undef,
+  $password                 = 'admin',
+  $old_password             = 'admin',
+  $monitoring_passwd        = 'monitor',
+  $external_monitoring_user = false,
+  $syslog_ip_port           = undef,
+  $system_name              = undef,
+  $purge                    = false,
+  $mgmt_addresses           = [],
+  $users                    = {},
+  $protection_domains       = {},
+  $storage_pools            = {},
+  $sds                      = {},
+  $sdc_names                = {},
+  $volumes                  = {},
+  $components               = [],
+  $lvm                      = false,
+  $use_consul               = false,
 ) {
 
   ensure_packages(['numactl','python'])

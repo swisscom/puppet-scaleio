@@ -93,6 +93,14 @@ class scaleio::mdm::primary {
     require => Exec['scaleio::mdm::primary_go_into_cluster_mode'],
   }
 
+  if $scaleio::external_monitoring_user {
+    scaleio_user{'monitoring':
+      role      => 'Monitor',
+      password  => $scaleio::monitoring_passwd,
+      require   => [Exec['scaleio::mdm::primary_add_secondary'], File[$scaleio::mdm::add_scaleio_user]],
+    }
+  }
+
   # TODO: default pool is created for a new protection domain, but deleted in the next puppet run
   # TODO: last pool cannot be deleted - results in error
   create_resources('scaleio_user',              $scaleio::users,              {ensure => present, require => [Exec['scaleio::mdm::primary_add_secondary'], File[$scaleio::mdm::add_scaleio_user]]})

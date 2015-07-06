@@ -22,6 +22,22 @@ class scaleio::mdm {
       require => Package::Verifiable['EMC-ScaleIO-mdm'];
   }
 
+  if $scaleio::external_monitoring_user {
+    file{
+      '/var/lib/puppet/module_data/scaleio/scli_wrap_monitoring':
+        content => template('scaleio/scli_wrap_monitoring.erb'),
+        owner   => root,
+        group   => 0,
+        mode    => '0700',
+        require => Package::Verifiable['EMC-ScaleIO-mdm'];
+    }
+
+    sudo::rule{
+      'ScaleIO-monitoring':
+        line => "${scaleio::external_monitoring_user} ALL=(ALL) NOPASSWD: /var/lib/puppet/module_data/scaleio/scli_wrap_monitoring"
+    }
+  }
+
   file{
     $add_scaleio_user:
       content => template('scaleio/add_scaleio_user.erb'),
