@@ -69,7 +69,7 @@ class scaleio(
   $license                  = undef,
   $password                 = 'admin',
   $old_password             = 'admin',
-  $monitoring_passwd        = 'monitor',
+  $monitoring_passwd        = 'Monitor1',
   $external_monitoring_user = false,
   $syslog_ip_port           = undef,
   $system_name              = undef,
