@@ -95,9 +95,9 @@ class scaleio::mdm::primary {
 
   if $scaleio::external_monitoring_user {
     scaleio_user{'monitoring':
-      role      => 'Monitor',
-      password  => $scaleio::monitoring_passwd,
-      require   => [Exec['scaleio::mdm::primary_add_secondary'], File[$scaleio::mdm::add_scaleio_user]],
+      role     => 'Monitor',
+      password => $scaleio::monitoring_passwd,
+      require  => [Exec['scaleio::mdm::primary_add_secondary'], File[$scaleio::mdm::add_scaleio_user]],
     }
   }
 
