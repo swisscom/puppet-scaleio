@@ -70,7 +70,7 @@ class scaleio(
   $password                 = 'admin',
   $old_password             = 'admin',
   $monitoring_passwd        = 'Monitor1',
-  $external_monitoring_user = false,
+  $external_monitoring_user = 'splunk',
   $syslog_ip_port           = undef,
   $system_name              = undef,
   $purge                    = false,

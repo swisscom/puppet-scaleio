@@ -31,11 +31,6 @@ class scaleio::mdm {
         mode    => '0700',
         require => Package::Verifiable['EMC-ScaleIO-mdm'];
     }
-
-    sudo::rule{
-      'ScaleIO-monitoring':
-        line => "${scaleio::external_monitoring_user} ALL=(ALL) NOPASSWD: /var/lib/puppet/module_data/scaleio/scli_wrap_monitoring"
-    }
   }
 
   file{

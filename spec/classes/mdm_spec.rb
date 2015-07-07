@@ -104,9 +104,6 @@ describe 'scaleio::mdm', :type => 'class' do
         :mode    => '0700',
         :require => 'Package::Verifiable[EMC-ScaleIO-mdm]'
     )}
-    it { should contain_sudo__rule('ScaleIO-monitoring').with(
-        :line => "monitor ALL=(ALL) NOPASSWD: /var/lib/puppet/module_data/scaleio/scli_wrap_monitoring"
-    )}
   end
 end
 
