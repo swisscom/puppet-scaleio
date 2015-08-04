@@ -27,15 +27,15 @@ describe 'scaleio::sdc', :type => 'class' do
   end
   context 'with a missing primary ip' do
     let(:pre_condition) {
-      "class{'scaleio': primary_mdm_ip => '' }"
+      "class{'scaleio': mdm_ips => [] }"
     }
-    it { expect { subject.call('fail') }.to raise_error() }
+    it { expect { subject.call('fail') }.to raise_error(/wrong number of arguments/) }
   end
   context 'with a missing secondary ip' do
     let(:pre_condition) {
-      "class{'scaleio': secondary_mdm_ip => '' }"
+      "class{'scaleio': mdm_ips => [] }"
     }
-    it { expect { subject.call('fail') }.to raise_error() }
+    it { expect { subject.call('fail') }.to raise_error(/wrong number of arguments/) }
   end
   context 'with lvm config' do
     let(:pre_condition){

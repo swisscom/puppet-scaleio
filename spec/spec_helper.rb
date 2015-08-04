@@ -17,7 +17,7 @@ RSpec.configure do |c|
   c.module_path = File.join(fixture_path, 'modules')
   c.manifest_dir = File.join(fixture_path, 'manifests')
   c.pattern = FileList[c.pattern].exclude(/^spec\/fixtures/)
-  c.hiera_config  = File.join(fixture_path, 'hiera/hiera.yaml')
+  c.hiera_config  = File.expand_path(File.join(__FILE__, '..', 'hiera/hiera.yaml'))
 end
 
 Puppet::Util::Log.level = :warning

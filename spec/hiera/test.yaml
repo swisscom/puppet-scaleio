@@ -1,7 +1,6 @@
 ---
-scaleio::primary_mdm_ip: 1.2.3.4
-scaleio::secondary_mdm_ip: 1.2.3.5
-scaleio::tb_ip: 1.2.3.6
+scaleio::mdm_ips: ['1.2.3.4', '1.2.3.5']
+scaleio::tb_ips: ['1.2.3.6']
 scaleio::system_name: sysname
 
 scaleio::license: HDJ96HJE5K7KDIKDPO57223MMDTGJ09MDDZ6KK

@@ -129,25 +129,25 @@ describe 'scaleio::mdm::primary', :type => 'class' do
     let(:pre_condition){
       "class{'scaleio': password => 'd,' }"
     }
-    it { expect { subject.call('fail') }.to raise_error() }
+    it { expect { subject.call('fail') }.to raise_error(/wrong number of arguments/) }
   end
   context 'with a wrong primary ip' do
     let(:pre_condition){
-      "class{'scaleio': primary_mdm_ip => '1.2.3' }"
+      "class{'scaleio': mdm_ips => ['1.2.3', '1.2.3.4'] }"
     }
-    it { expect { subject.call('fail') }.to raise_error() }
+    it { expect { subject.call('fail') }.to raise_error(/wrong number of arguments/) }
   end
   context 'with a wrong secondary ip' do
     let(:pre_condition){
-      "class{'scaleio': secondary_mdm_ip => '1.2.3' }"
+      "class{'scaleio': mdm_ips => ['1.2.3.4', '1.2.3'] }"
     }
-    it { expect { subject.call('fail') }.to raise_error() }
+    it { expect { subject.call('fail') }.to raise_error(/wrong number of arguments/) }
   end
   context 'with a wrong tb ip' do
     let(:pre_condition){
-      "class{'scaleio': tb_ip => '1.2.3' }"
+      "class{'scaleio': tb_ips => ['1.2.3'] }"
     }
-    it { expect { subject.call('fail') }.to raise_error() }
+    it { expect { subject.call('fail') }.to raise_error(/wrong number of arguments/) }
   end
 
   context 'with consul' do

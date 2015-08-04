@@ -6,4 +6,4 @@
   - test
 
 :yaml:
-  :datadir: 'spec/fixtures/hiera'
+  :datadir: 'spec/hiera'

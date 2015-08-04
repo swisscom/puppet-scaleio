@@ -26,46 +26,42 @@ describe 'scaleio', :type => 'class' do
   context 'with only primary ip' do
     let(:params) {
       {
-        :primary_mdm_ip => '1.2.3.4',
-        :secondary_mdm_ip => false,
+        :mdm_ips => ['1.2.3.4', false],
       }
     }
-    it { expect { subject.call('fail') }.to raise_error() }
+    it { expect { subject.call('fail') }.to raise_error(/wrong number of arguments/) }
   end
   context 'with only secondary ip' do
     let(:params) {
       {
-        :primary_mdm_ip => false,
-        :secondary_mdm_ip => '1.2.3.4',
+        :mdm_ips => [false, '1.2.3.4'],
       }
     }
-    it { expect { subject.call('fail') }.to raise_error() }
+    it { expect { subject.call('fail') }.to raise_error(/wrong number of arguments/) }
   end
   context 'with wrong primary ip' do
     let(:params) {
       {
-        :primary_mdm_ip => '1.2.3.4a',
-        :secondary_mdm_ip => '1.2.3.4',
+        :mdm_ips => ['1.2.3.4a', '1.2.3.4'],
       }
     }
-    it { expect { subject.call('fail') }.to raise_error() }
+    it { expect { subject.call('fail') }.to raise_error(/wrong number of arguments/) }
   end
   context 'with wrong secondary ip' do
     let(:params) {
       {
-        :primary_mdm_ip => '1.2.3.4',
-        :secondary_mdm_ip => '1.2.3.4a',
+        :mdm_ips => ['1.2.3.4', '1.2.3.4a'],
       }
     }
-    it { expect { subject.call('fail') }.to raise_error() }
+    it { expect { subject.call('fail') }.to raise_error(/wrong number of arguments/) }
   end
   context 'with wrong tb ip' do
     let(:params) {
       {
-        :tb_ip => '1.2.3.4s',
+        :tb_ips => ['1.2.3.4s'],
       }
     }
-    it { expect { subject.call('fail') }.to raise_error() }
+    it { expect { subject.call('fail') }.to raise_error(/wrong number of arguments/) }
   end
   context 'with standby mdms' do
     let(:facts){

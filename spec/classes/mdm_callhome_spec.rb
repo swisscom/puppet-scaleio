@@ -60,7 +60,7 @@ describe 'scaleio::mdm::callhome', :type => 'class' do
       class{'scaleio': 
         callhome          => false, # prevent duplicate declaration
         password          => 'adminpassword',
-        primary_mdm_ip    => '1.1.2.2',
+        mdm_ips           => ['1.1.2.2', '1.2.3.4'],
       }
     "}
     let(:params){

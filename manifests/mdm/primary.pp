@@ -8,25 +8,31 @@ class scaleio::mdm::primary {
 
   $scli_wrap         = $scaleio::mdm::scli_wrap
 
-  if size($scaleio::real_mdm_ips) < 2 or size($scaleio::real_tb_ips) < 1 {
+  if size($::scaleio::mdm_ips) < 2 or size($::scaleio::tb_ips) < 1 {
     fail('For a primary mdm at least two MDMs and one tiebreaker must be configured')
   }
 
   exec{'scaleio::mdm::primary_add_primary':
-    command => "scli --add_primary_mdm --primary_mdm_ip ${scaleio::real_mdm_ips[0]} --accept_license && sleep 10",
+    command => "scli --add_primary_mdm --primary_mdm_ip ${::scaleio::mdm_ips[0]} --accept_license && sleep 10",
     unless  => "scli --query_cluster | grep -qE '^ Primary IP: (([0-9]+.?))+$'",
     require => Package::Verifiable['EMC-ScaleIO-mdm'],
     before  => Exec['scaleio::mdm::primary_add_secondary'],
   }
 
   if $scaleio::use_consul {
-    ensure_resource( 'consul_kv_blocker', "scaleio/${::scaleio::system_name}/cluster_setup/secondary", {tries => 120, try_sleep => 30})
-    Consul_kv_blocker["scaleio/${::scaleio::system_name}/cluster_setup/secondary"] ->Exec['scaleio::mdm::primary_add_primary']
-  if $scaleio::use_consul {
-    ensure_resource( 'consul_kv_blocker', "scaleio/${::scaleio::system_name}/cluster_setup/secondary", {tries => 120, try_sleep => 30})
-    Consul_kv_blocker["scaleio/${::scaleio::system_name}/cluster_setup/secondary"] ->Exec['scaleio::mdm::primary_add_primary']
-    ensure_resource( 'consul_kv_blocker', "scaleio/${::scaleio::system_name}/cluster_setup/tiebreaker", {tries => 120, try_sleep => 30})
-    Consul_kv_blocker["scaleio/${::scaleio::system_name}/cluster_setup/tiebreaker"] ->Exec['scaleio::mdm::primary_add_tb']
+    ensure_resource('consul_kv_blocker',
+      "scaleio/${::scaleio::system_name}/cluster_setup/secondary",
+      {tries => 120, try_sleep => 30}
+    )
+    Consul_kv_blocker["scaleio/${::scaleio::system_name}/cluster_setup/secondary"] ->
+      Exec['scaleio::mdm::primary_add_primary']
+
+    ensure_resource('consul_kv_blocker',
+      "scaleio/${::scaleio::system_name}/cluster_setup/tiebreaker",
+      {tries => 120, try_sleep => 30}
+    )
+    Consul_kv_blocker["scaleio/${::scaleio::system_name}/cluster_setup/tiebreaker"] ->
+      Exec['scaleio::mdm::primary_add_tb']
   }
 
   # login and pwd set dance
@@ -43,12 +49,12 @@ class scaleio::mdm::primary {
   }
 
   exec{'scaleio::mdm::primary_add_secondary':
-    command => "${scli_wrap} --add_secondary_mdm --secondary_mdm_ip ${scaleio::real_mdm_ips[1]}",
+    command => "${scli_wrap} --add_secondary_mdm --secondary_mdm_ip ${::scaleio::mdm_ips[1]}",
     unless  => "scli --query_cluster | grep -qE '^ Secondary IP: (([0-9]+.?))+$'",
     require => [File[$scli_wrap], Package::Verifiable['EMC-ScaleIO-mdm']],
   } ->
   exec{'scaleio::mdm::primary_add_tb':
-    command => "${scli_wrap} --add_tb --tb_ip ${scaleio::real_tb_ips[0]}",
+    command => "${scli_wrap} --add_tb --tb_ip ${::scaleio::tb_ips[0]}",
     unless  => "scli --query_cluster | grep -qE '^ Tie-Breaker IP: (([0-9]+.?))+$'",
   } ->
   exec{'scaleio::mdm::primary_go_into_cluster_mode':
@@ -85,9 +91,9 @@ class scaleio::mdm::primary {
   }
 
   if size($scaleio::mgmt_addresses) > 0 {
-    $mgmt_addresses = join($scaleio::mgmt_addresses, ',')
+    $mgmt_addresses = join($::scaleio::mgmt_addresses, ',')
   } else {
-    $mgmt_addresses = join($scaleio::real_mdm_ips, ',')
+    $mgmt_addresses = join($::scaleio::mdm_ips, ',')
   }
 
   exec{'scaleio::mdm::set_mgmt_addresses':
@@ -123,7 +129,8 @@ class scaleio::mdm::primary {
     consul_kv{"scaleio/${::scaleio::system_name}/cluster_setup/primary":
       value   => 'ready',
     }
-    Scaleio_volume<| tag == 'scaleio_tag_volume' |> -> Consul_kv["scaleio/${::scaleio::system_name}/cluster_setup/primary"]
+    Scaleio_volume<| tag == 'scaleio_tag_volume' |> ->
+      Consul_kv["scaleio/${::scaleio::system_name}/cluster_setup/primary"]
   }
 
   #resources {

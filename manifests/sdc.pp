@@ -5,11 +5,11 @@ class scaleio::sdc {
     version => $scaleio::version,
   }
 
-  if size($scaleio::real_mdm_ips) < 2{
+  if size($::scaleio::mdm_ips) < 2{
     fail('At least two MDM IPs must be set to configure an sdc')
   }
 
-  $mdm_ips_joined = join($scaleio::real_mdm_ips, ',')
+  $mdm_ips_joined = join($::scaleio::mdm_ips, ',')
 
   # add a new MDM, if no one is defined
   exec{'scaleio::sdc_add_mdm':
