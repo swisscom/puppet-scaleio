@@ -17,14 +17,14 @@ describe 'scaleio::mdm::primary', :type => 'class' do
 
     it { should contain_exec('scaleio::mdm::primary_add_primary').with(
       :command => 'scli --add_primary_mdm --primary_mdm_ip 1.2.3.4 --accept_license && sleep 10',
-      :unless  => "scli --query_cluster | grep -qE '^ Primary IP: (([0-9]+.?))+$'",
+      :unless  => "scli --query_cluster | grep -qE '^ Primary (MDM )?IP: (([0-9]+.?))+$'",
       :require => 'Package::Verifiable[EMC-ScaleIO-mdm]',
       :before  => 'Exec[scaleio::mdm::primary_add_secondary]',
     )}
 
     it { should contain_exec('scaleio::mdm::primary_add_secondary').with(
       :command => '/var/lib/puppet/module_data/scaleio/scli_wrap --add_secondary_mdm --secondary_mdm_ip 1.2.3.5',
-      :unless  => "scli --query_cluster | grep -qE '^ Secondary IP: (([0-9]+.?))+$'",
+      :unless  => "scli --query_cluster | grep -qE '^ Secondary (MDM )?IP: (([0-9]+.?))+$'",
       :before  => ['Exec[scaleio::mdm::primary_add_tb]'],
     )}
     it { should contain_exec('scaleio::mdm::primary_add_tb').with(

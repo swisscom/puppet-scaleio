@@ -14,7 +14,7 @@ class scaleio::mdm::primary {
 
   exec{'scaleio::mdm::primary_add_primary':
     command => "scli --add_primary_mdm --primary_mdm_ip ${::scaleio::mdm_ips[0]} --accept_license && sleep 10",
-    unless  => "scli --query_cluster | grep -qE '^ Primary IP: (([0-9]+.?))+$'",
+    unless  => "scli --query_cluster | grep -qE '^ Primary (MDM )?IP: (([0-9]+.?))+$'",
     require => Package::Verifiable['EMC-ScaleIO-mdm'],
     before  => Exec['scaleio::mdm::primary_add_secondary'],
   }
@@ -50,7 +50,7 @@ class scaleio::mdm::primary {
 
   exec{'scaleio::mdm::primary_add_secondary':
     command => "${scli_wrap} --add_secondary_mdm --secondary_mdm_ip ${::scaleio::mdm_ips[1]}",
-    unless  => "scli --query_cluster | grep -qE '^ Secondary IP: (([0-9]+.?))+$'",
+    unless  => "scli --query_cluster | grep -qE '^ Secondary (MDM )?IP: (([0-9]+.?))+$'",
     require => [File[$scli_wrap], Package::Verifiable['EMC-ScaleIO-mdm']],
   } ->
   exec{'scaleio::mdm::primary_add_tb':
