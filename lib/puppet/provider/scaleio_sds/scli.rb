@@ -28,7 +28,7 @@ Puppet::Type.type(:scaleio_sds).provide(:scaleio_sds) do
       # Get devices and pool info for each SDS
       query_sds_lines = scli("--query_sds", "--sds_name", name).split("\n")
       protection_domain = ''
-      current_path = ''
+      original_path = ''
       pool_devices = Hash.new {|h,k| h[k] = [] }
 
       # First pull out the device path, then the pool it is assigned to
@@ -36,10 +36,10 @@ Puppet::Type.type(:scaleio_sds).provide(:scaleio_sds) do
         if line =~/Protection Domain/
           protection_domain = line.match(/Name: (.*)/)[1].strip
         elsif line =~/Path/
-          current_path = line.match(/Path: (.*)  Original/m)[1].strip
+          original_path = line.match(/Original-path: (.*)  /m)[1].strip
         elsif line =~/Storage Pool/
-          pool = line.match(/Storage Pool: (.*),/m)[1].strip 
-          pool_devices[pool].push current_path
+          pool = line.match(/Storage Pool: (.*?),/m)[1].strip 
+          pool_devices[pool].push original_path
         end
       end
 
