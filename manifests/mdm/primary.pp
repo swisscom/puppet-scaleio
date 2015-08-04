@@ -115,6 +115,14 @@ class scaleio::mdm::primary {
   Scaleio_sds<| tag == 'scaleio_tag_sds' |> -> Scaleio_sdc_name<| tag == 'scaleio_tag_sdc_name' |>
   Scaleio_sdc_name<| tag == 'scaleio_tag_sdc_name' |> -> Scaleio_volume<| tag == 'scaleio_tag_volume' |>
 
+  # Set value when all volumes have been created
+  if $scaleio::use_consul {
+    consul_kv{"scaleio/${::scaleio::system_name}/cluster_setup/primary":
+      value   => 'ready',
+      require => Scaleio_volume<| tag == 'scaleio_tag_volume' |>,
+    }
+  }
+
   #resources {
   #  'scaleio_protection_domain':
   #    require => Exec['scaleio::mdm::primary_add_secondary'],
