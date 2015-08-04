@@ -22,6 +22,9 @@ class scaleio::mdm::primary {
   if $scaleio::use_consul {
     ensure_resource( 'consul_kv_blocker', "scaleio/${::scaleio::system_name}/cluster_setup/secondary", {tries => 120, try_sleep => 30})
     Consul_kv_blocker["scaleio/${::scaleio::system_name}/cluster_setup/secondary"] ->Exec['scaleio::mdm::primary_add_primary']
+  if $scaleio::use_consul {
+    ensure_resource( 'consul_kv_blocker', "scaleio/${::scaleio::system_name}/cluster_setup/secondary", {tries => 120, try_sleep => 30})
+    Consul_kv_blocker["scaleio/${::scaleio::system_name}/cluster_setup/secondary"] ->Exec['scaleio::mdm::primary_add_primary']
     ensure_resource( 'consul_kv_blocker', "scaleio/${::scaleio::system_name}/cluster_setup/tiebreaker", {tries => 120, try_sleep => 30})
     Consul_kv_blocker["scaleio/${::scaleio::system_name}/cluster_setup/tiebreaker"] ->Exec['scaleio::mdm::primary_add_tb']
   }
@@ -119,8 +122,8 @@ class scaleio::mdm::primary {
   if $scaleio::use_consul {
     consul_kv{"scaleio/${::scaleio::system_name}/cluster_setup/primary":
       value   => 'ready',
-      require => Scaleio_volume<| tag == 'scaleio_tag_volume' |>,
     }
+    Scaleio_volume<| tag == 'scaleio_tag_volume' |> -> Consul_kv["scaleio/${::scaleio::system_name}/cluster_setup/primary"]
   }
 
   #resources {
