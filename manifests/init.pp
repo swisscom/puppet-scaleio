@@ -103,7 +103,7 @@ class scaleio(
     $current_mdm_ip = intersection($mdm_ips, $interfaces_addresses)
   }
 
-  if $tb_ips {
+  if $tb_ips and $tb_ips[0] {
     validate_re($tb_ips[0], '^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){3}$')
   
     # check whether one of the local IPs matches with one of the defined tb IPs
