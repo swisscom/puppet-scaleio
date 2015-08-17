@@ -37,6 +37,11 @@ describe 'scaleio::mdm::primary', :type => 'class' do
       :command => '/var/lib/puppet/module_data/scaleio/scli_wrap --switch_to_cluster_mode',
       :unless => "scli --query_cluster | grep -qE '^ Mode: Cluster, Cluster State: '"
     )}
+
+    it { should contain_exec('scaleio::mdm::manage_sdc_access_restriction').with(
+      :command => '/var/lib/puppet/module_data/scaleio/scli_wrap --set_restricted_sdc_mode --restricted_sdc_mode enabled',
+      :onlyif => "/var/lib/puppet/module_data/scaleio/scli_wrap --query_all |grep -q 'MDM restricted SDC mode: disabled'"
+    )}
   end
   context 'with a name' do
     let(:pre_condition){
@@ -176,6 +181,15 @@ describe 'scaleio::mdm::primary', :type => 'class' do
       :role      => 'Monitor',
       :password  => 'Monitor1',
       :require   => ['Exec[scaleio::mdm::primary_add_secondary]', 'File[/var/lib/puppet/module_data/scaleio/add_scaleio_user]']
+    )}
+  end
+  context 'SDC restricted mode disabled' do
+    let(:pre_condition){
+      "class{'scaleio': restricted_sdc_mode => false }"
+    }
+    it { should contain_exec('scaleio::mdm::manage_sdc_access_restriction').with(
+      :command => '/var/lib/puppet/module_data/scaleio/scli_wrap --set_restricted_sdc_mode --restricted_sdc_mode disabled',
+      :onlyif => "/var/lib/puppet/module_data/scaleio/scli_wrap --query_all |grep -q 'MDM restricted SDC mode: enabled'"
     )}
   end
 end

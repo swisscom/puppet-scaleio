@@ -54,6 +54,7 @@
 #    - to wait for secondary mdm being ready for setup
 #    - to wait for tiebreak being ready for setup
 #    - to wait for SDSs being ready for adding to cluster
+# * restricted_sdc_mode: use restricted SDC mode (true/false)
 #
 class scaleio(
   $version                  = 'installed',
@@ -78,6 +79,7 @@ class scaleio(
   $components               = [],
   $lvm                      = false,
   $use_consul               = false,
+  $restricted_sdc_mode      = true,
 ) {
 
   ensure_packages(['numactl','python'])

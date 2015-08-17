@@ -48,6 +48,7 @@ class scaleio::mdm::primary {
     }
   }
 
+  # Setup SIO cluster
   exec{'scaleio::mdm::primary_add_secondary':
     command => "${scli_wrap} --add_secondary_mdm --secondary_mdm_ip ${::scaleio::mdm_ips[1]}",
     unless  => "scli --query_cluster | grep -qE '^ Secondary (MDM )?IP: (([0-9]+.?))+$'",
@@ -62,6 +63,7 @@ class scaleio::mdm::primary {
     unless  => 'scli --query_cluster | grep -qE \'^ Mode: Cluster, Cluster State: \'',
   }
 
+  # Set SIO system name
   if $scaleio::system_name {
     validate_re($scaleio::system_name, '^[a-z0-9-]+$')
     exec{'scaleio::mdm::primary_rename_system':
@@ -71,6 +73,7 @@ class scaleio::mdm::primary {
     }
   }
 
+  # Setup Syslog
   if $scaleio::syslog_ip_port {
     validate_re($scaleio::syslog_ip_port, '^[\w\-\.]+:[0-9]+$')
     $splitted_ip_port = split($scaleio::syslog_ip_port,':')
@@ -88,6 +91,19 @@ class scaleio::mdm::primary {
         require => Exec['scaleio::mdm::primary_add_secondary']
       }
     }
+  }
+
+  # Manage SDC access restriction
+  if $scaleio::version !~ /^1.30-/ and $::scaleio::restricted_sdc_mode {
+    $real_restricted_sdc_mode = 'enabled'
+    $cur_restricted_sdc_mode = 'disabled'
+  } else {
+    $real_restricted_sdc_mode = 'disabled'
+    $cur_restricted_sdc_mode = 'enabled'
+  }
+  exec{'scaleio::mdm::manage_sdc_access_restriction':
+    command => "${scli_wrap} --set_restricted_sdc_mode --restricted_sdc_mode ${real_restricted_sdc_mode}",
+    onlyif  => "${scli_wrap} --query_all |grep -q 'MDM restricted SDC mode: ${cur_restricted_sdc_mode}'",
   }
 
   if size($scaleio::mgmt_addresses) > 0 {
@@ -116,7 +132,7 @@ class scaleio::mdm::primary {
   create_resources('scaleio_protection_domain', $scaleio::protection_domains, {ensure => present, require => Exec['scaleio::mdm::primary_add_secondary']})
   create_resources('scaleio_storage_pool',      $scaleio::storage_pools,      {ensure => present, require => Exec['scaleio::mdm::primary_add_secondary']})
   create_resources('scaleio_sds',               $scaleio::sds,                {ensure => present, require => Exec['scaleio::mdm::primary_add_secondary'], tag => 'scaleio_tag_sds', useconsul => $scaleio::use_consul})
-  create_resources('scaleio_sdc_name',          $scaleio::sdc_names,          {ensure => present, require => Exec['scaleio::mdm::primary_add_secondary'], tag => 'scaleio_tag_sdc_name'})
+  create_resources('scaleio_sdc_name',          $scaleio::sdc_names,          {ensure => present, require => Exec['scaleio::mdm::primary_add_secondary'], tag => 'scaleio_tag_sdc_name', restricted_sdc_mode => $real_restricted_sdc_mode})
   create_resources('scaleio_volume',            $scaleio::volumes,            {ensure => present, require => Exec['scaleio::mdm::primary_add_secondary'], tag => 'scaleio_tag_volume'})
 
   # Make sure that the sdc are renamed before trying to map the volumes to those names

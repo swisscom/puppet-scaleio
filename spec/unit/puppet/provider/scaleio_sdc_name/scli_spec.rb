@@ -66,6 +66,7 @@ describe provider_class do
 
   describe 'create' do
     it 'creates a sdc_name' do
+      provider.expects(:scli).with('--add_sdc', '--sdc_ip', '172.17.121.10', '--sdc_name', 'mySDC').returns([])
       provider.create
     end
   end

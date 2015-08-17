@@ -21,6 +21,16 @@ Puppet::Type.newtype(:scaleio_sdc_name) do
     end
   end
 
+  newproperty(:restricted_sdc_mode) do
+    desc "Is SDC restricted mode 'enabled' or 'disabled'?"
+
+    validate do |value|
+      fail("#{value} is not a valid value for SDC restriction mode.") unless value =~ /^(enabled|disabled)$/
+    end
+
+    defaultto 'enabled'
+  end
+
   # helper method, pass required parameters
   def validate_required(*required_parameters)
     if self[:ensure] == :present
