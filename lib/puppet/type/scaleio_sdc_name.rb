@@ -21,7 +21,7 @@ Puppet::Type.newtype(:scaleio_sdc_name) do
     end
   end
 
-  newproperty(:restricted_sdc_mode) do
+  newparam(:restricted_sdc_mode) do
     desc "Is SDC restricted mode 'enabled' or 'disabled'?"
 
     validate do |value|
