@@ -16,6 +16,7 @@ Puppet::Type.type(:scaleio_sdc_name).provide(:scaleio_sdc_name) do
     # Iterate through each SDS block
     query_all_sdc_lines.each do |line|
       next if line !~/SDC ID/
+      next if line =~/Approved: no/
 
       # Get information about the SDC
       name = line.match(/Name:(.*)IP/m)[1].strip
