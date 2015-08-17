@@ -85,7 +85,7 @@ describe 'scaleio::mdm', :type => 'class' do
     }
     it { should contain_exec('scaleio::mdm::setup_failover').with(
       :command => "/opt/emc/scaleio/mdm_failover/bin/delete_service.sh ; ps -ef |grep '[m]dm_failover.py' |awk '{print \$2}' |xargs -r kill ; /opt/emc/scaleio/mdm_failover/bin/mdm_failover_post_install.py --mdms_list='[1.2.3.4]+[1.2.3.5]+[1.2.3.6]' --tbs_list='[1.2.3.7]+[1.2.3.8]' --username=admin --password='admin'",
-      :unless  => "fgrep \"mdms': '[1.2.3.4]+[1.2.3.5]+[1.2.3.6]'\" /opt/emc/scaleio/mdm_failover/cfg/conf.txt |fgrep \"tbs': '[1.2.3.7]+[1.2.3.8]'\" |fgrep 'admin'",
+      :unless  => "fgrep \"mdms': '[1.2.3.4]+[1.2.3.5]+[1.2.3.6]'\" /opt/emc/scaleio/mdm_failover/cfg/conf.txt |fgrep \"tbs': '[1.2.3.7]+[1.2.3.8]'\" |fgrep $(echo 'admin' |base64 |awk '{ $1 = substr($1, 1, 25) } 1')",
       :require => 'Package::Verifiable[EMC-ScaleIO-mdm]',
       :returns => [ 0, '', ' ']
       )}
