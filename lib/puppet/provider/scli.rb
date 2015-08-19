@@ -79,5 +79,6 @@ module Puppet::Provider::Scli
   def self.included(base)
     base.extend(ClassMethods)
     base.commands :scli_wrap => '/var/lib/puppet/module_data/scaleio/scli_wrap'
+    base.commands :scli_basic => '/usr/bin/scli'
   end
 end
