@@ -74,6 +74,13 @@ describe provider_class do
     end
   end
 
+  describe 'change_password=' do
+    it 'updates a password' do
+      provider.expects(:update_scaleio_password).with('api', 'myPW').returns([])
+      provider.change_password=(true)
+    end
+  end
+
   describe 'destroy' do
     it 'destroys a user' do
       provider.expects(:scli).with('--delete_user', '--username', 'api').returns([])

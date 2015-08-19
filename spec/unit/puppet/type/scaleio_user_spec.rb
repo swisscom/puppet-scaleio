@@ -10,14 +10,16 @@ describe Puppet::Type.type(:scaleio_user) do
 
   it 'should accept valid parameters' do
     @PDO = Puppet::Type.type(:scaleio_user).new({
-        :ensure       => :present,
-        :name         => 'api',
-        :password     => 'myPW',
-        :role         => 'Monitor',
+        :ensure          => :present,
+        :name            => 'api',
+        :password        => 'myPW',
+        :change_password => false,
+        :role            => 'Monitor',
       })
     expect(@PDO[:name]).to eq('api')
     expect(@PDO[:password]).to eq('myPW')
     expect(@PDO[:role]).to eq('Monitor')
+    expect(@PDO[:change_password]).to eq(false)
   end
 
   it 'should not accept name with whitespaces' do

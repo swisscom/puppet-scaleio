@@ -19,6 +19,18 @@ describe 'scaleio::mdm', :type => 'class' do
     it { should_not contain_class('sudo::rule') }
     it { should contain_class('scaleio::mdm::callhome') }
     it { should_not contain_consul_kv('scaleio/sysname/cluster_setup/secondary')}
+
+    it { should contain_file('/var/lib/puppet/module_data/scaleio/add_scaleio_user').with(
+      :owner   => 'root',
+      :group   => 0,
+      :mode    => '0700',
+    )}
+
+    it { should contain_file('/var/lib/puppet/module_data/scaleio/update_scaleio_password').with(
+      :owner   => 'root',
+      :group   => 0,
+      :mode    => '0700',
+    )}
   end
   context 'on the primary' do
     let(:facts){

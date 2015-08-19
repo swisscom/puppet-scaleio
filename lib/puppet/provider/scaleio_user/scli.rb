@@ -8,6 +8,8 @@ Puppet::Type.type(:scaleio_user).provide(:scaleio_user) do
 
   commands :add_scaleio_user => '/var/lib/puppet/module_data/scaleio/add_scaleio_user'
 
+  commands :update_scaleio_password => '/var/lib/puppet/module_data/scaleio/update_scaleio_password'
+
   mk_resource_methods
   
   def self.instances
@@ -19,23 +21,28 @@ Puppet::Type.type(:scaleio_user).provide(:scaleio_user) do
     lines = query_all.split("\n")
    
     # Iterate through the users
-    userBlockStarted = false
+    user_block_started = false
     lines.each do |line|
-      if userBlockStarted
-         userInfo = line.match(/^([\w]+)\s+([\w]+)\s+([\w]+)\s+([\w]+)\s*/)  #ID, role, need new pw, user name
+      if user_block_started
+         user_info = line.match(/^([\w]+)\s+([\w]+)\s+([\w]+)\s+([\w]+)\s*/)  #ID, role, need new pw, user name
+         username = user_info[4].strip
+         role = user_info[2].strip
+
+        Puppet.debug(username)
 
         # Create user instances hash
         new user = { 
-            :name     => userInfo[4].strip,
-            :role     => userInfo[2].strip,
-            :ensure   => :present,
+            :name           => username,
+            :role           => role,
+            :need_pw_change => false,
+            :ensure         => :present,
         }
         users << new(user)
       end
 
       # users are listed below the line containing '-------------'
       if line =~/^----------------/
-        userBlockStarted = true
+        user_block_started = true
       end
     end
 
@@ -50,8 +57,19 @@ Puppet::Type.type(:scaleio_user).provide(:scaleio_user) do
     resources.keys.each do |name|
       if provider = users.find{ |user| user.name == name }
         resources[name].provider = provider
+        resources[name]['change_password'] = need_pw_change?(name, resources[name]['password'])
       end
     end
+  end
+
+  def self.need_pw_change?(username, password)
+    Puppet.debug(username + " PW: " + password)
+    begin
+      scli_basic("--login", "--username", username, "--password", password) 
+    rescue Puppet::ExecutionFailure => e
+      return e.inspect =~ /Permission denied/
+    end
+    return false
   end
 
   
@@ -59,6 +77,12 @@ Puppet::Type.type(:scaleio_user).provide(:scaleio_user) do
     Puppet.debug("Creating ScaleIO user #{resource[:name]}")
     add_scaleio_user(resource[:name], resource[:role], resource[:password])
     @property_hash[:ensure] = :present
+  end
+
+
+  def change_password=(need_pw_change)
+    Puppet.debug("Changing password for ScaleIO user #{resource[:name]}")
+    update_scaleio_password(resource[:name], resource[:password])
   end
 
 

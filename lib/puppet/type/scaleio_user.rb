@@ -27,6 +27,11 @@ Puppet::Type.newtype(:scaleio_user) do
       fail("#{value} is not a valid role (must be one of Monitor, Configure, Administrator).") unless value =~ /^(Monitor|Configure|Administrator)$/
     end
   end
+
+  newproperty(:change_password) do
+    desc "true if the password needs to be reset"
+    defaultto false
+  end
  
   # helper method, pass required parameters
   def validate_required(*required_parameters)
@@ -36,4 +41,5 @@ Puppet::Type.newtype(:scaleio_user) do
       end
     end
   end
-end    
+end  
+

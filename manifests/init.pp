@@ -55,6 +55,7 @@
 #    - to wait for tiebreak being ready for setup
 #    - to wait for SDSs being ready for adding to cluster
 # * restricted_sdc_mode: use restricted SDC mode (true/false)
+# * ramcache_size: ram cache size in MB
 #
 class scaleio(
   $version                  = 'installed',
@@ -80,6 +81,7 @@ class scaleio(
   $lvm                      = false,
   $use_consul               = false,
   $restricted_sdc_mode      = true,
+  $ramcache_size            = 128,
 ) {
 
   ensure_packages(['numactl','python'])

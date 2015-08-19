@@ -1,7 +1,8 @@
 # manage a mdm
 class scaleio::mdm {
-  $scli_wrap         = '/var/lib/puppet/module_data/scaleio/scli_wrap'
-  $add_scaleio_user  = '/var/lib/puppet/module_data/scaleio/add_scaleio_user'
+  $scli_wrap               = '/var/lib/puppet/module_data/scaleio/scli_wrap'
+  $add_scaleio_user        = '/var/lib/puppet/module_data/scaleio/add_scaleio_user'
+  $update_scaleio_password = '/var/lib/puppet/module_data/scaleio/update_scaleio_password'
 
   include ::scaleio
 
@@ -36,6 +37,12 @@ class scaleio::mdm {
   file{
     $add_scaleio_user:
       content => template('scaleio/add_scaleio_user.erb'),
+      owner   => root,
+      group   => 0,
+      mode    => '0700',
+      require => Package::Verifiable['EMC-ScaleIO-mdm'];
+    $update_scaleio_password:
+      content => template('scaleio/update_scaleio_password.erb'),
       owner   => root,
       group   => 0,
       mode    => '0700',
