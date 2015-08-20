@@ -15,6 +15,7 @@ describe Puppet::Type.type(:scaleio_sds) do
         :ips               => ['172.17.121.10'],
         :pool_devices      => {'myPool' => ['/dev/sda', '/dev/sdb']},
         :port              => 2342,
+        :ramcache_size     => -1,
         :useconsul         => true,
         :ensure            => :present,
       })
@@ -108,5 +109,19 @@ describe Puppet::Type.type(:scaleio_sds) do
         :ensure            => :present,
         })
     }.to raise_error Puppet::ResourceError, /not a valid value for SDS port/
+  end
+
+  it 'deny a non-digit RAM cache size' do
+    expect {
+      Puppet::Type.type(:scaleio_sds).new({
+        :name              => 'mySDS',
+        :protection_domain => 'myPDomain',
+        :ips               => ['172.17.121.10'],
+        :pool_devices      => {'myPool' => ['/dev/sda', '/dev/sdb']},
+        :port              => 99,
+        :ensure            => :present,
+        :ramcache_size     => 'ads',
+        })
+    }.to raise_error Puppet::ResourceError, /is not a valid RAM cache size/
   end
 end

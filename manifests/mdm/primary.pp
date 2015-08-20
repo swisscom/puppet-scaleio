@@ -22,14 +22,14 @@ class scaleio::mdm::primary {
   if $scaleio::use_consul {
     ensure_resource('consul_kv_blocker',
       "scaleio/${::scaleio::system_name}/cluster_setup/secondary",
-      {tries => 120, try_sleep => 30}
+      {tries => 120, try_sleep => 30, require => Service['consul']}
     )
     Consul_kv_blocker["scaleio/${::scaleio::system_name}/cluster_setup/secondary"] ->
       Exec['scaleio::mdm::primary_add_primary']
 
     ensure_resource('consul_kv_blocker',
       "scaleio/${::scaleio::system_name}/cluster_setup/tiebreaker",
-      {tries => 120, try_sleep => 30}
+      {tries => 120, try_sleep => 30, require => Service['consul']}
     )
     Consul_kv_blocker["scaleio/${::scaleio::system_name}/cluster_setup/tiebreaker"] ->
       Exec['scaleio::mdm::primary_add_tb']
@@ -131,7 +131,7 @@ class scaleio::mdm::primary {
   create_resources('scaleio_user',              $scaleio::users,              {ensure => present, require => [Exec['scaleio::mdm::primary_add_secondary'], File[$scaleio::mdm::add_scaleio_user]]})
   create_resources('scaleio_protection_domain', $scaleio::protection_domains, {ensure => present, require => Exec['scaleio::mdm::primary_add_secondary']})
   create_resources('scaleio_storage_pool',      $scaleio::storage_pools,      {ensure => present, require => Exec['scaleio::mdm::primary_add_secondary']})
-  create_resources('scaleio_sds',               $scaleio::sds,                {ensure => present, require => Exec['scaleio::mdm::primary_add_secondary'], tag => 'scaleio_tag_sds', useconsul => $scaleio::use_consul})
+  create_resources('scaleio_sds',               $scaleio::sds,                {ensure => present, require => Exec['scaleio::mdm::primary_add_secondary'], tag => 'scaleio_tag_sds', useconsul => $scaleio::use_consul, ramcache_size => $scaleio::ramcache_size})
   create_resources('scaleio_sdc_name',          $scaleio::sdc_names,          {ensure => present, require => [Exec['scaleio::mdm::primary_add_secondary'], Exec['scaleio::mdm::manage_sdc_access_restriction']], tag => 'scaleio_tag_sdc_name', restricted_sdc_mode => $real_restricted_sdc_mode})
   create_resources('scaleio_volume',            $scaleio::volumes,            {ensure => present, require => Exec['scaleio::mdm::primary_add_secondary'], tag => 'scaleio_tag_volume'})
 

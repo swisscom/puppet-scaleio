@@ -29,6 +29,7 @@ Puppet::Type.type(:scaleio_sds).provide(:scaleio_sds) do
       query_sds_lines = scli("--query_sds", "--sds_name", name).split("\n")
       protection_domain = ''
       original_path = ''
+      ramcache_size = ''
       pool_devices = Hash.new {|h,k| h[k] = [] }
 
       # First pull out the device path, then the pool it is assigned to
@@ -40,6 +41,10 @@ Puppet::Type.type(:scaleio_sds).provide(:scaleio_sds) do
         elsif line =~/Storage Pool/
           pool = line.match(/Storage Pool: (.*?),/m)[1].strip 
           pool_devices[pool].push original_path
+        elsif line =~ /Cache is disabled/
+          ramcache_size = -1
+        elsif line =~ /total size$/
+          ramcache_size = line.match(/([0-9]+)(\.[0-9]+)? MB/)[1].strip
         end
       end
 
@@ -51,6 +56,7 @@ Puppet::Type.type(:scaleio_sds).provide(:scaleio_sds) do
         :ips => ips,
         :port => port,
         :pool_devices => pool_devices,
+        :ramcache_size => ramcache_size,
       }
       sds_instances << new(sds_instance)
     end
@@ -99,6 +105,7 @@ Puppet::Type.type(:scaleio_sds).provide(:scaleio_sds) do
           create_sds << "--storage_pool_name" << "#{storage_pool}"
           create_sds << "--sds_port" << "#{@resource[:port]}" if @resource[:port]
           scli(*create_sds)
+          self.ramcache_size = @resource[:ramcache_size]
           first_add = false
         else
           scli("--add_sds_device", "--sds_name", @resource[:name], "--device_path", device, "--storage_pool_name", storage_pool)
@@ -116,6 +123,17 @@ Puppet::Type.type(:scaleio_sds).provide(:scaleio_sds) do
   
   def protection_domain=(value)
     fail("Changing the protection domain of a ScaleIO SDS is not supported")
+  end
+
+  def ramcache_size=(value)
+    if(value >= 0)
+      Puppet.debug("Setting SDS RAM cache size to #{value} MB")
+      scli("--enable_sds_rmcache", "--sds_name", @resource[:name], "--i_am_sure")
+      scli("--set_sds_rmcache_size", "--sds_name", @resource[:name], "--rmcache_size_mb", value, "--i_am_sure")
+    else
+      Puppet.debug("Disabling SDS RAM")
+      scli("--disable_sds_rmcache", "--sds_name", @resource[:name], "--i_am_sure")
+    end
   end
 
   def ips=(value)

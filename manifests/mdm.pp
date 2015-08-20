@@ -57,7 +57,7 @@ class scaleio::mdm {
   }elsif ($scaleio::use_consul and has_ip_address($::scaleio::mdm_ips[1])) {
       consul_kv{"scaleio/${::scaleio::system_name}/cluster_setup/secondary":
         value   => 'ready',
-        require => Package::Verifiable['EMC-ScaleIO-mdm']
+        require => [Service['consul'], Package::Verifiable['EMC-ScaleIO-mdm']]
       }
   }
 

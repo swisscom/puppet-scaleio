@@ -31,7 +31,7 @@ describe 'scaleio::tb', :type => 'class' do
     }
     it { should contain_consul_kv('scaleio/sysname/cluster_setup/tiebreaker').with(
         :value   => 'ready',
-        :require => 'Package::Verifiable[EMC-ScaleIO-tb]'
+        :require => ['Service[consul]', 'Package::Verifiable[EMC-ScaleIO-tb]']
       )}
   end
 end

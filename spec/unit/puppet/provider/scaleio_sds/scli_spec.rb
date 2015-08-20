@@ -24,6 +24,7 @@ describe provider_class do
       :ips               => ['172.17.121.10'],
       :port              => 3454,
       :useconsul         => false,
+      :ramcache_size     => 1024,
       :pool_devices      => {'myPool' => ['/dev/sda', '/dev/sdb']},
       :provider          => described_class.name,
     })
@@ -41,6 +42,7 @@ describe provider_class do
       @name              = 'myNewSDS'
       @protection_domain = 'myPDomain'
       @useconsul         = false
+      @ramcache_size     = 1024
       @ips               = ['172.17.121.11']
       @pool_devices      = {'myPool' => ['/dev/sda', '/dev/sdb']},
       # A catch all; no parameters set
@@ -48,6 +50,7 @@ describe provider_class do
       # But set name, ensure
       @resource.stubs(:[]).with(:name).returns @name
       @resource.stubs(:[]).with(:useconsul).returns @useconsul
+      @resource.stubs(:[]).with(:ramcache_size).returns @ramcache_size
       @resource.stubs(:[]).with(:protection_domain).returns @protection_domain
       @resource.stubs(:[]).with(:ips).returns @ips
       @resource.stubs(:[]).with(:pool_devices).returns @pool_devices
@@ -92,6 +95,8 @@ describe provider_class do
       expect(instances[0].ips).to match_array(['192.168.56.111'])
       expect(instances[0].port).to match(/^7072$/)
       expect(instances[0].pool_devices).to eql({'myPool' => ['/tmp/ac', '/tmp/aa']})
+      expect(instances[0].ramcache_size).to match(-1)
+      expect(instances[1].ramcache_size).to match(/^128$/)
     end
   end
 
@@ -99,6 +104,8 @@ describe provider_class do
     it 'creates a sds' do
       provider.expects(:scli).with('--add_sds', '--sds_name', 'mySDS', '--protection_domain_name', 'myPDomain', '--device_path', '/dev/sda', '--sds_ip', '172.17.121.10', '--storage_pool_name', 'myPool', '--sds_port', '3454').returns([])
       provider.expects(:scli).with('--add_sds_device', '--sds_name', 'mySDS', '--device_path', '/dev/sdb', '--storage_pool_name', 'myPool').returns([])
+      provider.expects(:scli).with('--enable_sds_rmcache', '--sds_name', 'mySDS', '--i_am_sure').returns([])
+      provider.expects(:scli).with('--set_sds_rmcache_size', '--sds_name', 'mySDS', '--rmcache_size_mb', 1024, '--i_am_sure').returns([])
       provider.create
     end    
   end
@@ -119,6 +126,8 @@ describe provider_class do
       provider.expects(:consul_delete_key).returns()
       provider.expects(:scli).with('--add_sds', '--sds_name', 'mySDS', '--protection_domain_name', 'myPDomain', '--device_path', '/dev/sda', '--sds_ip', '172.17.121.10', '--storage_pool_name', 'myPool', '--sds_port', '3454').returns([])
       provider.expects(:scli).with('--add_sds_device', '--sds_name', 'mySDS', '--device_path', '/dev/sdb', '--storage_pool_name', 'myPool').returns([])
+      provider.expects(:scli).with('--enable_sds_rmcache', '--sds_name', 'mySDS', '--i_am_sure').returns([])
+      provider.expects(:scli).with('--set_sds_rmcache_size', '--sds_name', 'mySDS', '--rmcache_size_mb', 1024, '--i_am_sure').returns([])
       provider.create
     end
 
@@ -143,6 +152,18 @@ describe provider_class do
     it 'updates the port' do
       provider.expects(:scli).with('--modify_sds_port', '--sds_name', 'mySDS', '--new_sds_port', 453).returns([])
       provider.port = 453
+    end
+  end
+
+  describe 'managing RAM cache' do
+    it 'enables the RAM cache and sets the correct size' do
+      provider.expects(:scli).with('--enable_sds_rmcache', '--sds_name', 'mySDS', '--i_am_sure').returns([])
+      provider.expects(:scli).with('--set_sds_rmcache_size', '--sds_name', 'mySDS', '--rmcache_size_mb', 453, '--i_am_sure').returns([])
+      provider.ramcache_size = 453
+    end
+    it 'disabled the RAM cache' do
+      provider.expects(:scli).with('--disable_sds_rmcache', '--sds_name', 'mySDS', '--i_am_sure').returns([])
+      provider.ramcache_size = -1
     end
   end
 

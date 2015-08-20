@@ -39,6 +39,15 @@ Puppet::Type.newtype(:scaleio_sds) do
     defaultto false
   end
 
+  newproperty(:ramcache_size) do
+    desc "RAM cache size of the SDS in MB (-1 to disable RAM cache)"
+
+    defaultto 128
+    validate do |value|
+      fail("#{value} is not a valid RAM cache size.") unless value.is_a? Integer
+    end
+  end
+
   newproperty(:pool_devices) do
     desc "Pools and the devices of the SDS"
     validate do |value|
