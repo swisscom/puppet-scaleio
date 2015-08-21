@@ -118,3 +118,4 @@ This module supports the RedHat/CentOS version of ScaleIO in physical and/or VMw
 ## Puppet Supported Versions
 
 This module requires a minimum version of Puppet 3.7.0 or Puppet Enterprise 3.2.0.
+
