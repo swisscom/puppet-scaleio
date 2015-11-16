@@ -7,6 +7,7 @@ class scaleio::mdm::callhome(
   $mail_server_address = 'localhost',
   $customer_name       = $::domain,
   $to_mail             = 'root@localhost',
+  $to_mail_emc          = '',
 ) {
 
   include ::scaleio::mdm
