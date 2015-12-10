@@ -1,6 +1,7 @@
 # manage a mdm
 class scaleio::mdm {
   $scli_wrap               = '/var/lib/puppet/module_data/scaleio/scli_wrap'
+  $scli_wrap_monitoring    = '/var/lib/puppet/module_data/scaleio/scli_wrap_monitoring'
   $add_scaleio_user        = '/var/lib/puppet/module_data/scaleio/add_scaleio_user'
   $update_scaleio_password = '/var/lib/puppet/module_data/scaleio/update_scaleio_password'
 
@@ -25,7 +26,7 @@ class scaleio::mdm {
 
   if $scaleio::external_monitoring_user {
     file{
-      '/var/lib/puppet/module_data/scaleio/scli_wrap_monitoring':
+      $scli_wrap_monitoring:
         content => template('scaleio/scli_wrap_monitoring.erb'),
         owner   => root,
         group   => 0,
