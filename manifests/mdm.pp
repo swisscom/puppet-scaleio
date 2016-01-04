@@ -22,7 +22,17 @@ class scaleio::mdm {
       group   => 0,
       mode    => '0700',
       require => Package::Verifiable['EMC-ScaleIO-mdm'];
+    '/etc/bash_completion.d/scli_wrap':
+      content => 'complete -o bashdefault -o default -o nospace -F _scli scli_wrap',
+      owner   => root,
+      group   => 0,
+      mode    => '0644',
+      require => Package::Verifiable['EMC-ScaleIO-mdm'];
+    '/usr/bin/scli_wrap':
+      ensure => 'link',
+      target => $scli_wrap;
   }
+
 
   if $scaleio::external_monitoring_user {
     file{

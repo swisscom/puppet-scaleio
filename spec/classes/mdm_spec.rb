@@ -12,7 +12,7 @@ describe 'scaleio::mdm', :type => 'class' do
   let(:pre_condition){"Exec{ path => '/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin' }"}
 
   describe 'with standard' do
-#    it { should compile.with_all_deps }
+    it { should compile.with_all_deps }
     it { should contain_class('scaleio') }
     it { should contain_package__verifiable('EMC-ScaleIO-mdm').with_version('installed') }
     it { should_not contain_class('scaleio::mdm::primary') }
@@ -31,6 +31,18 @@ describe 'scaleio::mdm', :type => 'class' do
       :group   => 0,
       :mode    => '0700',
     )}
+
+    it { should contain_file('/etc/bash_completion.d/scli_wrap').with(
+      :content => 'complete -o bashdefault -o default -o nospace -F _scli scli_wrap',
+      :owner   => 'root',
+      :group   => 0,
+      :mode    => '0644',
+      :require => 'Package::Verifiable[EMC-ScaleIO-mdm]',
+		)}
+    it { should contain_file('/usr/bin/scli_wrap').with(
+      :ensure => 'link',
+      :target => '/var/lib/puppet/module_data/scaleio/scli_wrap',
+		)}
   end
   context 'on the primary' do
     let(:facts){
