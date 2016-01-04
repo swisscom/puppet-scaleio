@@ -2,22 +2,26 @@
 
 echoerr() { echo "$@" 1>&2; }
 
-# login
-login_out=$(scli --login --username monitoring --password <%= scope['scaleio::monitoring_passwd'] %> 2>&1)
-if [ $? -gt 0 ]; then
-  echoerr "Error while logging in:\n${login_out}"
-  exit 129
-fi
+(
+  flock -w 10 205 || exit 1
 
-# run cmd
-scli "$@"
-ec=$?
+  # login
+  login_out=$(scli --login --username monitoring --password <%= scope['scaleio::monitoring_passwd'] %> 2>&1)
+  if [ $? -gt 0 ]; then
+    echoerr "Error while logging in:\n${login_out}"
+    exit 129
+  fi
 
-# logout
-logout_out=$(scli --logout 2>&1)
-if [ $? -gt 0 ]; then
-  echoerr "Error while logging out:\n${logout_out}"
-  exit 129
-fi
-exit $ec
+  # run cmd
+  scli "$@"
+  ec=$?
 
+  # logout
+  logout_out=$(scli --logout 2>&1)
+  if [ $? -gt 0 ]; then
+    echoerr "Error while logging out:\n${logout_out}"
+    exit 129
+  fi
+  exit $ec
+
+) 205>/var/lock/scli_wrap.lock
