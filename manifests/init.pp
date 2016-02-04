@@ -125,7 +125,7 @@ class scaleio(
   if 'tb' in $components or (size($current_tb_ip) >= 1 and has_ip_address($current_tb_ip[0])) {
     include scaleio::tb
   }
-  if 'sds' in $components {
+  if 'lia' in $components {
     include scaleio::lia
   }
 }
