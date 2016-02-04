@@ -15,6 +15,7 @@ class scaleio::tb {
   package::verifiable{'EMC-ScaleIO-tb':
     version        => $scaleio::version,
     manage_package => !$package_emc_scaleio_tb_version,
+    tag            => 'scaleio-install',
   }
 
   if $scaleio::use_consul and has_ip_address($::scaleio::tb_ips[0]) {

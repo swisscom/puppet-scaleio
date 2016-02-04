@@ -23,6 +23,7 @@ class scaleio::mdm::callhome(
   package::verifiable{'EMC-ScaleIO-callhome':
     version        => $scaleio::version,
     manage_package => !$package_emc_scaleio_callhome_version,
+    tag            => 'scaleio-install',
   }
 
   # Include primary mdm class, if this server shall be the primary (first setup)

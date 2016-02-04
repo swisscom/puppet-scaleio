@@ -19,6 +19,7 @@ class scaleio::lia{
   # but this is needed for setting the LIA password
   exec {"yum install EMC-ScaleIO-lia$real_version":
     environment => [ "TOKEN=$scaleio::password" ],
+    tag         => 'scaleio-install',
     unless      => "rpm -q EMC-ScaleIO-lia$real_version",
   }->
 

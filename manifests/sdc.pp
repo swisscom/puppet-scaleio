@@ -12,6 +12,7 @@ class scaleio::sdc {
   package::verifiable{'EMC-ScaleIO-sdc':
     version        => $scaleio::version,
     manage_package => !$package_emc_scaleio_sdc_version,
+    tag            => 'scaleio-install',
   }
 
   if size($::scaleio::mdm_ips) < 2{
