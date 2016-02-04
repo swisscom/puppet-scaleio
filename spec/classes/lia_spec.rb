@@ -20,9 +20,9 @@ describe 'scaleio::lia', :type => 'class' do
       :manage_package => false
     )}
 
-    it { should contain_exec("yum install EMC-ScaleIO-lia").with(
+    it { should contain_exec("yum install -y 'EMC-ScaleIO-lia'").with(
       :environment => [ "TOKEN=admin" ],
-	  	:unless			 => "rpm -q EMC-ScaleIO-lia",
+	  	:unless			 => "rpm -q 'EMC-ScaleIO-lia'",
     )}
 
     it { should contain_tidy('/opt/emc/scaleio/lia/rpm').with(
@@ -51,9 +51,9 @@ describe 'scaleio::lia', :type => 'class' do
       :manage_package => false
     )}
 
-    it { should contain_exec("yum install EMC-ScaleIO-lia-1.44-6-el7").with(
+    it { should contain_exec("yum install -y 'EMC-ScaleIO-lia-1.44-6-el7'").with(
       :environment => [ "TOKEN=admin" ],
-	  	:unless			 => "rpm -q EMC-ScaleIO-lia-1.44-6-el7",
+	  	:unless			 => "rpm -q 'EMC-ScaleIO-lia-1.44-6-el7'",
     )}
 
     it { should contain_tidy('/opt/emc/scaleio/lia/rpm').with(

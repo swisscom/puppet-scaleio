@@ -34,8 +34,8 @@ describe 'scaleio::mdm', :type => 'class' do
       :mode    => '0700',
     )}
 
-    it { should contain_file('/etc/bash_completion.d/scli_wrap').with(
-      :content => 'complete -o bashdefault -o default -o nospace -F _scli scli_wrap',
+    it { should contain_file('/etc/bash_completion.d/si').with(
+      :content => 'complete -o bashdefault -o default -o nospace -F _scli si',
       :owner   => 'root',
       :group   => 0,
       :mode    => '0644',
