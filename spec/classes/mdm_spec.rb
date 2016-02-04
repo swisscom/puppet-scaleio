@@ -14,7 +14,9 @@ describe 'scaleio::mdm', :type => 'class' do
   describe 'with standard' do
     it { should compile.with_all_deps }
     it { should contain_class('scaleio') }
-    it { should contain_package__verifiable('EMC-ScaleIO-mdm').with_version('installed') }
+    it { should contain_package__verifiable('EMC-ScaleIO-mdm').with(
+      :version        => 'installed',
+    )}
     it { should_not contain_class('scaleio::mdm::primary') }
     it { should_not contain_class('sudo::rule') }
     it { should contain_class('scaleio::mdm::callhome') }
@@ -39,7 +41,7 @@ describe 'scaleio::mdm', :type => 'class' do
       :mode    => '0644',
       :require => 'Package::Verifiable[EMC-ScaleIO-mdm]',
 		)}
-    it { should contain_file('/usr/bin/scli_wrap').with(
+    it { should contain_file('/usr/bin/si').with(
       :ensure => 'link',
       :target => '/var/lib/puppet/module_data/scaleio/scli_wrap',
 		)}
@@ -129,5 +131,22 @@ describe 'scaleio::mdm', :type => 'class' do
         :require => 'Package::Verifiable[EMC-ScaleIO-mdm]'
     )}
   end
+  context 'should not update SIO packages' do
+    let(:facts){
+      {
+        :interfaces => 'eth0,eth10',
+        :ipaddress_eth10 => '1.2.3.4',
+        :architecture => 'x86_64',
+        :operatingsystem => 'RedHat',
+        :package_emc_scaleio_mdm_version => 'asdfadf',
+      }
+    }
+    it { should contain_package__verifiable('EMC-ScaleIO-mdm').with(
+      :version        => 'installed',
+      :manage_package => false
+    )}
+    it { should contain_package('EMC-ScaleIO-mdm').with(
+      :ensure  => 'installed',
+    )}
+  end
 end
-

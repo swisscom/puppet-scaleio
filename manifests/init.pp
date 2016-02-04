@@ -6,7 +6,7 @@
 # * callhome: should callhome on the mdms be installed?
 # * mdm_ips: a list of IPs, which will be mdms. On first setup, the first entry in the list will be the primary mdm. 
 #   The initial ScaleIO configuration will be done on this host.
-# * tb_ips: a list of IPs, which will be tiebreakers. On first setup, the first entry in the list will be the actively used tb. 
+# * tb_ips: a list of IPs, which will be tiebreakers. On first setup, the first entry in the list will be the actively used tb.
 # * password: for the mdm
 # * old_password: if you want to change the password, you have to provide the
 #                 old one for change.
@@ -41,14 +41,14 @@
 #       protection_domain:  'protDomainName'
 #       size:               504 # volume size in GB
 #       type:               'thin' # either thin or thick
-#       sdc_nodes:          ['node1', 'node2'] # array containing SDC names the volume shall be mapped to 
-#       
+#       sdc_nodes:          ['node1', 'node2'] # array containing SDC names the volume shall be mapped to
+#
 # * purge: shall the not defined resources (f.e. protection domain, storage pool etc.) be purged
 # * components: will configure the different components any out of:
 #    - sds
 #    - sdc
-#    - mdm
 #    - tb
+#    - lia
 # * lvm: add scini types to lvm.conf to be able to create lvm pv on SIO volumes
 # * use_consul: shall consul be used:
 #    - to wait for secondary mdm being ready for setup
@@ -107,7 +107,7 @@ class scaleio(
 
   if $tb_ips and $tb_ips[0] {
     validate_re($tb_ips[0], '^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){3}$')
-  
+
     # check whether one of the local IPs matches with one of the defined tb IPs
     # => if so, install tb on this host
     $current_tb_ip = intersection($tb_ips, $interfaces_addresses)
@@ -124,5 +124,8 @@ class scaleio(
   }
   if 'tb' in $components or (size($current_tb_ip) >= 1 and has_ip_address($current_tb_ip[0])) {
     include scaleio::tb
+  }
+  if 'sds' in $components {
+    include scaleio::lia
   }
 }

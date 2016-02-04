@@ -8,6 +8,6 @@ end
 
 gem 'puppet', puppetversion
 gem 'puppet-lint', '>=1.1.0'
-gem 'puppetlabs_spec_helper', '=0.10.3'
+gem 'puppetlabs_spec_helper'
 gem 'rake', '>=0.9.2.2'
 gem 'librarian-puppet', '>=0.9.10'

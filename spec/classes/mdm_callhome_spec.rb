@@ -112,4 +112,22 @@ describe 'scaleio::mdm::callhome', :type => 'class' do
       :refreshonly => true,
     )}
   end
+  context 'should not update SIO packages' do
+    let(:facts){
+      {
+        :interfaces => 'eth0,eth10',
+        :ipaddress_eth10 => '1.2.3.4',
+        :architecture => 'x86_64',
+        :operatingsystem => 'RedHat',
+        :package_emc_scaleio_callhome_version => 'asdfadf',
+      }
+    }
+    it { should contain_package__verifiable('EMC-ScaleIO-callhome').with(
+      :version        => 'installed',
+      :manage_package => false
+    )}
+    it { should contain_package('EMC-ScaleIO-callhome').with(
+      :ensure  => 'installed',
+    )}
+  end
 end

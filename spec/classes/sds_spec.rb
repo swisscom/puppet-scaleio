@@ -11,5 +11,23 @@ describe 'scaleio::sds', :type => 'class' do
     it { should contain_class('scaleio') }
     it { should contain_package__verifiable('EMC-ScaleIO-sds').with_version('installed') }
   end
+  context 'should not update SIO packages' do
+    let(:facts){
+      {
+        :interfaces => 'eth0,eth10',
+        :ipaddress_eth10 => '1.2.3.4',
+        :architecture => 'x86_64',
+        :operatingsystem => 'RedHat',
+        :package_emc_scaleio_sds_version => 'asdfadf',
+      }
+    }
+    it { should contain_package__verifiable('EMC-ScaleIO-sds').with(
+      :version        => 'installed',
+      :manage_package => false
+    )}
+    it { should contain_package('EMC-ScaleIO-sds').with(
+      :ensure  => 'installed',
+    )}
+  end
 end
 

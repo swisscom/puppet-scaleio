@@ -4,8 +4,17 @@ class scaleio::tb {
   if $scaleio::use_consul {
     require ::consul
   }
+
+  # only do a new installation of the package
+  if $package_emc_scaleio_tb_version {
+    package{'EMC-ScaleIO-tb':
+      ensure => 'installed',
+    }
+  }
+
   package::verifiable{'EMC-ScaleIO-tb':
-    version => $scaleio::version,
+    version        => $scaleio::version,
+    manage_package => !$package_emc_scaleio_tb_version,
   }
 
   if $scaleio::use_consul and has_ip_address($::scaleio::tb_ips[0]) {

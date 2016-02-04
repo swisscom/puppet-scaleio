@@ -13,8 +13,16 @@ class scaleio::mdm::callhome(
   include ::scaleio::mdm
   ensure_packages(['mutt'])
 
+  # only do a new installation of the package
+  if $package_emc_scaleio_callhome_version {
+    package{'EMC-ScaleIO-callhome':
+      ensure => 'installed',
+    }
+  }
+
   package::verifiable{'EMC-ScaleIO-callhome':
-    version => $scaleio::version,
+    version        => $scaleio::version,
+    manage_package => !$package_emc_scaleio_callhome_version,
   }
 
   # Include primary mdm class, if this server shall be the primary (first setup)

@@ -1,8 +1,17 @@
 # manage a sdc
 class scaleio::sdc {
   include ::scaleio
+
+  # only do a new installation of the package
+  if $package_emc_scaleio_sdc_version {
+    package{'EMC-ScaleIO-sdc':
+      ensure => 'installed',
+    }
+  }
+
   package::verifiable{'EMC-ScaleIO-sdc':
-    version => $scaleio::version,
+    version        => $scaleio::version,
+    manage_package => !$package_emc_scaleio_sdc_version,
   }
 
   if size($::scaleio::mdm_ips) < 2{

@@ -34,5 +34,20 @@ describe 'scaleio::tb', :type => 'class' do
         :require => ['Service[consul]', 'Package::Verifiable[EMC-ScaleIO-tb]']
       )}
   end
+  context 'should not update SIO packages' do
+    let(:facts){
+      {
+        :interfaces => 'eth0,eth10',
+        :ipaddress_eth10 => '1.2.3.4',
+        :architecture => 'x86_64',
+        :operatingsystem => 'RedHat',
+        :package_emc_scaleio_tb_version => 'asdfadf',
+      }
+    }
+    it { should contain_package__verifiable('EMC-ScaleIO-tb').with(
+      :version        => 'installed',
+      :manage_package => false
+    )}
+  end
 end
 

@@ -11,8 +11,16 @@ class scaleio::mdm {
     include ::consul
   }
 
+  # only do a new installation of the package
+  if $package_emc_scaleio_mdm_version {
+    package{'EMC-ScaleIO-mdm':
+      ensure => 'installed',
+    }
+  }
+
   package::verifiable{'EMC-ScaleIO-mdm':
-    version => $scaleio::version
+    version        => $scaleio::version,
+    manage_package => !$package_emc_scaleio_mdm_version,
   }
 
   file{
@@ -28,7 +36,7 @@ class scaleio::mdm {
       group   => 0,
       mode    => '0644',
       require => Package::Verifiable['EMC-ScaleIO-mdm'];
-    '/usr/bin/scli_wrap':
+    '/usr/bin/si':
       ensure => 'link',
       target => $scli_wrap;
   }
