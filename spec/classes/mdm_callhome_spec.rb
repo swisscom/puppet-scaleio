@@ -126,8 +126,5 @@ describe 'scaleio::mdm::callhome', :type => 'class' do
       :version        => 'installed',
       :manage_package => false
     )}
-    it { should contain_package('EMC-ScaleIO-callhome').with(
-      :ensure  => 'installed',
-    )}
   end
 end

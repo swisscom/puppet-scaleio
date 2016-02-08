@@ -6,12 +6,6 @@ class scaleio::tb {
   }
 
   # only do a new installation of the package
-  if $package_emc_scaleio_tb_version {
-    package{'EMC-ScaleIO-tb':
-      ensure => 'installed',
-    }
-  }
-
   package::verifiable{'EMC-ScaleIO-tb':
     version        => $scaleio::version,
     manage_package => !$package_emc_scaleio_tb_version,

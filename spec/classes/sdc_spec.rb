@@ -62,9 +62,6 @@ describe 'scaleio::sdc', :type => 'class' do
       :version        => 'installed',
       :manage_package => false
     )}
-    it { should contain_package('EMC-ScaleIO-sdc').with(
-      :ensure  => 'installed',
-    )}
   end
 end
 

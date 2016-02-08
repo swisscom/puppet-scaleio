@@ -145,8 +145,5 @@ describe 'scaleio::mdm', :type => 'class' do
       :version        => 'installed',
       :manage_package => false
     )}
-    it { should contain_package('EMC-ScaleIO-mdm').with(
-      :ensure  => 'installed',
-    )}
   end
 end
