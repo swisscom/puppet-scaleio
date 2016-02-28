@@ -37,6 +37,14 @@ Puppet::Type.newtype(:scaleio_storage_pool) do
     end
   end
 
+  newproperty(:ramcache, :boolean => true) do
+    desc "Enable RAM read cache for this pool?"
+    validate do |value|
+      raise ArgumentError, "RAM cache for storage pool can either be enabled or disabled (true/false)." unless !!value == value
+    end
+    defaultto true
+  end
+
   # This is a parameter as zeropadding, as updating zero padding is no more allowed once the pool has devices 
   newparam(:zeropadding, :boolean => true) do
     desc "Should zero padding be enabled?"

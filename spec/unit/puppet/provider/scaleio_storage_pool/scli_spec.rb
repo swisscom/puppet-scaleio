@@ -8,10 +8,12 @@ all_properties = [
 describe provider_class do
 
   # load sample cli outputs
-  let(:fixtures_cli)    { File.expand_path(File.join(File.dirname(__FILE__),"../../../../fixtures/cli"))}
-  let(:myPool)          { File.read(File.join(fixtures_cli,"pool_query_myPDomain_myPool.cli")) }
-  let(:myPool2)         { File.read(File.join(fixtures_cli,"pool_query_myPDomain_myPool2.cli")) }
-  let(:myPDomain)       { File.read(File.join(fixtures_cli,"pool_query_myPDomain.cli")) }
+  let(:fixtures_cli)         { File.expand_path(File.join(File.dirname(__FILE__),"../../../../fixtures/cli"))}
+  let(:myPool)               { File.read(File.join(fixtures_cli,"pool_query_myPDomain_myPool.cli")) }
+  let(:myPool2)              { File.read(File.join(fixtures_cli,"pool_query_myPDomain_myPool2.cli")) }
+  let(:myPool2NewRamCache)   { File.read(File.join(fixtures_cli,"pool_query_myPDomain_myPool2_ramcache_new.cli")) }
+  let(:myPool2NoRamCache)    { File.read(File.join(fixtures_cli,"pool_query_myPDomain_myPool2_no_ramcache.cli")) }
+  let(:myPDomain)            { File.read(File.join(fixtures_cli,"pool_query_myPDomain.cli")) }
 
   let(:resource) {
     Puppet::Type.type(:scaleio_storage_pool).new({
@@ -29,6 +31,7 @@ describe provider_class do
       # Create a mock resource
       @resource     = stub 'resource'
       @pool_name    = "myNewPool"
+      @ramcache     = true
       @protection_domain = "myPDomain"
       @name          = "#{@protection_domain}:#{@pool_name}"
       @spare_policy  = "8%"
@@ -40,6 +43,7 @@ describe provider_class do
       @resource.stubs(:[]).with(:protection_domain).returns @protection_domain
       @resource.stubs(:[]).with(:ensure).returns :present
       @resource.stubs(:[]).with(:zeropadding).returns true
+      @resource.stubs(:[]).with(:ramcache).returns true
       @resource.stubs(:ref).returns "Scaleio_storage_pool[#{@name}]"
       @provider = provider_class.new(@resource)
     end
@@ -74,6 +78,30 @@ describe provider_class do
       instances = provider.class.instances
       expect(instances[0].spare_policy).to match('11%')
     end
+    it 'detects the RAM cache setting enabled' do
+      provider.class.stubs(:getProtectionDomains).returns(['myPDomain'])
+      provider.class.stubs(:scli).with('--query_protection_domain', '--protection_domain_name', 'myPDomain').returns(myPDomain)
+      provider.class.stubs(:scli).with('--query_storage_pool', '--storage_pool_name', 'myPool', '--protection_domain_name', 'myPDomain').returns(myPool)
+      provider.class.stubs(:scli).with('--query_storage_pool', '--storage_pool_name', 'myPool2', '--protection_domain_name', 'myPDomain').returns(myPool2)
+      instances = provider.class.instances
+      expect(instances[1].ramcache).to match(true)
+    end
+    it 'detects the RAM cache setting enabled (new output)' do
+      provider.class.stubs(:getProtectionDomains).returns(['myPDomain'])
+      provider.class.stubs(:scli).with('--query_protection_domain', '--protection_domain_name', 'myPDomain').returns(myPDomain)
+      provider.class.stubs(:scli).with('--query_storage_pool', '--storage_pool_name', 'myPool', '--protection_domain_name', 'myPDomain').returns(myPool)
+      provider.class.stubs(:scli).with('--query_storage_pool', '--storage_pool_name', 'myPool2', '--protection_domain_name', 'myPDomain').returns(myPool2NewRamCache)
+      instances = provider.class.instances
+      expect(instances[1].ramcache).to match(true)
+    end
+    it 'detects the RAM cache setting disabled' do
+      provider.class.stubs(:getProtectionDomains).returns(['myPDomain'])
+      provider.class.stubs(:scli).with('--query_protection_domain', '--protection_domain_name', 'myPDomain').returns(myPDomain)
+      provider.class.stubs(:scli).with('--query_storage_pool', '--storage_pool_name', 'myPool', '--protection_domain_name', 'myPDomain').returns(myPool)
+      provider.class.stubs(:scli).with('--query_storage_pool', '--storage_pool_name', 'myPool2', '--protection_domain_name', 'myPDomain').returns(myPool2NoRamCache)
+      instances = provider.class.instances
+      expect(instances[1].ramcache).to match(false)
+    end
   end
 
   describe 'create' do
@@ -81,6 +109,7 @@ describe provider_class do
       provider.expects(:scli).with('--add_storage_pool', '--protection_domain_name', 'myPDomain', '--storage_pool_name', 'myNewPool').returns([])
       provider.expects(:scli).with('--modify_spare_policy', '--protection_domain_name', 'myPDomain', '--storage_pool_name', 'myNewPool', '--spare_percentage', '34%', '--i_am_sure').returns([])
       provider.expects(:scli).with('--modify_zero_padding_policy', '--protection_domain_name', 'myPDomain', '--storage_pool_name', 'myNewPool', '--enable_zero_padding').returns([])
+      provider.expects(:scli).with('--set_rmcache_usage', '--protection_domain_name', 'myPDomain', '--storage_pool_name', 'myNewPool', '--i_am_sure', '--use_rmcache').returns([])
       provider.expects(:sleep).with(30).returns([])
       provider.create
     end
@@ -97,6 +126,10 @@ describe provider_class do
     it 'updates the spare policy' do
       provider.expects(:scli).with('--modify_spare_policy', '--protection_domain_name', 'myPDomain', '--storage_pool_name', 'myNewPool', '--spare_percentage', '34%', '--i_am_sure').returns([])
       provider.updateSparePolicy('34%')
+    end
+    it 'updates the ram cache' do
+      provider.expects(:scli).with('--set_rmcache_usage', '--protection_domain_name', 'myPDomain', '--storage_pool_name', 'myNewPool', '--i_am_sure', '--dont_use_rmcache').returns([])
+      provider.update_ram_cache(false)
     end
   end
 end
