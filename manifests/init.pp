@@ -23,6 +23,7 @@
 #     myPoolName:
 #       protection_domain : myProtectionDomainName
 #       spare_policy      : 35%
+#       ramcache          : 'enabled' # or disabled
 # * sds: hash containing SDS definitions, format:
 #     'sds_name':
 #       protection_domain : 'pdomain1',

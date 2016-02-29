@@ -39,7 +39,7 @@ Puppet::Type.type(:scaleio_storage_pool).provide(:scaleio_storage_pool) do
     pdomain_pools.each do |pdomain, pools|
       pools.flatten.each do |pool|
         spare_policy = ""
-        ramcache_enabled = false
+        ramcache = 'disabled'
 
         pool_query_lines = scli("--query_storage_pool", "--storage_pool_name", pool, "--protection_domain_name", pdomain).split("\n")
         pool_query_lines.each do |line|
@@ -48,7 +48,7 @@ Puppet::Type.type(:scaleio_storage_pool).provide(:scaleio_storage_pool) do
             spare_policy = spare_pct[1];
           end
           if line =~ /Uses RAM Read Cache|RAM cache is used/
-            ramcache_enabled = true
+            ramcache = 'enabled'
           end
         end
         # Create storage pools hash
@@ -58,7 +58,7 @@ Puppet::Type.type(:scaleio_storage_pool).provide(:scaleio_storage_pool) do
                 :ensure             => :present,
                 :protection_domain  => pdomain,
                 :spare_policy       => spare_policy,
-                :ramcache           => ramcache_enabled,
+                :ramcache           => ramcache,
         }
         storage_pool_instances << new(storage_pool_info)
       end
@@ -86,7 +86,7 @@ Puppet::Type.type(:scaleio_storage_pool).provide(:scaleio_storage_pool) do
     Puppet.debug("Creating storage pool #{@resource[:name]}")
     scli("--add_storage_pool", "--protection_domain_name", @resource[:protection_domain], "--storage_pool_name", @resource[:pool_name])
     updateSparePolicy(@resource[:spare_policy])
-    update_ram_cache(@resource[:ramcache])
+    update_ramcache(@resource[:ramcache])
 
     # Should zero padding be enabled?
     if @resource[:zeropadding]
@@ -103,12 +103,12 @@ Puppet::Type.type(:scaleio_storage_pool).provide(:scaleio_storage_pool) do
   end
 
   def ramcache=(value)
-    update_ram_cache(value)
+    update_ramcache(value)
   end
 
-  def update_ram_cache(value)
+  def update_ramcache(value)
     Puppet.debug("Updating ramcache setting of pool #{@resource[:name]} to #{value}")
-    scli("--set_rmcache_usage", "--protection_domain_name", @resource[:protection_domain], "--storage_pool_name", @resource[:pool_name], "--i_am_sure", if value then "--use_rmcache" else "--dont_use_rmcache" end)
+    scli("--set_rmcache_usage", "--protection_domain_name", @resource[:protection_domain], "--storage_pool_name", @resource[:pool_name], "--i_am_sure", if value == 'enabled' then "--use_rmcache" else "--dont_use_rmcache" end)
   end
 
   def spare_policy=(value)

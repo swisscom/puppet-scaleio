@@ -13,7 +13,7 @@ describe Puppet::Type.type(:scaleio_storage_pool) do
         :name         => 'test-PDO:myPool',
         :spare_policy => '12%',
         :ensure       => :present,
-        :ramcache     => false,
+        :ramcache     => 'enabled',
       })
     expect(@pool[:name]).to eq('test-PDO:myPool')
   end
@@ -57,7 +57,7 @@ describe Puppet::Type.type(:scaleio_storage_pool) do
     }.to raise_error Puppet::ResourceError, /not a valid value for the storage pool spare capacity/
   end
 
-  it 'should validate ramcache boolean' do
+  it 'should validate ramcache' do
     expect {
       Puppet::Type.type(:scaleio_storage_pool).new({
           :name         => 'test-PDO:myPool',

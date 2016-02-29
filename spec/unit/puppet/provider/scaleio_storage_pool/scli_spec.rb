@@ -31,7 +31,7 @@ describe provider_class do
       # Create a mock resource
       @resource     = stub 'resource'
       @pool_name    = "myNewPool"
-      @ramcache     = true
+      @ramcache     = 'enabled'
       @protection_domain = "myPDomain"
       @name          = "#{@protection_domain}:#{@pool_name}"
       @spare_policy  = "8%"
@@ -43,7 +43,7 @@ describe provider_class do
       @resource.stubs(:[]).with(:protection_domain).returns @protection_domain
       @resource.stubs(:[]).with(:ensure).returns :present
       @resource.stubs(:[]).with(:zeropadding).returns true
-      @resource.stubs(:[]).with(:ramcache).returns true
+      @resource.stubs(:[]).with(:ramcache).returns 'enabled'
       @resource.stubs(:ref).returns "Scaleio_storage_pool[#{@name}]"
       @provider = provider_class.new(@resource)
     end
@@ -84,7 +84,7 @@ describe provider_class do
       provider.class.stubs(:scli).with('--query_storage_pool', '--storage_pool_name', 'myPool', '--protection_domain_name', 'myPDomain').returns(myPool)
       provider.class.stubs(:scli).with('--query_storage_pool', '--storage_pool_name', 'myPool2', '--protection_domain_name', 'myPDomain').returns(myPool2)
       instances = provider.class.instances
-      expect(instances[1].ramcache).to match(true)
+      expect(instances[1].ramcache).to match('enabled')
     end
     it 'detects the RAM cache setting enabled (new output)' do
       provider.class.stubs(:getProtectionDomains).returns(['myPDomain'])
@@ -92,7 +92,7 @@ describe provider_class do
       provider.class.stubs(:scli).with('--query_storage_pool', '--storage_pool_name', 'myPool', '--protection_domain_name', 'myPDomain').returns(myPool)
       provider.class.stubs(:scli).with('--query_storage_pool', '--storage_pool_name', 'myPool2', '--protection_domain_name', 'myPDomain').returns(myPool2NewRamCache)
       instances = provider.class.instances
-      expect(instances[1].ramcache).to match(true)
+      expect(instances[1].ramcache).to match('enabled')
     end
     it 'detects the RAM cache setting disabled' do
       provider.class.stubs(:getProtectionDomains).returns(['myPDomain'])
@@ -100,7 +100,7 @@ describe provider_class do
       provider.class.stubs(:scli).with('--query_storage_pool', '--storage_pool_name', 'myPool', '--protection_domain_name', 'myPDomain').returns(myPool)
       provider.class.stubs(:scli).with('--query_storage_pool', '--storage_pool_name', 'myPool2', '--protection_domain_name', 'myPDomain').returns(myPool2NoRamCache)
       instances = provider.class.instances
-      expect(instances[1].ramcache).to match(false)
+      expect(instances[1].ramcache).to match('disabled')
     end
   end
 
@@ -127,9 +127,9 @@ describe provider_class do
       provider.expects(:scli).with('--modify_spare_policy', '--protection_domain_name', 'myPDomain', '--storage_pool_name', 'myNewPool', '--spare_percentage', '34%', '--i_am_sure').returns([])
       provider.updateSparePolicy('34%')
     end
-    it 'updates the ram cache' do
+    it 'updates the ramcache' do
       provider.expects(:scli).with('--set_rmcache_usage', '--protection_domain_name', 'myPDomain', '--storage_pool_name', 'myNewPool', '--i_am_sure', '--dont_use_rmcache').returns([])
-      provider.update_ram_cache(false)
+      provider.update_ramcache('disabled')
     end
   end
 end
