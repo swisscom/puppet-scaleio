@@ -145,6 +145,8 @@ class scaleio::mdm::primary {
     consul_kv{"scaleio/${::scaleio::system_name}/cluster_setup/primary":
       value   => 'ready',
     }
+    Scaleio_sdc_name<| |> ->
+      Consul_kv["scaleio/${::scaleio::system_name}/cluster_setup/primary"]
     Scaleio_volume<| tag == 'scaleio_tag_volume' |> ->
       Consul_kv["scaleio/${::scaleio::system_name}/cluster_setup/primary"]
   }
