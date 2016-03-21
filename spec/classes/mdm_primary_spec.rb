@@ -167,17 +167,17 @@ describe 'scaleio::mdm::primary', :type => 'class' do
     it { should contain_consul_kv_blocker('scaleio/sysname/cluster_setup/secondary').with(
       :tries => 120,
       :try_sleep => 30
-    )}    
+    )}
     it { should contain_consul_kv_blocker('scaleio/sysname/cluster_setup/tiebreaker').with(
       :tries => 120,
       :try_sleep => 30
     )}
   end
-  context 'external monitoring user' do
+  context 'monitoring user' do
     let(:pre_condition){
-      "class{'scaleio': external_monitoring_user => 'monitor' }"
+      "class{'scaleio': monitoring_user => 'monitor11' }"
     }
-    it { should contain_scaleio_user('monitoring').with(
+    it { should contain_scaleio_user('monitor11').with(
       :role      => 'Monitor',
       :password  => 'Monitor1',
       :require   => ['Exec[scaleio::mdm::primary_add_secondary]', 'File[/var/lib/puppet/module_data/scaleio/add_scaleio_user]']

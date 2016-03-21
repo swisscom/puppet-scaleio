@@ -10,6 +10,7 @@
 # * password: for the mdm
 # * old_password: if you want to change the password, you have to provide the
 #                 old one for change.
+# * monitoring_user username for the monitor user
 # * monitoring_passwd: password for mionitoring user
 # * external_monitoring_user: external monitoring software user (eq splunk user)i that allow running scli cmd for monitoring
 # * syslog_ip_port: if set we will configure a syslog server
@@ -66,6 +67,7 @@ class scaleio(
   $license                  = undef,
   $password                 = 'admin',
   $old_password             = 'admin',
+  $monitoring_user          = 'monitoring',
   $monitoring_passwd        = 'Monitor1',
   $external_monitoring_user = false,
   $syslog_ip_port           = undef,

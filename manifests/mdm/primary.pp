@@ -118,8 +118,8 @@ class scaleio::mdm::primary {
     require => Exec['scaleio::mdm::primary_go_into_cluster_mode'],
   }
 
-  if $scaleio::external_monitoring_user {
-    scaleio_user{'monitoring':
+  if $scaleio::monitoring_user {
+    scaleio_user{$scaleio::monitoring_user:
       role     => 'Monitor',
       password => $scaleio::monitoring_passwd,
       require  => [Exec['scaleio::mdm::primary_add_secondary'], File[$scaleio::mdm::add_scaleio_user]],
