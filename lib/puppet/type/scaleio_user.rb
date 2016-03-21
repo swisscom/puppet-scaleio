@@ -1,6 +1,6 @@
 Puppet::Type.newtype(:scaleio_user) do
   @doc = "Manage ScaleIO users"
-  
+
   ensurable
 
   validate do
@@ -17,7 +17,9 @@ Puppet::Type.newtype(:scaleio_user) do
   newparam(:password) do
     desc "The password for the mdm user."
     validate do |value|
-      fail("Password must be provided") unless value =~ /^[\w]+$/
+      unless value =~ /^[\w]+$/
+        fail("Password must be provided and matching only word characters")
+      end
     end
   end
 
