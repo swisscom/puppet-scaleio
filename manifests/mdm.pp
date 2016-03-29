@@ -91,6 +91,10 @@ class scaleio::mdm {
       require => Package::Verifiable['EMC-ScaleIO-mdm'],
       returns => [ 0, '', ' ']
     }
+    service{'mdm_failover':
+      ensure  => running,
+      require => Exec['scaleio::mdm::setup_failover']
+    }
   }
 
   if $scaleio::callhome {

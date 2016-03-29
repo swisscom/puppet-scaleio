@@ -114,7 +114,11 @@ describe 'scaleio::mdm', :type => 'class' do
       :unless  => "fgrep \"mdms': '[1.2.3.4]+[1.2.3.5]+[1.2.3.6]'\" /opt/emc/scaleio/mdm_failover/cfg/conf.txt |fgrep \"tbs': '[1.2.3.7]+[1.2.3.8]'\" |egrep \"admin|$(echo -n 'admin' |base64)\"",
       :require => 'Package::Verifiable[EMC-ScaleIO-mdm]',
       :returns => [ 0, '', ' ']
-      )}
+    )}
+    it { should contain_service('mdm_failover').with(
+      :require => 'Exec[scaleio::mdm::setup_failover]',
+      :ensure  => 'running',
+    )}
   end
 
   context 'with external monitoring user' do

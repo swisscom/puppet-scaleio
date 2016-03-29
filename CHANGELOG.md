@@ -1,5 +1,8 @@
 # Changelog
 
+## 2.2.2 (2016-03-29)
+* ensure that the mdm_failover service is running
+
 ## 2.2.1 (2016-03-21)
 * Report primary is finished setting up, after all SDC have been configured.
 
