@@ -78,6 +78,9 @@ class scaleio::mdm {
   # If there are more than two MDMs defined, then we have to setup
   # standy MDMs using the MDM failover script
   if size($::scaleio::mdm_ips) > 2 or size($::scaleio::tb_ips) > 1 {
+    package{'bzip2':
+      ensure => installed,
+    }
 
     # prepare input for mdm_failover_post_install
     $failover_mdms_joined = join($::scaleio::mdm_ips, ']+[')

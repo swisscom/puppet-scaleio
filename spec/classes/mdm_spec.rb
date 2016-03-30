@@ -119,6 +119,9 @@ describe 'scaleio::mdm', :type => 'class' do
       :require => 'Exec[scaleio::mdm::setup_failover]',
       :ensure  => 'running',
     )}
+    it { should contain_package('bzip2').with(
+      :ensure => 'installed',
+    )}
   end
 
   context 'with external monitoring user' do
