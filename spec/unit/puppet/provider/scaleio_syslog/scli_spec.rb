@@ -55,16 +55,16 @@ describe provider_class do
 
   describe 'self.instances' do
     it 'returns an array w/ no syslog destinations' do
-     Resolv.stubs(:getaddress).with('log-host.local').returns('192.168.2.2')
+     Resolv.stubs(:getaddresses).with('log-host.local').returns(['::1','192.168.2.2'])
       provider.class.stubs(:scli).with('--query_remote_syslog').returns(syslog_no)
       syslog_instances  = provider.class.instances
       syslog_names      = syslog_instances.collect {|x| x.name }
       expect([]).to match_array(syslog_names)
     end
     it 'returns an array w/ 2 syslog destinations' do
-      Resolv.stubs(:getaddress).with('log-host.local').returns('192.168.2.2')
-      Resolv.stubs(:getaddress).with('192.168.56.200').returns('192.168.56.200')
-      Resolv.stubs(:getaddress).with('127.127.127.127').returns('127.127.127.127')
+      Resolv.stubs(:getaddresses).with('log-host.local').returns(['192.168.2.2','::1'])
+      Resolv.stubs(:getaddresses).with('192.168.56.200').returns(['::1','192.168.56.200'])
+      Resolv.stubs(:getaddresses).with('127.127.127.127').returns(['::1','127.127.127.127'])
       provider.class.stubs(:scli).with('--query_remote_syslog').returns(syslog_two)
       syslog_instances = provider.class.instances
       syslog_names     = syslog_instances.collect {|x| x.name }
@@ -74,7 +74,7 @@ describe provider_class do
 
   describe 'create' do
     it 'creates a syslog' do
-      Resolv.stubs(:getaddress).returns('192.168.2.2')
+      Resolv.stubs(:getaddresses).returns(['192.168.2.2','::1'])
       provider.expects(:scli).with('--stop_remote_syslog', '--remote_syslog_server_ip', '192.168.2.2').returns([])
       provider.expects(:scli).with('--start_remote_syslog', '--remote_syslog_server_ip', '192.168.2.2', '--remote_syslog_server_port', '1564', '--syslog_facility', '15').returns([])
       provider.create
@@ -83,7 +83,7 @@ describe provider_class do
 
   describe 'destroy' do
     it 'destroys a syslog' do
-      Resolv.stubs(:getaddress).returns('192.168.2.2')
+      Resolv.stubs(:getaddresses).returns(['::1','192.168.2.2'])
       provider.expects(:scli).with('--stop_remote_syslog', '--remote_syslog_server_ip', '192.168.2.2').returns([])
       provider.destroy
     end

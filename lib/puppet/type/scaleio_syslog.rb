@@ -14,7 +14,7 @@ Puppet::Type.newtype(:scaleio_syslog) do
       fail("#{value} is not a valid syslog destination.") unless value =~ /^[\w\.\-]+$/
     end
     munge do |value|
-      Resolv.getaddress(value)
+      Resolv.getaddresses(value).reject{|i| i =~ Resolv::IPv6::Regex }.sort.first
     end
   end
 

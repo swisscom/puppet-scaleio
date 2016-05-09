@@ -23,7 +23,7 @@ Puppet::Type.type(:scaleio_syslog).provide(:scaleio_syslog) do
 
         # Create syslog instances hash
         new destination = {
-            :name     => Resolv.getaddress(destinationInfo[1].strip),
+            :name     => Resolv.getaddresses(destinationInfo[1].strip).reject{|i| i =~ Resolv::IPv6::Regex }.sort.first,
             :port     => destinationInfo[2].strip,
             :facility => destinationInfo[3].strip,
             :ensure   => :present,

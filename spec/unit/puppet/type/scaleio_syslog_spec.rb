@@ -10,7 +10,7 @@ describe Puppet::Type.type(:scaleio_syslog) do
   end
 
   it 'should accept valid parameters' do
-    Resolv.expects(:getaddress).with('log-host.local').returns('192.168.2.2')
+    Resolv.expects(:getaddresses).with('log-host.local').returns(['::1','192.168.2.2'])
     @PDO = Puppet::Type.type(:scaleio_syslog).new({
         :ensure       => :present,
         :name         => 'log-host.local',
@@ -31,7 +31,7 @@ describe Puppet::Type.type(:scaleio_syslog) do
   end
 
   it 'should require a port' do
-    Resolv.expects(:getaddress).with('log-host.local').returns('192.168.2.2')
+    Resolv.expects(:getaddresses).with('log-host.local').returns(['192.168.2.2','::1'])
     expect {
       Puppet::Type.type(:scaleio_syslog).new({
         :ensure       => :present,
@@ -41,7 +41,7 @@ describe Puppet::Type.type(:scaleio_syslog) do
   end
 
   it 'should require a valid role' do
-    Resolv.expects(:getaddress).with('log-host.local').returns('192.168.2.2')
+    Resolv.expects(:getaddresses).with('log-host.local').returns(['192.168.2.2','::1'])
     expect {
       Puppet::Type.type(:scaleio_syslog).new({
         :ensure       => :present,
@@ -52,7 +52,7 @@ describe Puppet::Type.type(:scaleio_syslog) do
   end
 
   it 'should accept a facility' do
-    Resolv.expects(:getaddress).with('log-host.local').returns('192.168.2.2')
+    Resolv.expects(:getaddresses).with('log-host.local').returns(['::1','192.168.2.2'])
     @PDO = Puppet::Type.type(:scaleio_syslog).new({
         :ensure       => :present,
         :name         => 'log-host.local',
@@ -63,7 +63,7 @@ describe Puppet::Type.type(:scaleio_syslog) do
   end
 
   it 'should deny a wrong facility' do
-    Resolv.expects(:getaddress).with('log-host.local').returns('192.168.2.2')
+    Resolv.expects(:getaddresses).with('log-host.local').returns(['::1','192.168.2.2'])
     expect {
       Puppet::Type.type(:scaleio_syslog).new({
         :ensure       => :present,
