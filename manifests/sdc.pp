@@ -5,7 +5,7 @@ class scaleio::sdc {
   # only do a new installation of the package
   package::verifiable{'EMC-ScaleIO-sdc':
     version        => $scaleio::version,
-    manage_package => !$package_emc_scaleio_sdc_version,
+    manage_package => !$::package_emc_scaleio_sdc_version,
     tag            => 'scaleio-install',
   }
 

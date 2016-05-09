@@ -8,7 +8,7 @@ class scaleio::tb {
   # only do a new installation of the package
   package::verifiable{'EMC-ScaleIO-tb':
     version        => $scaleio::version,
-    manage_package => !$package_emc_scaleio_tb_version,
+    manage_package => !$::package_emc_scaleio_tb_version,
     tag            => 'scaleio-install',
   }
 

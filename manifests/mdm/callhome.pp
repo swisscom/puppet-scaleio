@@ -16,7 +16,7 @@ class scaleio::mdm::callhome(
   # only do a new installation of the package
   package::verifiable{'EMC-ScaleIO-callhome':
     version        => $scaleio::version,
-    manage_package => !$package_emc_scaleio_callhome_version,
+    manage_package => !$::package_emc_scaleio_callhome_version,
     tag            => 'scaleio-install',
   }
 

@@ -14,7 +14,7 @@ class scaleio::mdm {
   # only do a new installation of the package
   package::verifiable{'EMC-ScaleIO-mdm':
     version        => $scaleio::version,
-    manage_package => !$package_emc_scaleio_mdm_version,
+    manage_package => !$::package_emc_scaleio_mdm_version,
     tag            => 'scaleio-install',
   }
 
