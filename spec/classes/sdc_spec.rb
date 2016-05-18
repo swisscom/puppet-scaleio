@@ -29,10 +29,17 @@ describe 'scaleio::sdc', :type => 'class' do
     it { should contain_class('scaleio') }
     it { should contain_package__verifiable('EMC-ScaleIO-sdc').with_version('installed') }
 
+    it { should contain_service('scini').with(
+      :ensure  => 'running',
+      :enable  => true,
+      :require => 'Package::Verifiable[EMC-ScaleIO-sdc]',
+      :before  => 'Exec[scaleio::sdc_add_mdm]',
+    )}
+
     it { should contain_exec('scaleio::sdc_add_mdm').with(
       :command  => '/bin/emc/scaleio/drv_cfg --add_mdm --ip 10.0.0.1,10.0.0.2,10.0.0.3 --file /bin/emc/scaleio/drv_cfg.txt',
       :unless   => 'grep -qE \'^mdm \' /bin/emc/scaleio/drv_cfg.txt',
-      :require  => 'Package::Verifiable[EMC-ScaleIO-sdc]'
+      :before   => ['Exec[scaleio::sdc_mod_mdm]'],
     )}
 
     it { should contain_exec('scaleio::sdc_mod_mdm').with(
