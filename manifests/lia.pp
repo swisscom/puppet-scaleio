@@ -23,6 +23,10 @@ class scaleio::lia{
     tag         => 'scaleio-install',
     unless      => "rpm -q 'EMC-ScaleIO-lia${real_version}'",
     require     => Package::Yum::Versionlock['EMC-ScaleIO-lia']
+  } ->
+  service{'lia':
+    ensure => running,
+    enable => true,
   }
 
   tidy { '/opt/emc/scaleio/lia/rpm':

@@ -43,6 +43,10 @@ describe 'scaleio::lia', :type => 'class' do
 	  	:recurse => true,
 	  	:matches => [ '*rpm' ]
     )}
+    it { should contain_service('lia').with(
+      :ensure => 'running',
+      :enable => true
+    )}
   end
 
 
@@ -73,6 +77,10 @@ describe 'scaleio::lia', :type => 'class' do
 	  	:age     => '1w',
 	  	:recurse => true,
 	  	:matches => [ '*rpm' ]
+    )}
+    it { should contain_service('lia').with(
+      :ensure => 'running',
+      :enable => true
     )}
   end
 end

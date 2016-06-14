@@ -1,5 +1,8 @@
 # Changelog
 
+## 2.2.5 (2016-06-14)
+* manage lia service
+
 ## 2.2.4 (2016-05-18)
 * manage scini service
 
