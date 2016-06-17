@@ -6,9 +6,10 @@ Puppet::Type.type(:scaleio_user).provide(:scaleio_user) do
 
   confine :osfamily => :redhat
 
-  commands :add_scaleio_user => '/var/lib/puppet/module_data/scaleio/add_scaleio_user'
+  commands :add_scaleio_user => '/opt/emc/scaleio/scripts/add_scaleio_user.sh'
 
-  commands :update_scaleio_password => '/var/lib/puppet/module_data/scaleio/update_scaleio_password'
+  commands :change_scaleio_password =>
+               '/opt/emc/scaleio/scripts/change_scaleio_password.sh'
 
   mk_resource_methods
   
@@ -82,7 +83,7 @@ Puppet::Type.type(:scaleio_user).provide(:scaleio_user) do
 
   def change_password=(need_pw_change)
     Puppet.debug("Changing password for ScaleIO user #{resource[:name]}")
-    update_scaleio_password(resource[:name], resource[:password])
+    change_scaleio_password(resource[:name], resource[:password])
   end
 
 

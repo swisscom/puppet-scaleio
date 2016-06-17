@@ -1,100 +1,134 @@
-require File.expand_path(File.join(File.dirname(__FILE__),'../spec_helper'))
+require File.expand_path(File.join(File.dirname(__FILE__), '../spec_helper'))
 
 describe 'scaleio', :type => 'class' do
-  let(:facts){
+
+  # facts definition
+  let(:facts_default) do
     {
-      :interfaces => 'eth0',
-      :architecture => 'x86_64',
-      :operatingsystem => 'RedHat',
+        :osfamily => 'RedHat',
+        :operatingsystem => 'RedHat',
+        :operatingsystemmajrelease => '7',
+        :concat_basedir => '/var/lib/puppet/concat',
+        :is_virtual => false,
+        :ipaddress => '10.0.0.1',
+        :interfaces => 'eth0',
+        :ipaddress_eth0 => '10.0.0.1',
+        :fqdn => 'node1.example.com',
+        :kernel => 'linux',
+        :architecture => 'x86_64',
     }
-  }
+  end
+  let(:facts) { facts_default }
+
+  # pre_condition definition
+  let(:pre_condition) do
+    [
+        "Exec{ path => '/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin' }",
+    ]
+  end
+
   describe 'with standard' do
     it { should contain_package('numactl').with_ensure('present') }
     it { should contain_package('python').with_ensure('present') }
+
+    it { should_not contain_class('sdc') }
+    it { should_not contain_class('sds') }
+    it { should_not contain_class('lia') }
+    it { should_not contain_class('mdm') }
+    it { should_not contain_class('tb') }
   end
-  context 'on the primary mdm node' do
-    let(:facts){
-      {
-        :interfaces     => 'eth0',
-        :ipaddress_eth0 => '1.2.3.4',
-        :architecture => 'x86_64',
-        :operatingsystem => 'RedHat',
-      }
-    }
-    it { should contain_class('scaleio::mdm') }
+
+
+  describe 'mdm install' do
+    context 'on the primary mdm node' do
+      it { should contain_class('scaleio::mdm') }
+    end
+    context 'on the third mdm node' do
+      let(:facts) { facts_default.merge({
+                                            :ipaddress => '10.0.0.3',
+                                            :interfaces => 'eth0',
+                                            :ipaddress_eth0 => '10.0.0.3',
+                                        }) }
+
+      it { should contain_class('scaleio::mdm') }
+    end
   end
-  context 'with only primary ip' do
-    let(:params) {
-      {
-        :mdm_ips => ['1.2.3.4', false],
-      }
-    }
-    it { expect { subject.call('fail') }.to raise_error(/wrong number of arguments/) }
+
+  describe 'tb install' do
+    context 'on the first tie-breaker node' do
+      let(:facts) { facts_default.merge({
+                                            :ipaddress => '10.0.0.4',
+                                            :interfaces => 'eth0',
+                                            :ipaddress_eth0 => '10.0.0.4',
+                                        }) }
+
+      it { should contain_class('scaleio::tb') }
+    end
+    context 'on the second tie-breaker node' do
+      let(:facts) { facts_default.merge({
+                                            :ipaddress => '10.0.0.5',
+                                            :interfaces => 'eth0',
+                                            :ipaddress_eth0 => '10.0.0.5',
+                                        }) }
+
+      it { should contain_class('scaleio::tb') }
+    end
   end
-  context 'with only secondary ip' do
-    let(:params) {
-      {
-        :mdm_ips => [false, '1.2.3.4'],
-      }
-    }
-    it { expect { subject.call('fail') }.to raise_error(/wrong number of arguments/) }
+
+  describe 'sdc install' do
+    let(:params) { {
+        :components => ['sdc'],
+    } }
+
+    it { should contain_class('scaleio::sdc') }
   end
-  context 'with wrong primary ip' do
-    let(:params) {
-      {
-        :mdm_ips => ['1.2.3.4a', '1.2.3.4'],
-      }
-    }
-    it { expect { subject.call('fail') }.to raise_error(/wrong number of arguments/) }
+
+  describe 'sds install' do
+    let(:params) { {
+        :components => ['sds'],
+    } }
+
+    it { should contain_class('scaleio::sds') }
   end
-  context 'with wrong secondary ip' do
-    let(:params) {
-      {
-        :mdm_ips => ['1.2.3.4', '1.2.3.4a'],
-      }
-    }
-    it { expect { subject.call('fail') }.to raise_error(/wrong number of arguments/) }
+
+  describe 'lia install' do
+    let(:params) { {
+        :components => ['lia'],
+    } }
+
+    it { should contain_class('scaleio::lia') }
   end
-  context 'with wrong tb ip' do
-    let(:params) {
-      {
-        :tb_ips => ['1.2.3.4s'],
-      }
-    }
-    it { expect { subject.call('fail') }.to raise_error(/wrong number of arguments/) }
-  end
-  context 'with standby mdms' do
-    let(:facts){
-      {
-        :interfaces     => 'eth0',
-        :ipaddress_eth0 => '1.2.3.4',
-        :architecture => 'x86_64',
-        :operatingsystem => 'RedHat',
-      }
-    }
-    let(:params) {
-      {
-        :mdm_ips => ['1.2.3.4','1.2.3.5','1.2.3.6','1.2.3.7'],
-        :tb_ips => ['1.2.3.8','1.2.3.9'],
-      }
-    }
-    it { should contain_class('scaleio::mdm') }
-  end
-  context 'with standby tbs' do
-    let(:facts){
-      {
-        :interfaces     => 'eth0',
-        :ipaddress_eth0 => '1.2.3.8',
-        :architecture => 'x86_64',
-        :operatingsystem => 'RedHat',
-      }
-    }
-    let(:params) {
-      {
-        :mdm_ips => ['1.2.3.4','1.2.3.5','1.2.3.6','1.2.3.7'],
-        :tb_ips => ['1.2.3.8','1.2.3.9'],
-      }
-    }
-    it { should contain_class('scaleio::tb') }
+
+  describe 'with invalid IPs' do
+    context 'with wrong primary ip' do
+      let(:params) { {
+          :mdm_ips => ['10.0.0.1a', '10.0.0.1'],
+      } }
+      it do
+        expect {
+          is_expected.to compile
+        }.to raise_error(RSpec::Expectations::ExpectationNotMetError, /mdm_ips must/)
+      end
+    end
+    context 'with wrong secondary ip' do
+      let(:params) { {
+          :mdm_ips => ['10.0.0.1', '10.0.0.1a'],
+      } }
+      it do
+        expect {
+          is_expected.to compile
+        }.to raise_error(RSpec::Expectations::ExpectationNotMetError, /mdm_ips must/)
+      end
+    end
+    context 'with wrong tb ip' do
+      let(:params) { {
+          :tb_ips => ['10.0.0.1s'],
+      } }
+      it do
+        expect {
+          is_expected.to compile
+        }.to raise_error(RSpec::Expectations::ExpectationNotMetError, /tb_ips must/)
+      end
+    end
   end
 end

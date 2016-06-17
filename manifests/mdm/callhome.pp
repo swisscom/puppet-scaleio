@@ -10,7 +10,6 @@ class scaleio::mdm::callhome(
   $to_mail_emc          = '',
 ) {
 
-  include ::scaleio::mdm
   ensure_packages(['mutt'])
 
   # only do a new installation of the package
@@ -27,7 +26,7 @@ class scaleio::mdm::callhome(
     scaleio_user{$user:
       role      => $user_role,
       password  => $password,
-      require   => [Exec['scaleio::mdm::primary_add_secondary'], File[$scaleio::mdm::add_scaleio_user]],
+      require   => File[$scaleio::mdm::add_scaleio_user], # TODO: require also Exec['scaleio::mdm::primary_add_secondary'],
       before    => File['/opt/emc/scaleio/callhome/cfg/conf.txt'];
     }
   }

@@ -1,15 +1,28 @@
 require File.expand_path(File.join(File.dirname(__FILE__),'../spec_helper'))
 
 describe 'scaleio::lia', :type => 'class' do
-  let(:facts){
+  # facts definition
+  let(:facts_default) do
     {
-      :interfaces => 'eth0',
-      :architecture => 'x86_64',
-      :operatingsystem => 'RedHat',
+        :osfamily => 'RedHat',
+        :operatingsystem => 'RedHat',
+        :operatingsystemmajrelease => '7',
+        :concat_basedir => '/var/lib/puppet/concat',
+        :is_virtual => false,
+        :ipaddress => '10.0.0.1',
+        :fqdn => 'node1.example.com',
+        :kernel => 'linux',
+        :architecture => 'x86_64',
     }
-  }
+  end
+  let(:facts) { facts_default }
 
-  let(:pre_condition){"Exec{ path => '/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin' }"}
+  # pre_condition definition
+  let(:pre_condition) do
+    [
+        "Exec{ path => '/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin' }",
+    ]
+  end
 
   describe 'with standard' do
     it { should compile.with_all_deps }
@@ -37,7 +50,7 @@ describe 'scaleio::lia', :type => 'class' do
     let(:facts){
       {
         :interfaces => 'eth0',
-        :ipaddress => '1.2.3.6',
+        :ipaddress => '10.0.0.3',
         :architecture => 'x86_64',
         :operatingsystem => 'RedHat',
         :fqdn => 'version.example.com'

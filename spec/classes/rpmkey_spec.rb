@@ -1,6 +1,7 @@
 require File.expand_path(File.join(File.dirname(__FILE__), '../spec_helper'))
 
-describe 'scaleio::sds', :type => 'class' do
+describe 'scaleio::rpmkey', :type => 'class' do
+
   # facts definition
   let(:facts_default) do
     {
@@ -25,18 +26,16 @@ describe 'scaleio::sds', :type => 'class' do
   end
 
   describe 'with standard' do
-    it { should compile.with_all_deps }
-    it { should contain_class('scaleio') }
-    it { should contain_package__verifiable('EMC-ScaleIO-sds').with_version('installed') }
-  end
+    it { should contain_file('/etc/pki/rpm-gpg/RPM-GPG-KEY-ScaleIO').with(
+        :source => 'puppet:///modules/scaleio/RPM-GPG-KEY-ScaleIO',
+        :owner => 'root',
+        :group => '0',
+        :mode => '0644',
+    ).that_notifies('Exec[scaleio::rpmkey::import]') }
 
-  context 'should not update SIO packages' do
-    let(:facts) { facts_default.merge({:package_emc_scaleio_sds_version => '1'}) }
-
-    it { should contain_package__verifiable('EMC-ScaleIO-sds').with(
-        :version => 'installed',
-        :manage_package => false
-    ) }
+    it { should contain_exec('scaleio::rpmkey::import').with(
+        :command => 'rpm --import /etc/pki/rpm-gpg/RPM-GPG-KEY-ScaleIO',
+        :refreshonly => true,
+    )}
   end
 end
-

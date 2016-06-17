@@ -110,7 +110,7 @@ describe provider_class do
       provider.expects(:scli).with('--modify_spare_policy', '--protection_domain_name', 'myPDomain', '--storage_pool_name', 'myNewPool', '--spare_percentage', '34%', '--i_am_sure').returns([])
       provider.expects(:scli).with('--modify_zero_padding_policy', '--protection_domain_name', 'myPDomain', '--storage_pool_name', 'myNewPool', '--enable_zero_padding').returns([])
       provider.expects(:scli).with('--set_rmcache_usage', '--protection_domain_name', 'myPDomain', '--storage_pool_name', 'myNewPool', '--i_am_sure', '--use_rmcache').returns([])
-      provider.expects(:sleep).with(30).returns([])
+      provider.expects(:sleep).with(1).returns([])
       provider.create
     end
   end

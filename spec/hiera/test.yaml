@@ -1,7 +1,9 @@
 ---
-scaleio::mdm_ips: ['1.2.3.4', '1.2.3.5']
-scaleio::tb_ips: ['1.2.3.6']
 scaleio::system_name: sysname
-
-scaleio::license: HDJ96HJE5K7KDIKDPO57223MMDTGJ09MDDZ6KK
-
+scaleio::mdm_ips:
+  - '10.0.0.1'
+  - '10.0.0.2'
+  - '10.0.0.3'
+scaleio::tb_ips:
+  - '10.0.0.4'
+  - '10.0.0.5'

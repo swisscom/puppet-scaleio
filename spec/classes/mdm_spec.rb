@@ -1,156 +1,132 @@
-require File.expand_path(File.join(File.dirname(__FILE__),'../spec_helper'))
+require File.expand_path(File.join(File.dirname(__FILE__), '../spec_helper'))
 
 describe 'scaleio::mdm', :type => 'class' do
-  let(:facts){
-    {
-      :interfaces => 'eth0',
-      :architecture => 'x86_64',
-      :operatingsystem => 'RedHat',
-    }
-  }
 
-  let(:pre_condition){"Exec{ path => '/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin' }"}
+  # facts definition
+  let(:facts_default) do
+    {
+        :osfamily => 'RedHat',
+        :operatingsystem => 'RedHat',
+        :operatingsystemmajrelease => '7',
+        :concat_basedir => '/var/lib/puppet/concat',
+        :is_virtual => false,
+        :ipaddress => '10.0.0.1',
+        :interfaces => 'eth0',
+        :ipaddress_eth0 => '10.0.0.1',
+        :fqdn => 'node1.example.com',
+        :kernel => 'linux',
+        :architecture => 'x86_64',
+    }
+  end
+  let(:facts) { facts_default }
+
+  # pre_condition definition
+  let(:pre_condition) do
+    [
+        "Exec{ path => '/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin' }",
+        "include scaleio"
+    ]
+  end
 
   describe 'with standard' do
     it { should compile.with_all_deps }
-    it { should contain_class('scaleio') }
+
     it { should contain_package__verifiable('EMC-ScaleIO-mdm').with(
-      :version        => 'installed',
-    )}
-    it { should_not contain_class('scaleio::mdm::primary') }
-    it { should_not contain_class('sudo::rule') }
-    it { should contain_class('scaleio::mdm::callhome') }
-    it { should_not contain_consul_kv('scaleio/sysname/cluster_setup/secondary')}
+        :version => 'installed',
+        :manage_package => true,
+        :tag => 'scaleio-install',
+    ) }
 
-    it { should contain_file('/var/lib/puppet/module_data/scaleio/add_scaleio_user').with(
-      :owner   => 'root',
-      :group   => 0,
-      :mode    => '0700',
-    )}
-
-    it { should contain_file('/var/lib/puppet/module_data/scaleio/update_scaleio_password').with(
-      :owner   => 'root',
-      :group   => 0,
-      :mode    => '0700',
-    )}
-
+    it { should contain_file('/opt/emc/scaleio/scripts').with(
+        :ensure => 'directory',
+        :owner => 'root',
+        :group => 'root',
+        :mode => '0600',
+        :require => 'Package::Verifiable[EMC-ScaleIO-mdm]',
+    ) }
+    it { should contain_file('/opt/emc/scaleio/scripts/scli_wrap.sh').with(
+        :owner => 'root',
+        :group => 'root',
+        :mode => '0700',
+        :require => 'File[/opt/emc/scaleio/scripts]',
+    ) }
+    it { should contain_file('/opt/emc/scaleio/scripts/add_scaleio_user.sh').with(
+        :owner => 'root',
+        :group => 'root',
+        :mode => '0700',
+        :require => 'File[/opt/emc/scaleio/scripts]',
+    ) }
+    it { should contain_file('/opt/emc/scaleio/scripts/change_scaleio_password.sh').with(
+        :owner => 'root',
+        :group => 'root',
+        :mode => '0700',
+        :require => 'File[/opt/emc/scaleio/scripts]',
+    ) }
     it { should contain_file('/etc/bash_completion.d/si').with(
-      :content => 'complete -o bashdefault -o default -o nospace -F _scli si',
-      :owner   => 'root',
-      :group   => 0,
-      :mode    => '0644',
-      :require => 'Package::Verifiable[EMC-ScaleIO-mdm]',
-		)}
+        :content => 'complete -o bashdefault -o default -o nospace -F _scli si',
+        :owner => 'root',
+        :group => 'root',
+        :mode => '0644',
+        :require => 'File[/opt/emc/scaleio/scripts]',
+    ) }
     it { should contain_file('/usr/bin/si').with(
-      :ensure => 'link',
-      :target => '/var/lib/puppet/module_data/scaleio/scli_wrap',
-		)}
+        :ensure => 'link',
+        :target => '/opt/emc/scaleio/scripts/scli_wrap.sh',
+    ) }
+
+    it { should_not include_class('scaleio::mdm::primary') }
+    it { should include_class('scaleio::mdm::secondary') }
+    it { should_not include_class('scaleio::mdm::callhome') }
   end
-  context 'on the primary' do
-    let(:facts){
-      {
-        :interfaces => 'eth0',
-        :ipaddress => '1.2.3.4',
-        :architecture => 'x86_64',
-        :operatingsystem => 'RedHat',
-        :scaleio_is_primary_mdm => 'true',
-      }
-    }
+
+  context 'on the primary MDM' do
+    let(:facts) { facts_default.merge({:scaleio_is_primary_mdm => true}) }
+
     it { should contain_class('scaleio::mdm::primary') }
-    it { should_not contain_consul_kv('scaleio/sysname/cluster_setup/secondary')}
   end
+
+  context 'on the first MDM when bootstrapping' do
+    let(:facts) { facts_default.merge({:scaleio_mdm_clustersetup_needed => true}) }
+
+    it { should contain_class('scaleio::mdm::primary') }
+  end
+
+  context 'on the 3rd MDM' do
+    let(:facts) { facts_default.merge({
+                                          :ipaddress => '10.0.0.3',
+                                          :interfaces => 'eth0',
+                                          :ipaddress_eth0 => '10.0.0.3',
+                                      }) }
+    it { should contain_class('scaleio::mdm::secondary') }
+  end
+
   context 'on the primary with ip on a different interface' do
-    let(:facts){
-      {
-        :interfaces => 'eth0,eth10',
-        :ipaddress_eth10 => '1.2.3.4',
-        :architecture => 'x86_64',
-        :operatingsystem => 'RedHat',
-        :scaleio_is_primary_mdm => 'true',
-      }
-    }
+    let(:facts) { facts_default.merge({
+                                          :scaleio_is_primary_mdm => true,
+                                          :interfaces => 'eth0,eth10',
+                                          :ipaddress_eth0 => '10.0.0.20',
+                                          :ipaddress_eth10 => '10.0.0.1',
+                                      }) }
+
     it { should contain_class('scaleio::mdm::primary') }
   end
+
   context 'without callhome' do
-    let(:pre_condition){[
-      "class{'scaleio':
-        callhome => false,
-       }",
-       "Exec{ path => '/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin' }"
-    ]}
-    it { should_not contain_class('scaleio::mdm::callhome') }
+    let(:facts) { facts_default.merge({
+                                          :fqdn => 'use_callhome.example.com',
+                                      }) }
+
+    it { should contain_class('scaleio::mdm::callhome') }
   end
 
-  context 'using consul on the secondary' do
-    let(:facts){
-      {
-        :interfaces => 'eth0',
-        :ipaddress => '1.2.3.5',
-        :architecture => 'x86_64',
-        :operatingsystem => 'RedHat',
-        :fqdn => 'consul.example.com',
-        :scaleio_mdm_clustersetup_needed => 'true'
-      }
-    }
-    it { should contain_consul_kv('scaleio/sysname/cluster_setup/secondary').with(
-        :value   => 'ready',
-        :require => ['Service[consul]', 'Package::Verifiable[EMC-ScaleIO-mdm]']
-      )}
-  end
-
-  context 'using standby MDMs' do
-    let(:facts){
-      {
-        :interfaces => 'eth0',
-        :ipaddress => '1.2.3.5',
-        :architecture => 'x86_64',
-        :operatingsystem => 'RedHat',
-        :fqdn => 'standbymdms.example.com',
-        :scaleio_mdm_clustersetup_needed => 'true'
-      }
-    }
-    it { should contain_exec('scaleio::mdm::setup_failover').with(
-      :command => "/opt/emc/scaleio/mdm_failover/bin/delete_service.sh ; ps -ef |grep '[m]dm_failover.py' |awk '{print \$2}' |xargs -r kill ; /opt/emc/scaleio/mdm_failover/bin/mdm_failover_post_install.py --mdms_list='[1.2.3.4]+[1.2.3.5]+[1.2.3.6]' --tbs_list='[1.2.3.7]+[1.2.3.8]' --username=admin --password='admin'",
-      :unless  => "fgrep \"mdms': '[1.2.3.4]+[1.2.3.5]+[1.2.3.6]'\" /opt/emc/scaleio/mdm_failover/cfg/conf.txt |fgrep \"tbs': '[1.2.3.7]+[1.2.3.8]'\" |egrep \"admin|$(echo -n 'admin' |base64)\"",
-      :require => 'Package::Verifiable[EMC-ScaleIO-mdm]',
-      :returns => [ 0, '', ' ']
-    )}
-    it { should contain_service('mdm_failover').with(
-      :require => 'Exec[scaleio::mdm::setup_failover]',
-      :ensure  => 'running',
-    )}
-    it { should contain_package('bzip2').with(
-      :ensure => 'installed',
-    )}
-  end
-
-  context 'with external monitoring user' do
-    let(:pre_condition){[
-      "class{'scaleio':
-        external_monitoring_user => 'monitor'
-       }",
-       "Exec{ path => '/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin' }"
-    ]}
-    it { should contain_file('/var/lib/puppet/module_data/scaleio/scli_wrap_monitoring').with(
-        :owner   => 'root',
-        :group   => 0,
-        :mode    => '0700',
-        :require => 'Package::Verifiable[EMC-ScaleIO-mdm]'
-    )}
-  end
   context 'should not update SIO packages' do
-    let(:facts){
-      {
-        :interfaces => 'eth0,eth10',
-        :ipaddress_eth10 => '1.2.3.4',
-        :architecture => 'x86_64',
-        :operatingsystem => 'RedHat',
-        :package_emc_scaleio_mdm_version => 'asdfadf',
-      }
-    }
+    let(:facts) { facts_default.merge({
+                                          :package_emc_scaleio_mdm_version => '1',
+                                      }) }
+
     it { should contain_package__verifiable('EMC-ScaleIO-mdm').with(
-      :version        => 'installed',
-      :manage_package => false
-    )}
+        :version => 'installed',
+        :manage_package => false
+    ) }
   end
 end

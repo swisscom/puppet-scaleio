@@ -61,55 +61,64 @@
 #
 class scaleio(
   $version                  = 'installed',
-  $callhome                 = true,
-  $mdm_ips                  = false,
-  $tb_ips                   = false,
-  $license                  = undef,
+  $system_name              = 'my-sio-system',
   $password                 = 'admin',
   $old_password             = 'admin',
+
+  $mgmt_addresses           = [],
+  $mdm_ips                  = [],
+  $tb_ips                   = [],
+
+  $callhome                 = false,
+  $use_consul               = false,
+
+  $users                    = { },
+  $protection_domains       = { },
+  $storage_pools            = { },
+  $sds                      = { },
+  $sdc_names                = { },
+  $volumes                  = { },
+  $components               = [],
+  $purge                    = false,
+
+  $restricted_sdc_mode      = true,
+  $ramcache_size            = 128,
+
+  $lvm                      = false,
+  $syslog_ip_port           = undef,
   $monitoring_user          = 'monitoring',
   $monitoring_passwd        = 'Monitor1',
   $external_monitoring_user = false,
-  $syslog_ip_port           = undef,
-  $system_name              = undef,
-  $purge                    = false,
-  $mgmt_addresses           = [],
-  $users                    = {},
-  $protection_domains       = {},
-  $storage_pools            = {},
-  $sds                      = {},
-  $sdc_names                = {},
-  $volumes                  = {},
-  $components               = [],
-  $lvm                      = false,
-  $use_consul               = false,
-  $restricted_sdc_mode      = true,
-  $ramcache_size            = 128,
 ) {
 
   ensure_packages(['numactl','python'])
 
+  include ::scaleio::rpmkey
+
+  if $scaleio::use_consul {
+    include ::consul
+  }
+
   # extract all local ip addresses of all interfaces
   $interface_names = split($::interfaces, ',')
   $interfaces_addresses = split(inline_template('<%=
-    @interface_names.reject{ |ifc| ifc == "lo" }.map{ |ifc| scope.lookupvar("ipaddress_#{ifc}") }.join(" ")%>'),
-    ' ')
+    @interface_names.reject{ |ifc| ifc == "lo" }.map{
+      |ifc| scope.lookupvar("ipaddress_#{ifc}")
+    }.join(" ")%>'), ' ')
 
-  # both must be set and if they are they should be valid
-  if $mdm_ips {
-    validate_re($mdm_ips[0], '^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){3}$')
-    validate_re($mdm_ips[1], '^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){3}$')
-    if $mdm_ips[0] == $mdm_ips[1] {
-      fail('$primary_mdm_ip and $secondary_mdm_ip can\'t be the same!')
-    }
+  # there must be at least two valid IP addresses
+  if ! empty($mdm_ips) {
+    validate_re(join($mdm_ips,':_:'), '^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){3}(:_:)?){1,3}$',
+      'mdm_ips must be an array with up to 3 valid MDM IPs')
 
     # check whether one of the local IPs matches with one of the defined MDM IPs
     # => if so, install MDM on this host
     $current_mdm_ip = intersection($mdm_ips, $interfaces_addresses)
   }
 
-  if $tb_ips and $tb_ips[0] {
-    validate_re($tb_ips[0], '^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){3}$')
+  if ! empty($tb_ips) {
+    validate_re(join($tb_ips,':_:'), '^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){3}(:_:)?){1,2}$',
+      'tb_ips must be an array with up to 2 valid tie-breaker IPs')
 
     # check whether one of the local IPs matches with one of the defined tb IPs
     # => if so, install tb on this host
@@ -122,13 +131,15 @@ class scaleio(
   if 'sds' in $components {
     include scaleio::sds
   }
-  if 'mdm' in $components or (size($current_mdm_ip) >= 1 and has_ip_address($current_mdm_ip[0])) {
-    include scaleio::mdm
-  }
-  if 'tb' in $components or (size($current_tb_ip) >= 1 and has_ip_address($current_tb_ip[0])) {
-    include scaleio::tb
-  }
   if 'lia' in $components {
     include scaleio::lia
+  }
+  if 'mdm' in $components or (size($current_mdm_ip) >= 1
+  and has_ip_address($current_mdm_ip[0])) {
+    include scaleio::mdm
+  }
+  if 'tb' in $components or (size($current_tb_ip) >= 1
+  and has_ip_address($current_tb_ip[0])) {
+    include scaleio::tb
   }
 }

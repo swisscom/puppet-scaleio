@@ -1,26 +1,43 @@
 require File.expand_path(File.join(File.dirname(__FILE__),'../spec_helper'))
 
 describe 'scaleio::sdc', :type => 'class' do
-  let(:facts){
+  # facts definition
+  let(:facts_default) do
     {
-      :interfaces => 'eth0',
+        :osfamily => 'RedHat',
+        :operatingsystem => 'RedHat',
+        :operatingsystemmajrelease => '7',
+        :concat_basedir => '/var/lib/puppet/concat',
+        :is_virtual => false,
+        :ipaddress => '10.0.0.1',
+        :fqdn => 'node1.example.com',
+        :kernel => 'linux',
+        :architecture => 'x86_64',
     }
-  }
-  # mdm ips are configured in hiera
+  end
+  let(:facts) { facts_default }
+
+  # pre_condition definition
+  let(:pre_condition) do
+    [
+        "Exec{ path => '/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin' }",
+    ]
+  end
+
   describe 'with standard' do
     #it { should compile.with_all_deps }
     it { should contain_class('scaleio') }
     it { should contain_package__verifiable('EMC-ScaleIO-sdc').with_version('installed') }
 
     it { should contain_exec('scaleio::sdc_add_mdm').with(
-      :command  => '/bin/emc/scaleio/drv_cfg --add_mdm --ip 1.2.3.4,1.2.3.5 --file /bin/emc/scaleio/drv_cfg.txt',
+      :command  => '/bin/emc/scaleio/drv_cfg --add_mdm --ip 10.0.0.1,10.0.0.2,10.0.0.3 --file /bin/emc/scaleio/drv_cfg.txt',
       :unless   => 'grep -qE \'^mdm \' /bin/emc/scaleio/drv_cfg.txt',
       :require  => 'Package::Verifiable[EMC-ScaleIO-sdc]'
     )}
 
     it { should contain_exec('scaleio::sdc_mod_mdm').with(
-      :command => "/bin/emc/scaleio/drv_cfg --mod_mdm_ip --ip $(grep -E '^mdm' /bin/emc/scaleio/drv_cfg.txt |awk '{print $2}' |awk -F ',' '{print $1}') --new_mdm_ip 1.2.3.4,1.2.3.5 --file /bin/emc/scaleio/drv_cfg.txt",
-      :unless  => "grep -qE '^mdm 1.2.3.4,1.2.3.5$' /bin/emc/scaleio/drv_cfg.txt",
+      :command => "/bin/emc/scaleio/drv_cfg --mod_mdm_ip --ip $(grep -E '^mdm' /bin/emc/scaleio/drv_cfg.txt |awk '{print $2}' |awk -F ',' '{print $1}') --new_mdm_ip 10.0.0.1,10.0.0.2,10.0.0.3 --file /bin/emc/scaleio/drv_cfg.txt",
+      :unless  => "grep -qE '^mdm 10.0.0.1,10.0.0.2,10.0.0.3$' /bin/emc/scaleio/drv_cfg.txt",
       :require  => 'Package::Verifiable[EMC-ScaleIO-sdc]'
     )}
     it { should_not contain_file_line ( 'scaleio_lvm_types') }
@@ -49,15 +66,8 @@ describe 'scaleio::sdc', :type => 'class' do
     )}
   end
   context 'should not update SIO packages' do
-    let(:facts){
-      {
-        :interfaces => 'eth0,eth10',
-        :ipaddress_eth10 => '1.2.3.4',
-        :architecture => 'x86_64',
-        :operatingsystem => 'RedHat',
-        :package_emc_scaleio_sdc_version => 'asdfadf',
-      }
-    }
+    let(:facts) { facts_default.merge({:package_emc_scaleio_sdc_version => '1'}) }
+
     it { should contain_package__verifiable('EMC-ScaleIO-sdc').with(
       :version        => 'installed',
       :manage_package => false
