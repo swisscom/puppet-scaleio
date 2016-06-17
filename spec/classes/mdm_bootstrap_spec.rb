@@ -27,22 +27,10 @@ describe 'scaleio::mdm::bootstrap', :type => 'class' do
   end
 
   describe 'with standard' do
-    it { should contain_file_line('scaleio::mdm::bootstrap::actor').with(
-        :path => '/opt/emc/scaleio/mdm/cfg/conf.txt',
-        :line => 'actor_role_is_manager=1',
-    ).that_notifies('Exec[scaleio::mdm::bootstrap::restart_mdm]') }
-
-    it { should contain_exec('scaleio::mdm::bootstrap::restart_mdm').with(
-        :command => 'systemctl restart mdm.service',
-        :refreshonly => true,
-    ) }
-
     it { should contain_exec('scaleio::mdm::bootstrap::create_cluster').with(
-        :command => 'scli --create_mdm_cluster --master_mdm_ip '\
-                    '10.0.0.1 --use_nonsecure_communication --accept_license',
-        :onlyif => 'scli --query_cluster --approve_certificate\ grep -qE '\
-                    '"Error: MDM failed command.  '\
-                    'Status: The MDM cluster state is incorrect"',
-    ).that_requires('Exec[scaleio::mdm::bootstrap::restart_mdm]') }
+        :command => 'scli --create_mdm_cluster --master_mdm_ip 10.0.0.1 --use_nonsecure_communication --accept_license; sleep 5',
+        :onlyif => 'scli --query_cluster --approve_certificate 2>&1 |grep -qE "Error: MDM failed command.  Status: The MDM cluster state is incorrect"',
+        :require => 'Exec[scaleio::mdm::installation::restart_mdm]',
+    ) }
   end
 end

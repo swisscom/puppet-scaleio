@@ -75,24 +75,25 @@ describe 'scaleio::mdm', :type => 'class' do
     ) }
 
     it { should_not include_class('scaleio::mdm::primary') }
-    it { should include_class('scaleio::mdm::secondary') }
     it { should_not include_class('scaleio::mdm::callhome') }
+    it { should include_class('scaleio::mdm::secondary') }
     it { should include_class('scaleio::mdm::monitoring') }
+    it { should include_class('scaleio::mdm::installation') }
   end
 
-  context 'on the primary MDM' do
+  describe 'on the primary MDM' do
     let(:facts) { facts_default.merge({:scaleio_is_primary_mdm => true}) }
 
     it { should contain_class('scaleio::mdm::primary') }
   end
 
-  context 'on the first MDM when bootstrapping' do
+  describe 'on the first MDM when bootstrapping' do
     let(:facts) { facts_default.merge({:scaleio_mdm_clustersetup_needed => true}) }
 
     it { should contain_class('scaleio::mdm::primary') }
   end
 
-  context 'on the 3rd MDM' do
+  describe 'on the 3rd MDM' do
     let(:facts) { facts_default.merge({
                                           :ipaddress => '10.0.0.3',
                                           :interfaces => 'eth0',
@@ -101,7 +102,7 @@ describe 'scaleio::mdm', :type => 'class' do
     it { should contain_class('scaleio::mdm::secondary') }
   end
 
-  context 'on the primary with ip on a different interface' do
+  describe 'on the primary with ip on a different interface' do
     let(:facts) { facts_default.merge({
                                           :scaleio_is_primary_mdm => true,
                                           :interfaces => 'eth0,eth10',
@@ -112,22 +113,11 @@ describe 'scaleio::mdm', :type => 'class' do
     it { should contain_class('scaleio::mdm::primary') }
   end
 
-  context 'without callhome' do
+  describe 'without callhome' do
     let(:facts) { facts_default.merge({
                                           :fqdn => 'use_callhome.example.com',
                                       }) }
 
     it { should contain_class('scaleio::mdm::callhome') }
-  end
-
-  context 'should not update SIO packages' do
-    let(:facts) { facts_default.merge({
-                                          :package_emc_scaleio_mdm_version => '1',
-                                      }) }
-
-    it { should contain_package__verifiable('EMC-ScaleIO-mdm').with(
-        :version => 'installed',
-        :manage_package => false
-    ) }
   end
 end

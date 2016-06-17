@@ -5,21 +5,18 @@ class scaleio::mdm {
   $add_scaleio_user        = "${script_dir}/add_scaleio_user.sh"
   $change_scaleio_password = "${script_dir}/change_scaleio_password.sh"
 
+  include scaleio::mdm::monitoring
+
+  class{'scaleio::mdm::installation':
+    is_tiebreaker => false,
+  }
+
   if $scaleio::callhome{
     include scaleio::mdm::callhome
   }
 
   if $scaleio::use_consul {
     include ::consul
-  }
-
-  include scaleio::mdm::monitoring
-
-  # only do a new installation of the package
-  package::verifiable{ 'EMC-ScaleIO-mdm':
-    version        => $scaleio::version,
-    manage_package => !$::package_emc_scaleio_mdm_version,
-    tag            => 'scaleio-install',
   }
 
   file{

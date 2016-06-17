@@ -1,12 +1,8 @@
 Facter.add('scaleio_is_primary_mdm') do
+  confine :kernel => 'Linux'
+
   setcode do
-    command = "scli --query_cluster"
-    if Facter.value(:kernel) == 'windows'
-      command = "#{command} 2>NUL"
-    else
-      command = "#{command} 2>/dev/null"
-    end
-    output = Facter::Util::Resolution.exec command
-    output.nil? ? false : output.include?("Primary ")
+    output = Facter::Util::Resolution.exec('scli --query_cluster --approve_certificate 2>/dev/null')
+    output.nil? ? false : !!(output =~ /Master MDM:/)
   end
 end

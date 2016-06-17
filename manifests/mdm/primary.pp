@@ -5,8 +5,10 @@ class scaleio::mdm::primary {
   include scaleio::mdm::bootstrap
 
   # validate password
-  validate_re($scaleio::password, '^[A-Za-z0-9_]+$', 'ScaleIO admin password
-  must be alphanumeric')
+  validate_re($scaleio::password, '^[A-Za-z0-9_]+$', 'ScaleIO admin password must be alphanumeric')
+
+
+
 
   # if size($::scaleio::mdm_ips) < 2 or size($::scaleio::tb_ips) < 1 {
   #   fail('To manage a ScaleIO cluster, there must be at least two MDMs and
