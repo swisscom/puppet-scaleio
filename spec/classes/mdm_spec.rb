@@ -77,6 +77,7 @@ describe 'scaleio::mdm', :type => 'class' do
     it { should_not include_class('scaleio::mdm::primary') }
     it { should include_class('scaleio::mdm::secondary') }
     it { should_not include_class('scaleio::mdm::callhome') }
+    it { should include_class('scaleio::mdm::monitoring') }
   end
 
   context 'on the primary MDM' do

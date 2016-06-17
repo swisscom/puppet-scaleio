@@ -13,6 +13,8 @@ class scaleio::mdm {
     include ::consul
   }
 
+  include scaleio::mdm::monitoring
+
   # only do a new installation of the package
   package::verifiable{ 'EMC-ScaleIO-mdm':
     version        => $scaleio::version,
