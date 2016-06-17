@@ -106,7 +106,6 @@ class scaleio(
       |ifc| scope.lookupvar("ipaddress_#{ifc}")
     }.join(" ")%>'), ' ')
 
-  # there must be at least two valid IP addresses
   if ! empty($mdms) {
     # check whether one of the local IPs matches with one of the defined MDM IPs
     # => if so, install MDM on this host
