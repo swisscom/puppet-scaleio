@@ -2,7 +2,7 @@
 scaleio::system_name: sysname
 scaleio::mdms:
   - ips: '10.0.0.1'
-    mgmt_ips: '11.0.0.2'
+    mgmt_ips: '11.0.0.1'
   - ips: '10.0.0.2'
     mgmt_ips: '11.0.0.2'
   - ips: '10.0.0.3'
