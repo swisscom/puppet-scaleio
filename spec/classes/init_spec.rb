@@ -98,37 +98,4 @@ describe 'scaleio', :type => 'class' do
 
     it { should contain_class('scaleio::lia') }
   end
-
-  describe 'with invalid IPs' do
-    context 'with wrong primary ip' do
-      let(:params) { {
-          :mdm_ips => ['10.0.0.1a', '10.0.0.1'],
-      } }
-      it do
-        expect {
-          is_expected.to compile
-        }.to raise_error(RSpec::Expectations::ExpectationNotMetError, /mdm_ips must/)
-      end
-    end
-    context 'with wrong secondary ip' do
-      let(:params) { {
-          :mdm_ips => ['10.0.0.1', '10.0.0.1a'],
-      } }
-      it do
-        expect {
-          is_expected.to compile
-        }.to raise_error(RSpec::Expectations::ExpectationNotMetError, /mdm_ips must/)
-      end
-    end
-    context 'with wrong tb ip' do
-      let(:params) { {
-          :tb_ips => ['10.0.0.1s'],
-      } }
-      it do
-        expect {
-          is_expected.to compile
-        }.to raise_error(RSpec::Expectations::ExpectationNotMetError, /tb_ips must/)
-      end
-    end
-  end
 end

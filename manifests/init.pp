@@ -66,8 +66,8 @@ class scaleio(
   $old_password             = 'admin',
 
   $mgmt_addresses           = [],
-  $mdm_ips                  = [],
-  $tb_ips                   = [],
+  $mdms                     = [],
+  $tbs                      = [],
 
   $callhome                 = false,
   $use_consul               = false,
@@ -107,21 +107,17 @@ class scaleio(
     }.join(" ")%>'), ' ')
 
   # there must be at least two valid IP addresses
-  if ! empty($mdm_ips) {
-    validate_re(join($mdm_ips,':_:'), '^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){3}(:_:)?){1,3}$',
-      'mdm_ips must be an array with up to 3 valid MDM IPs')
-
+  if ! empty($mdms) {
     # check whether one of the local IPs matches with one of the defined MDM IPs
     # => if so, install MDM on this host
+    $mdm_ips = extract_values_from_hash_array($mdms, 'ips')
     $current_mdm_ip = intersection($mdm_ips, $interfaces_addresses)
   }
 
-  if ! empty($tb_ips) {
-    validate_re(join($tb_ips,':_:'), '^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){3}(:_:)?){1,2}$',
-      'tb_ips must be an array with up to 2 valid tie-breaker IPs')
-
+  if ! empty($tbs) {
     # check whether one of the local IPs matches with one of the defined tb IPs
     # => if so, install tb on this host
+    $tb_ips = extract_values_from_hash_array($tbs, 'ips')
     $current_tb_ip = intersection($tb_ips, $interfaces_addresses)
   }
 

@@ -1,9 +1,12 @@
 ---
 scaleio::system_name: sysname
-scaleio::mdm_ips:
-  - '10.0.0.1'
-  - '10.0.0.2'
-  - '10.0.0.3'
-scaleio::tb_ips:
-  - '10.0.0.4'
-  - '10.0.0.5'
+scaleio::mdms:
+  - ips: '10.0.0.1'
+    mgmt_ips: '11.0.0.2'
+  - ips: '10.0.0.2'
+    mgmt_ips: '11.0.0.2'
+  - ips: '10.0.0.3'
+    mgmt_ips: '11.0.0.3'
+scaleio::tbs:
+  - ips: '10.0.0.4'
+  - ips: '10.0.0.5'
