@@ -65,9 +65,8 @@ class scaleio(
   $password                 = 'admin',
   $old_password             = 'admin',
 
-  $mgmt_addresses           = [],
-  $mdms                     = [],
-  $tbs                      = [],
+  $mdms                     = {},
+  $tiebreakers              = {},
 
   $callhome                 = false,
   $use_consul               = false,
@@ -109,14 +108,14 @@ class scaleio(
   if ! empty($mdms) {
     # check whether one of the local IPs matches with one of the defined MDM IPs
     # => if so, install MDM on this host
-    $mdm_ips = extract_values_from_hash_array($mdms, 'ips')
+    $mdm_ips = scaleio_get_first_mdm_ips($mdms, 'ips')
     $current_mdm_ip = intersection($mdm_ips, $interfaces_addresses)
   }
 
-  if ! empty($tbs) {
+  if ! empty($tiebreakers) {
     # check whether one of the local IPs matches with one of the defined tb IPs
     # => if so, install tb on this host
-    $tb_ips = extract_values_from_hash_array($tbs, 'ips')
+    $tb_ips = scaleio_get_first_mdm_ips($tiebreakers, 'ips')
     $current_tb_ip = intersection($tb_ips, $interfaces_addresses)
   }
 

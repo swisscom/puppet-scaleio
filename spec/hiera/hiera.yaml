@@ -3,7 +3,7 @@
   - yaml
 :hierarchy:
   - '%{::fqdn}'
-  - test
+  - stack
 
 :yaml:
   :datadir: 'spec/hiera'

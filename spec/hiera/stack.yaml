@@ -1,0 +1,17 @@
+---
+scaleio::system_name: sysname
+scaleio::mdms:
+  myMDM1:
+    ips: '10.0.0.1'
+    mgmt_ips: '11.0.0.1'
+  myMDM2:
+    ips: '10.0.0.2'
+    mgmt_ips: '11.0.0.2'
+  myMDM3:
+    ips: '10.0.0.3'
+    mgmt_ips: '11.0.0.3'
+scaleio::tiebreakers:
+  myTB1:
+    ips: '10.0.0.4'
+  myTB2:
+    ips: '10.0.0.5'
