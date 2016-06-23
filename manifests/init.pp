@@ -65,8 +65,9 @@ class scaleio(
   $password                 = 'admin',
   $old_password             = 'admin',
 
-  $mdms                     = {},
-  $tiebreakers              = {},
+  $mdms                     = { },
+  $tiebreakers              = { },
+  $bootstrap_mdm_name       = '',
 
   $callhome                 = false,
   $use_consul               = false,
@@ -90,7 +91,7 @@ class scaleio(
   $external_monitoring_user = false,
 ) {
 
-  ensure_packages(['numactl','python'])
+  ensure_packages(['numactl'])
 
   include ::scaleio::rpmkey
 
@@ -105,7 +106,10 @@ class scaleio(
       |ifc| scope.lookupvar("ipaddress_#{ifc}")
     }.join(" ")%>'), ' ')
 
-  if ! empty($mdms) {
+  $cluster_setup_ips = any2array($mdms[$bootstrap_mdm_name]['ips'])
+  $cluster_setup_ip = $cluster_setup_ips[0]
+
+    if ! empty($mdms) {
     # check whether one of the local IPs matches with one of the defined MDM IPs
     # => if so, install MDM on this host
     $mdm_ips = scaleio_get_first_mdm_ips($mdms, 'ips')
@@ -128,12 +132,10 @@ class scaleio(
   if 'lia' in $components {
     include scaleio::lia
   }
-  if 'mdm' in $components or (size($current_mdm_ip) >= 1
-  and has_ip_address($current_mdm_ip[0])) {
+  if 'mdm' in $components or (size($current_mdm_ip) >= 1 and has_ip_address($current_mdm_ip[0])) {
     include scaleio::mdm
   }
-  if 'tb' in $components or (size($current_tb_ip) >= 1
-  and has_ip_address($current_tb_ip[0])) {
+  if 'tb' in $components or (size($current_tb_ip) >= 1 and has_ip_address($current_tb_ip[0])) {
     include scaleio::tb
   }
 }

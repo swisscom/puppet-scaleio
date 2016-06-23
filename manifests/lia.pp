@@ -12,7 +12,8 @@ class scaleio::lia{
   # only versionlock package
   package::verifiable{'EMC-ScaleIO-lia':
     version        => $scaleio::version,
-    manage_package => false
+    manage_package => false,
+    require        => Package['numactl'],
   }
 
   # Setting environment variables is not supported by package

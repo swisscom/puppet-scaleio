@@ -7,5 +7,6 @@ class scaleio::sds {
     version        => $scaleio::version,
     manage_package => !$::package_emc_scaleio_sds_version,
     tag            => 'scaleio-install',
+    require        => Package['numactl'],
   }
 }

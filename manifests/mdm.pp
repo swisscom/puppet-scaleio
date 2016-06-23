@@ -15,10 +15,6 @@ class scaleio::mdm {
     include scaleio::mdm::callhome
   }
 
-  if $scaleio::use_consul {
-    include ::consul
-  }
-
   file{
     $script_dir:
       ensure  => directory,
@@ -58,7 +54,7 @@ class scaleio::mdm {
   # Include primary mdm class, if this server shall be the primary (first setup)
   # or if we are running on the actual SIO primary mdm
 
-  if (has_ip_address($::scaleio::mdm_ips[0]) and str2bool($::scaleio_mdm_clustersetup_needed)) or str2bool($::scaleio_is_primary_mdm) {
+  if (has_ip_address($scaleio::cluster_setup_ip) and str2bool($::scaleio_mdm_clustersetup_needed)) or str2bool($::scaleio_is_primary_mdm) {
     include scaleio::mdm::primary
   } else{
     include scaleio::mdm::secondary

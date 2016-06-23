@@ -27,7 +27,7 @@ describe 'scaleio::mdm::primary', :type => 'class' do
   end
 
   describe 'with standard' do
-    it { should contain_class('scaleio::mdm::bootstrap') }
+    it { should contain_class('scaleio::mdm::cluster_setup') }
 
   end
 end

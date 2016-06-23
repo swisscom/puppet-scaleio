@@ -2,10 +2,11 @@
 class scaleio::mdm::primary {
   $scli_wrap = $scaleio::mdm::scli_wrap
 
-  include scaleio::mdm::bootstrap
+  include scaleio::mdm::cluster_setup
 
   # validate password
   validate_re($scaleio::password, '^[A-Za-z0-9_]+$', 'ScaleIO admin password must be alphanumeric')
+
 
 
 

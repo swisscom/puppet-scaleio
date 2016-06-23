@@ -7,6 +7,7 @@ class scaleio::sdc {
     version        => $scaleio::version,
     manage_package => !$::package_emc_scaleio_sdc_version,
     tag            => 'scaleio-install',
+    require        => Package['numactl'],
   }
 
   if size($::scaleio::mdm_ips) < 2{

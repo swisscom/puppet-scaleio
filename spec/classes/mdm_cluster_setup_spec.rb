@@ -1,6 +1,6 @@
 require File.expand_path(File.join(File.dirname(__FILE__), '../spec_helper'))
 
-describe 'scaleio::mdm::bootstrap', :type => 'class' do
+describe 'scaleio::mdm::cluster_setup', :type => 'class' do
 
   # facts definition
   let(:facts_default) do
@@ -27,8 +27,8 @@ describe 'scaleio::mdm::bootstrap', :type => 'class' do
   end
 
   describe 'with standard' do
-    it { should contain_exec('scaleio::mdm::bootstrap::create_cluster').with(
-        :command => 'scli --create_mdm_cluster --master_mdm_ip 10.0.0.1 --use_nonsecure_communication --accept_license; sleep 5',
+    it { should contain_exec('scaleio::mdm::cluster_setup::create_cluster').with(
+        :command => 'scli --create_mdm_cluster --master_mdm_ip 10.0.0.1 --master_mdm_management_ip 11.0.0.1 --master_mdm_name myMDM1 --use_nonsecure_communication --accept_license; sleep 5',
         :onlyif => 'scli --query_cluster --approve_certificate 2>&1 |grep -qE "Error: MDM failed command.  Status: The MDM cluster state is incorrect"',
         :require => 'Exec[scaleio::mdm::installation::restart_mdm]',
     ) }

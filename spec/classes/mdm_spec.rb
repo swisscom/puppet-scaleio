@@ -87,7 +87,7 @@ describe 'scaleio::mdm', :type => 'class' do
     it { should contain_class('scaleio::mdm::primary') }
   end
 
-  describe 'on the first MDM when bootstrapping' do
+  describe 'on the first MDM when cluster_setupping' do
     let(:facts) { facts_default.merge({:scaleio_mdm_clustersetup_needed => true}) }
 
     it { should contain_class('scaleio::mdm::primary') }

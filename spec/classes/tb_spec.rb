@@ -32,16 +32,5 @@ describe 'scaleio::tb', :type => 'class' do
     it { should contain_class('scaleio::mdm::installation') }
     it { should_not contain_consul_kv('scaleio/sysname/cluster_setup/tiebreaker')}
   end
-
-
-  describe 'using consul' do
-    let(:facts) { facts_default.merge({:fqdn => 'use_consul.example.com'}) }
-
-    it { should contain_consul_kv('scaleio/sysname/cluster_setup/tiebreaker').with(
-        :value   => 'ready',
-        :require => ['Service[consul]', 'Package::Verifiable[EMC-ScaleIO-mdm]']
-      )}
-  end
-
 end
 

@@ -1,4 +1,5 @@
 ---
+scaleio::bootstrap_mdm_name: myMDM1
 scaleio::system_name: sysname
 scaleio::mdms:
   myMDM1:

@@ -13,6 +13,25 @@ module Puppet::Provider::Scli
       result
     end
 
+    def scli_query_properties(*args)
+      Puppet.debug("Querying scaleio properties #{args}")
+      query_result = scli('--query_properties', args).split("\n")
+      group_name = ''
+      properties = {}
+
+      query_result.each do |line|
+        if line =~ /^([^\s]+)\s([^:]+)/
+          group_name = $2
+          properties[group_name] = Hash.new { |hash, key| hash[key] = {} }
+        else
+          line =~ /^\s+([^\s]+)\s+(.*)$/
+          properties[group_name][$1] = $2
+        end
+      end
+      Puppet.debug("Queried scaleio properties #{properties}")
+      properties
+    end
+
     # From gist: https://gist.github.com/ashrithr/5305786
     def port_open?(ip, port, seconds=1)
       # => checks if a port is open or not on a remote host
@@ -24,20 +43,20 @@ module Puppet::Provider::Scli
           false
         end
       end
-      rescue Timeout::Error
-        false
+    rescue Timeout::Error
+      false
     end
-  
+
     # Increment the consul key by 1, until max_tries is reached.
     # If max_tries is reached, Puppet run will fail
     def consul_max_tries(key, max_tries)
       consul_kv = Puppet::Type.type(:consul_kv).new(
-              :name => "#{key}",
-              :value => '1').provider
+          :name => "#{key}",
+          :value => '1').provider
       tries = consul_kv.send('value') # retrive current try value
 
       tries = tries.empty? ? 1 : tries.to_i + 1
-      if(tries >= max_tries)
+      if (tries >= max_tries)
         raise Puppet::Error, "Reached max_tries (#{tries}) for #{key}"
       end
 
@@ -45,8 +64,8 @@ module Puppet::Provider::Scli
 
       # Update the key
       consul_kv = Puppet::Type.type(:consul_kv).new(
-        :name => "#{key}", 
-        :value => "#{tries}").provider
+          :name => "#{key}",
+          :value => "#{tries}").provider
       consul_kv.send('create')
       Puppet.debug("Key should be here")
     end
@@ -54,14 +73,18 @@ module Puppet::Provider::Scli
     def consul_delete_key(key)
       Puppet.debug("ScaleIO #{key} removing consul key #{key}")
       consul_kv = Puppet::Type.type(:consul_kv).new(
-        :name => "#{key}",
-        :value => '1').provider
+          :name => "#{key}",
+          :value => '1').provider
       tries = consul_kv.send('destroy') # retrive current try value
     end
   end
 
   def scli(*args)
     self.class.scli(args)
+  end
+
+  def scli_query_properties(*args)
+    self.class.scli_query_properties(args)
   end
 
   def port_open?(ip, port, seconds=1)
