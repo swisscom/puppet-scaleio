@@ -1,7 +1,6 @@
 require File.expand_path(File.join(File.dirname(__FILE__), '../spec_helper'))
 
 describe 'scaleio::mdm::installation', :type => 'class' do
-
   # facts definition
   let(:facts_default) do
     {
@@ -75,6 +74,32 @@ describe 'scaleio::mdm::installation', :type => 'class' do
     it { should contain_package__verifiable('EMC-ScaleIO-mdm').with(
         :version => 'installed',
         :manage_package => false
+    ) }
+  end
+
+  describe 'with consul as TB' do
+    let(:facts) { facts_default.merge({:fqdn => 'use_consul.example.com'}) }
+
+    let(:params) { {:mdm_tb_ip => '1.1.1.1'} }
+
+    it { should contain_class('consul') }
+
+    it { should contain_consul_kv('scaleio/sysname/cluster_setup/1.1.1.1').with(
+        :value => 'ready',
+        :require => 'Exec[scaleio::mdm::installation::restart_mdm]',
+    ) }
+  end
+
+  describe 'with consul as MDM' do
+    let(:facts) { facts_default.merge({:fqdn => 'use_consul.example.com'}) }
+
+    let(:params) { {:mdm_tb_ip => '2.2.2.2', :is_tiebreaker => false} }
+
+    it { should contain_class('consul') }
+
+    it { should contain_consul_kv('scaleio/sysname/cluster_setup/2.2.2.2').with(
+        :value => 'ready',
+        :require => 'Exec[scaleio::mdm::installation::restart_mdm]',
     ) }
   end
 end

@@ -2,7 +2,12 @@
 # and set the corresponding role
 class scaleio::mdm::installation(
   $is_tiebreaker = true,
-){
+  $mdm_tb_ip = $is_tiebreaker ?{
+    true  => $::scaleio::current_tb_ip,
+    false => $::scaleio::current_mdm_ip,
+    default => false,
+  }
+) inherits scaleio{
 
   ensure_packages(['python'])
 
@@ -35,11 +40,6 @@ class scaleio::mdm::installation(
 
   if $scaleio::use_consul {
     include ::consul
-
-    $mdm_tb_ip = $is_tiebreaker ?{
-      true  => $::scaleio::current_tb_ip,
-      false => $::scaleio::current_mdm_ip,
-    }
 
     consul_kv{ "scaleio/${::scaleio::system_name}/cluster_setup/${mdm_tb_ip}":
       value   => 'ready',

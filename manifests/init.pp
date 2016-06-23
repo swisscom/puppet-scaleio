@@ -62,7 +62,7 @@
 class scaleio(
   $version                  = 'installed',
   $system_name              = 'my-sio-system',
-  $password                 = 'admin',
+  $password                 = 'myS3cr3t',
   $old_password             = 'admin',
 
   $mdms                     = { },

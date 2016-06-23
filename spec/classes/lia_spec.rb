@@ -34,7 +34,7 @@ describe 'scaleio::lia', :type => 'class' do
     )}
 
     it { should contain_exec("yum install -y 'EMC-ScaleIO-lia'").with(
-      :environment => [ "TOKEN=admin" ],
+      :environment => [ "TOKEN=myS3cr3t" ],
 	  	:unless			 => "rpm -q 'EMC-ScaleIO-lia'",
     )}
 
@@ -65,7 +65,7 @@ describe 'scaleio::lia', :type => 'class' do
     )}
 
     it { should contain_exec("yum install -y 'EMC-ScaleIO-lia-1.44-6-el7'").with(
-      :environment => [ "TOKEN=admin" ],
+      :environment => [ "TOKEN=myS3cr3t" ],
 	  	:unless			 => "rpm -q 'EMC-ScaleIO-lia-1.44-6-el7'",
     )}
 
