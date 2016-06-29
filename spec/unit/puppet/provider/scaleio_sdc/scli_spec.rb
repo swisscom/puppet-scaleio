@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-provider_class = Puppet::Type.type(:scaleio_sdc_name).provider(:scaleio_sdc_name)
+provider_class = Puppet::Type.type(:scaleio_sdc).provider(:scaleio_sdc)
 all_properties = [
   :desc,
 ]
@@ -12,7 +12,7 @@ describe provider_class do
   let(:threeSDC)        { File.read(File.join(fixtures_cli,"sdc_name_query_all_three_sdc.cli")) }
 
   let(:resource) {
-    Puppet::Type.type(:scaleio_sdc_name).new({
+    Puppet::Type.type(:scaleio_sdc).new({
       :ensure   => :present,
       :name     => '172.17.121.10',
       :desc     => 'mySDC',
@@ -68,14 +68,6 @@ describe provider_class do
     it 'creates a sdc_name' do
       provider.expects(:scli).with('--add_sdc', '--sdc_ip', '172.17.121.10', '--sdc_name', 'mySDC').returns([])
       provider.create
-    end
-  end
-
-  describe 'destroy' do
-    it 'removes a sdc_name' do
-      expect{
-        provider.destroy
-      }.to raise_error Puppet::Error, /Destroying \(unmapping\) an SDC name from an IP is not \(yet\?\) supported by ScaleIO/
     end
   end
 

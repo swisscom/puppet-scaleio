@@ -1,15 +1,15 @@
 require 'puppet'
-require 'puppet/type/scaleio_sdc_name'
-describe Puppet::Type.type(:scaleio_sdc_name) do
+require 'puppet/type/scaleio_sdc'
+describe Puppet::Type.type(:scaleio_sdc) do
 
   it 'should require a name' do
     expect {
-      Puppet::Type.type(:scaleio_sdc_name).new({})
+      Puppet::Type.type(:scaleio_sdc).new({})
     }.to raise_error(Puppet::Error, 'Title or name must be provided')
   end
 
   it 'should accept valid parameters' do
-    @sdc_name = Puppet::Type.type(:scaleio_sdc_name).new({
+    @sdc_name = Puppet::Type.type(:scaleio_sdc).new({
         :ensure => :present,
         :name => '172.17.17.1',
         :desc => 'mySDC',
@@ -20,7 +20,7 @@ describe Puppet::Type.type(:scaleio_sdc_name) do
 
   it 'should require a description' do
     expect {
-      Puppet::Type.type(:scaleio_sdc_name).new({
+      Puppet::Type.type(:scaleio_sdc).new({
         :ensure => :present,
         :name   => '172.17.17.1',
         })
@@ -29,7 +29,7 @@ describe Puppet::Type.type(:scaleio_sdc_name) do
 
   it 'should require a valid IP as name' do
     expect {
-      Puppet::Type.type(:scaleio_sdc_name).new({
+      Puppet::Type.type(:scaleio_sdc).new({
         :ensure => :present,
         :name   => '259.17.17.1',
         :desc   => 'mySDC',

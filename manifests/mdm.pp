@@ -33,13 +33,13 @@ class scaleio::mdm {
       owner   => 'root',
       group   => 'root',
       mode    => '0700',
-      require => File[$script_dir];
+      require => File[$scli_wrap];
     $change_scaleio_password:
       content => template('scaleio/change_scaleio_password.sh.erb'),
       owner   => 'root',
       group   => 'root',
       mode    => '0700',
-      require => File[$script_dir];
+      require => File[$add_scaleio_user];
     '/etc/bash_completion.d/si':
       content => 'complete -o bashdefault -o default -o nospace -F _scli si',
       owner   => 'root',
@@ -53,11 +53,9 @@ class scaleio::mdm {
 
   # Include primary mdm class, if this server shall be the primary (first setup)
   # or if we are running on the actual SIO primary mdm
-
   if (has_ip_address($scaleio::cluster_setup_ip) and str2bool($::scaleio_mdm_clustersetup_needed)) or str2bool($::scaleio_is_primary_mdm) {
     include scaleio::mdm::primary
-  } else{
-    include scaleio::mdm::secondary
+    File[$change_scaleio_password] -> Class['scaleio::mdm::primary']
   }
 
 }

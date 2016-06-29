@@ -54,13 +54,13 @@ describe 'scaleio::mdm', :type => 'class' do
         :owner => 'root',
         :group => 'root',
         :mode => '0700',
-        :require => 'File[/opt/emc/scaleio/scripts]',
+        :require => 'File[/opt/emc/scaleio/scripts/scli_wrap.sh]',
     ) }
     it { should contain_file('/opt/emc/scaleio/scripts/change_scaleio_password.sh').with(
         :owner => 'root',
         :group => 'root',
         :mode => '0700',
-        :require => 'File[/opt/emc/scaleio/scripts]',
+        :require => 'File[/opt/emc/scaleio/scripts/add_scaleio_user.sh]',
     ) }
     it { should contain_file('/etc/bash_completion.d/si').with(
         :content => 'complete -o bashdefault -o default -o nospace -F _scli si',
@@ -76,7 +76,6 @@ describe 'scaleio::mdm', :type => 'class' do
 
     it { should_not include_class('scaleio::mdm::primary') }
     it { should_not include_class('scaleio::mdm::callhome') }
-    it { should include_class('scaleio::mdm::secondary') }
     it { should include_class('scaleio::mdm::monitoring') }
     it { should include_class('scaleio::mdm::installation') }
   end
@@ -84,22 +83,15 @@ describe 'scaleio::mdm', :type => 'class' do
   describe 'on the primary MDM' do
     let(:facts) { facts_default.merge({:scaleio_is_primary_mdm => true}) }
 
-    it { should contain_class('scaleio::mdm::primary') }
+    it { should contain_class('scaleio::mdm::primary')
+                    .that_requires('File[/opt/emc/scaleio/scripts/change_scaleio_password.sh]') }
   end
 
   describe 'on the first MDM when cluster_setupping' do
     let(:facts) { facts_default.merge({:scaleio_mdm_clustersetup_needed => true}) }
 
-    it { should contain_class('scaleio::mdm::primary') }
-  end
-
-  describe 'on the 3rd MDM' do
-    let(:facts) { facts_default.merge({
-                                          :ipaddress => '10.0.0.3',
-                                          :interfaces => 'eth0',
-                                          :ipaddress_eth0 => '10.0.0.3',
-                                      }) }
-    it { should contain_class('scaleio::mdm::secondary') }
+    it { should contain_class('scaleio::mdm::primary')
+                    .that_requires('File[/opt/emc/scaleio/scripts/change_scaleio_password.sh]')}
   end
 
   describe 'on the primary with ip on a different interface' do
@@ -110,10 +102,11 @@ describe 'scaleio::mdm', :type => 'class' do
                                           :ipaddress_eth10 => '10.0.0.1',
                                       }) }
 
-    it { should contain_class('scaleio::mdm::primary') }
+    it { should contain_class('scaleio::mdm::primary')
+                    .that_requires('File[/opt/emc/scaleio/scripts/change_scaleio_password.sh]')}
   end
 
-  describe 'without callhome' do
+  describe 'with callhome' do
     let(:facts) { facts_default.merge({
                                           :fqdn => 'use_callhome.example.com',
                                       }) }

@@ -28,7 +28,31 @@ describe 'scaleio::mdm::primary', :type => 'class' do
 
   describe 'with standard' do
     it { should contain_class('scaleio::mdm::cluster_setup') }
+    it { should contain_exec('scaleio::mdm::primary::manage_sdc_access_restriction').with(
+        :command => '/opt/emc/scaleio/scripts/scli_wrap.sh --set_restricted_sdc_mode --restricted_sdc_mode enabled',
+        :unless => "/opt/emc/scaleio/scripts/scli_wrap.sh --query_all |grep -q 'MDM restricted SDC mode: enabled'"
+    )}
 
+    it { should contain_exec('scaleio::mdm::primary::rename_system').with(
+        :command => '/opt/emc/scaleio/scripts/scli_wrap.sh --rename_system --new_name sysname',
+        :unless => "/opt/emc/scaleio/scripts/scli_wrap.sh --query_cluster | grep -qE '^ Name: sysname\\s*Mode'",
+        :require   => 'Class[Scaleio::Mdm::Cluster_setup]',
+    )}
+
+    it { should contain_scaleio_user('monitoring').with(
+        :role      => 'Monitor',
+        :password  => 'Monitor1',
+        :require   => 'Class[Scaleio::Mdm::Cluster_setup]',
+    )}
+  end
+
+  context 'SDC restricted mode disabled' do
+    let(:facts) { facts_default.merge({:fqdn => 'no_sdc_restriction.example.com'}) }
+
+    it { should contain_exec('scaleio::mdm::primary::manage_sdc_access_restriction').with(
+        :command => '/opt/emc/scaleio/scripts/scli_wrap.sh --set_restricted_sdc_mode --restricted_sdc_mode disabled',
+        :unless => "/opt/emc/scaleio/scripts/scli_wrap.sh --query_all |grep -q 'MDM restricted SDC mode: disabled'"
+    )}
   end
 end
 

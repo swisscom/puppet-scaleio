@@ -1,16 +1,16 @@
 require File.expand_path(File.join(File.dirname(__FILE__), '..', 'scli'))
-Puppet::Type.type(:scaleio_sdc_name).provide(:scaleio_sdc_name) do 
+Puppet::Type.type(:scaleio_sdc).provide(:scaleio_sdc) do
   include Puppet::Provider::Scli
 
-  desc "Manages ScaleIO SDC names."
+  desc "Manages ScaleIO SDC."
 
   confine :osfamily => :redhat
 
   mk_resource_methods
   
   def self.instances
-    Puppet.debug("Getting SDC name instances.")
-    sdc_name_instances=[]
+    Puppet.debug("Getting SDC instances.")
+    sdc_instances=[]
     query_all_sdc_lines = scli('--query_all_sdc').split("\n")
     
     # Iterate through each SDS block
@@ -24,19 +24,19 @@ Puppet::Type.type(:scaleio_sdc_name).provide(:scaleio_sdc_name) do
 
       # next if name =~ /^N\/A$/
 
-      # Create sdc name instances hash
-      new sdc_name_instance = {
+      # Create sdc instances hash
+      new sdc_instance = {
         :name => ip,
         :ensure => :present,
         :desc => name,
       }
 
-      sdc_name_instances << new(sdc_name_instance)
+      sdc_instances << new(sdc_instance)
     end
     
     # Return the SDS array
-    Puppet.debug("Returning the SDC name instances array.")
-    sdc_name_instances
+    Puppet.debug("Returning the SDC instances array.")
+    sdc_instances
   end
   
   def self.prefetch(resources)
@@ -49,21 +49,16 @@ Puppet::Type.type(:scaleio_sdc_name).provide(:scaleio_sdc_name) do
     end
   end
 
-  def create 
-    # Do not try to rename an SDC if it does not exist
-    # Once it exists, it will be done using desc=
-    Puppet.debug("Creating SDC name #{@resource[:name]}")
-    if @resource[:restricted_sdc_mode] == "enabled"
-      scli('--add_sdc', '--sdc_ip', @resource[:name], '--sdc_name', @resource[:desc])
-    end
+  def create
+    Puppet.debug("Adding SDC #{@resource[:name]}")
+    scli('--add_sdc', '--sdc_ip', @resource[:name], '--sdc_name', @resource[:desc])
     @property_hash[:ensure] = :absent
   end
 
-  # TODO: should set the name (desc) to nothing, unfortunately not (yet?) possible
   def destroy
-    Puppet.debug("Destroying SDC name #{@resource[:name]} - not yet implemented")
-    raise Puppet::Error, "Destroying (unmapping) an SDC name from an IP is not (yet?) supported by ScaleIO"
-    #@property_hash[:ensure] = :absent
+    Puppet.debug("Removing SDC #{@resource[:name]}")
+    scli('--remove_sdc', '--sdc_ip', @resource[:name])
+    @property_hash[:ensure] = :absent
   end
   
   def desc=(value)

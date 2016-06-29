@@ -1,5 +1,5 @@
-Puppet::Type.newtype(:scaleio_sdc_name) do
-  @doc = "Manage ScaleIO SDC names"
+Puppet::Type.newtype(:scaleio_sdc) do
+  @doc = "Manage ScaleIO SDC"
 
   ensurable
 
@@ -19,16 +19,6 @@ Puppet::Type.newtype(:scaleio_sdc_name) do
     validate do |value|
       fail("#{value} is not a valid value for an SDC name.") unless value =~ /^[\w\-]+$/
     end
-  end
-
-  newparam(:restricted_sdc_mode) do
-    desc "Is SDC restricted mode 'enabled' or 'disabled'?"
-
-    validate do |value|
-      fail("#{value} is not a valid value for SDC restriction mode.") unless value =~ /^(enabled|disabled)$/
-    end
-
-    defaultto 'enabled'
   end
 
   # helper method, pass required parameters
