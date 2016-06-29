@@ -1,7 +1,7 @@
 #!/bin/bash
 #******************************************************************************
 # 
-#  add callhome user, and change initial password of callhome user
+#  add user, and change initial password
 #
 #
 #  31.10.2014 A.Mathys
@@ -17,34 +17,39 @@
 # $2 => user role
 # $3 => new password
 
-# login as admin user
-scli --login --username admin --password <%= scope['scaleio::password'] %> >/dev/null 2>&1
-if [ $? -ne 0 ] ; then
-  exit 1
-fi
+(
+  flock -w 10 205 || exit 1
 
-# create new user
-Output=`scli --add_user --username ${1} --user_role ${2}`
-if [ $? -ne 0 ] ; then
-  exit 1
-fi
+  # login as admin user
+  scli --login --username admin --password <%= scope['scaleio::password'] %> >/dev/null 2>&1
+  if [ $? -ne 0 ] ; then
+    exit 1
+  fi
 
-# get temp password for new user
-TempPassword=`echo $Output |  awk -F\' '{print $2}'`
+  # create new user
+  Output=`scli --add_user --username ${1} --user_role ${2}`
+  if [ $? -ne 0 ] ; then
+    exit 1
+  fi
 
-# logout 
-scli --logout >/dev/null 2>&1
-if [ $? -ne 0 ] ; then
-  exit 1
-fi
+  # get temp password for new user
+  TempPassword=`echo $Output |  awk -F\' '{print $2}'`
 
-# login with new user
-scli --login --username ${1} --password ${TempPassword} >/dev/null 2>&1
-if [ $? -ne 0 ] ; then
-  exit 1
-fi
+  # logout
+  scli --logout >/dev/null 2>&1
+  if [ $? -ne 0 ] ; then
+    exit 1
+  fi
 
-scli --set_password --old_password ${TempPassword} --new_password ${3} >/dev/null 2>&1
-if [ $? -ne 0 ] ; then
-  exit 1
-fi
+  # login with new user
+  scli --login --username ${1} --password ${TempPassword} >/dev/null 2>&1
+  if [ $? -ne 0 ] ; then
+    exit 1
+  fi
+
+  scli --set_password --old_password ${TempPassword} --new_password ${3} >/dev/null 2>&1
+  if [ $? -ne 0 ] ; then
+    exit 1
+  fi
+
+) 205>/var/lock/scli_wrap.lock

@@ -45,7 +45,6 @@ describe 'scaleio::sdc', :type => 'class' do
     it { should contain_exec('scaleio::sdc_mod_mdm').with(
       :command => "/bin/emc/scaleio/drv_cfg --mod_mdm_ip --ip $(grep -E '^mdm' /bin/emc/scaleio/drv_cfg.txt |awk '{print $2}' |awk -F ',' '{print $1}') --new_mdm_ip 10.0.0.1,10.0.0.2,10.0.0.3 --file /bin/emc/scaleio/drv_cfg.txt",
       :unless  => "grep -qE '^mdm 10.0.0.1,10.0.0.2,10.0.0.3$' /bin/emc/scaleio/drv_cfg.txt",
-      :require  => 'Package::Verifiable[EMC-ScaleIO-sdc]'
     )}
     it { should_not contain_file_line ( 'scaleio_lvm_types') }
   end

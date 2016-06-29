@@ -22,6 +22,7 @@ class scaleio::sdc {
     require => Package::Verifiable['EMC-ScaleIO-sdc'],
     before  => Exec['scaleio::sdc_add_mdm'],
   }
+
   # add a new MDM, if no one is defined
   exec{'scaleio::sdc_add_mdm':
     command => "/bin/emc/scaleio/drv_cfg --add_mdm --ip ${mdm_ips_joined} --file /bin/emc/scaleio/drv_cfg.txt",
