@@ -11,27 +11,19 @@ Puppet::Type.type(:scaleio_protection_domain).provide(:scaleio_protection_domain
   def self.instances
     Puppet.debug('Getting instances of protection domains')
     pdomain_instances = []
-    pdomain_info = {}
 
-    query_all = scli("--query_all")
-    lines = query_all.split("\n")
-    pdomain =''    
-    # Iterate through the Protection Domain block
-    lines.each do |line|
-      
-      # Pull out relevant info
-      if line =~/^Protection Domain/
-        pdomain = line.split(' ')[2]
-
-        # Create pdomains instances hash
-        new pdomain_info = { 
-            :name     => pdomain,
-            :ensure   => :present,
-        }
-        pdomain_instances << new(pdomain_info)
+    pdos = scli_query_properties('--object_type', 'PROTECTION_DOMAIN', '--all_objects', '--properties', 'NAME')
+    pdos.each do |pdo_id, pdo|
+      if pdo['NAME'] =~ /N\/A/i
+        raise Puppet::Error, "ScaleIO protection domain (#{pdo_id}) without a name is not supported by the puppet module, please give it a name manually."
       end
+      pdomain_instances << new({
+                               :name => pdo['NAME'],
+                               :ensure => :present,
+                           })
     end
-    # Return the pdomain instances array
+
+    Puppet.debug("Returning the protection domain instances array: #{pdomain_instances}")
     pdomain_instances
   end
     

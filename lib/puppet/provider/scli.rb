@@ -20,7 +20,9 @@ module Puppet::Provider::Scli
       properties = {}
 
       query_result.each do |line|
-        if line =~ /^([^\s]+)\s([^:]+)/
+        if line =~ /^No objects returned/i
+          return properties
+        elsif line =~ /^([^\s]+)\s([^:]+)/
           group_name = $2
           properties[group_name] = Hash.new { |hash, key| hash[key] = {} }
         else
@@ -30,6 +32,26 @@ module Puppet::Provider::Scli
       end
       Puppet.debug("Queried scaleio properties #{properties}")
       properties
+    end
+
+    def convert_size_to_bytes(size)
+      size_bytes = 0
+      if size =~ /\((\d+) ([a-zA-Z]+)\)/i
+        size_bytes = $1.to_i * (1024 ** 0) if $2 == 'Bytes'
+        size_bytes = $1.to_i * (1024 ** 1) if $2 == 'KB'
+        size_bytes = $1.to_i * (1024 ** 2) if $2 == 'MB'
+        size_bytes = $1.to_i * (1024 ** 3) if $2 == 'GB'
+        size_bytes = $1.to_i * (1024 ** 4) if $2 == 'TB'
+        size_bytes = $1.to_i * (1024 ** 5) if $2 == 'PB'
+
+        Puppet.debug("math #{$1.to_i} * #{(1024 ** 0)}") if $2 == 'Bytes'
+        Puppet.debug("math #{$1.to_i} * #{(1024 ** 1)}") if $2 == 'KB'
+        Puppet.debug("math #{$1.to_i} * #{(1024 ** 2)}") if $2 == 'MB'
+        Puppet.debug("math #{$1.to_i} * #{(1024 ** 3)}") if $2 == 'GB'
+        Puppet.debug("math #{$1.to_i} * #{(1024 ** 4)}") if $2 == 'TB'
+        Puppet.debug("math #{$1.to_i} * #{(1024 ** 5)}") if $2 == 'PB'
+      end
+      return size_bytes
     end
 
     # From gist: https://gist.github.com/ashrithr/5305786
@@ -86,11 +108,12 @@ module Puppet::Provider::Scli
   def scli_query_properties(*args)
     self.class.scli_query_properties(args)
   end
-
+  def convert_size_to_bytes(size)
+    self.class.convert_size_to_bytes(size)
+  end
   def port_open?(ip, port, seconds=1)
     self.class.port_open?(ip, port, seconds)
   end
-
   def consul_max_tries(key, max_tries)
     self.class.consul_max_tries(key, max_tries)
   end

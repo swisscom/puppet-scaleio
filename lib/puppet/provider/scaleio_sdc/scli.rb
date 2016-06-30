@@ -7,43 +7,31 @@ Puppet::Type.type(:scaleio_sdc).provide(:scaleio_sdc) do
   confine :osfamily => :redhat
 
   mk_resource_methods
-  
+
   def self.instances
     Puppet.debug("Getting SDC instances.")
-    sdc_instances=[]
-    query_all_sdc_lines = scli('--query_all_sdc').split("\n")
-    
-    # Iterate through each SDS block
-    query_all_sdc_lines.each do |line|
-      next if line !~/SDC ID/
-      next if line =~/Approved: no/
+    sdc_instances = []
 
-      # Get information about the SDC
-      name = line.match(/Name:(.*)IP/m)[1].strip
-      ip = line.match(/IP:(.*)State/m)[1].strip
+    sdcs = scli_query_properties('--object_type', 'SDC', '--all_objects', '--properties', 'NAME,IP,APPROVED')
+    sdcs.each do |sdc_id, sdc|
+      next if sdc['APPROVED'] =~ /No/i
 
-      # next if name =~ /^N\/A$/
-
-      # Create sdc instances hash
-      new sdc_instance = {
-        :name => ip,
-        :ensure => :present,
-        :desc => name,
-      }
-
-      sdc_instances << new(sdc_instance)
+      sdc_instances << new({
+                               :name => sdc['IP'],
+                               :ensure => :present,
+                               :desc => sdc['NAME'],
+                           })
     end
-    
-    # Return the SDS array
-    Puppet.debug("Returning the SDC instances array.")
+
+    Puppet.debug("Returning the sdc instances array: #{sdc_instances}")
     sdc_instances
   end
-  
+
   def self.prefetch(resources)
     Puppet.debug("Prefetching SDC instances")
-    sds = instances
+    sdcs = instances
     resources.keys.each do |name|
-      if provider = sds.find{ |sdsname| sdsname.name == name }
+      if provider = sdcs.find { |sdcname| sdcname.name == name }
         resources[name].provider = provider
       end
     end
@@ -60,7 +48,7 @@ Puppet::Type.type(:scaleio_sdc).provide(:scaleio_sdc) do
     scli('--remove_sdc', '--sdc_ip', @resource[:name])
     @property_hash[:ensure] = :absent
   end
-  
+
   def desc=(value)
     Puppet.debug("Renaming SDC #{@resource[:name]}")
     rename_sdc(value)

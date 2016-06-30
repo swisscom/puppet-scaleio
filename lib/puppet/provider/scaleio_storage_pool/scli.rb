@@ -13,66 +13,30 @@ Puppet::Type.type(:scaleio_storage_pool).provide(:scaleio_storage_pool) do
   def self.instances
     Puppet.debug('getting instances of storage pools')
 
-    # First have to get a list of pdomains
-    pdomains = getProtectionDomains
+    # get protection domains to lookup the name by the id
+    pdos = scli_query_properties('--object_type', 'PROTECTION_DOMAIN', '--all_objects', '--properties', 'NAME')
 
-    pdomain_pools = Hash.new {|h,k| h[k] = [] }
+    pool_instances = []
 
-    # Get a list of storage pools in each pdomain
-    pdomains.each do |pdomain|
-      poolNames = []
+    pools = scli_query_properties('--object_type', 'STORAGE_POOL', '--all_objects', '--properties', 'NAME,SPARE_PERCENT,USE_RMCACHE,PROTECTION_DOMAIN_ID')
+    pools.each do |pool_id, pool|
+      pdomain = pdos[pool['PROTECTION_DOMAIN_ID']]['NAME']
 
-      lines = scli("--query_protection_domain", "--protection_domain_name", pdomain).split("\n")
-      lines.each do |line|
-        if line =~/^Storage Pool/
-          poolName = line.split(' ')[2]
-          poolNames << poolName
-        end
-      end
-      # Build up hash of protection domains and their storage pools
-      pdomain_pools[pdomain] << poolNames
+      pool_instances << new({
+                                :name               => "#{pdomain}:#{pool['NAME']}",
+                                :pool_name          => pool['NAME'],
+                                :ensure             => :present,
+                                :protection_domain  => pdomain,
+                                :spare_policy       => pool['SPARE_PERCENT'],
+                                :ramcache           => pool['USE_RMCACHE'] =~ /^Yes$/i ? 'enabled' : 'disabled',
+                               })
     end
 
-    storage_pool_instances = []
-    storage_pool_info = {}
-    # Get detailed info for each storage pool
-    pdomain_pools.each do |pdomain, pools|
-      pools.flatten.each do |pool|
-        spare_policy = ""
-        ramcache = 'disabled'
-
-        pool_query_lines = scli("--query_storage_pool", "--storage_pool_name", pool, "--protection_domain_name", pdomain).split("\n")
-        pool_query_lines.each do |line|
-          if line =~/Spare policy/
-            spare_pct = line.match /([0-9\.]+%)/
-            spare_policy = spare_pct[1];
-          end
-          if line =~ /Uses RAM Read Cache|RAM cache is used/
-            ramcache = 'enabled'
-          end
-        end
-        # Create storage pools hash
-        new storage_pool_info = {
-                :name               => "#{pdomain}:#{pool}",
-                :pool_name          => pool,
-                :ensure             => :present,
-                :protection_domain  => pdomain,
-                :spare_policy       => spare_policy,
-                :ramcache           => ramcache,
-        }
-        storage_pool_instances << new(storage_pool_info)
-      end
-    end
-    Puppet.debug('Returning storage pool array')
-    storage_pool_instances
+    Puppet.debug("Returning the storage pool instances array: #{pool_instances}")
+    pool_instances
   end
 
-  def self.getProtectionDomains
-    pdomains = Puppet::Type.type(:scaleio_protection_domain).instances
-    pdomains.collect {|x| x.parameters[:name].value}
-  end
-
-  def self.prefetch(resources)
+   def self.prefetch(resources)
     Puppet.debug('Prefetching storage pools')
     pool = instances
     resources.keys.each do |name|

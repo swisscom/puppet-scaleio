@@ -1,6 +1,6 @@
 #require 'puppet/provider/blocker'
 require File.expand_path(File.join(File.dirname(__FILE__), '..', 'scli'))
-Puppet::Type.type(:scaleio_sds).provide(:scaleio_sds) do 
+Puppet::Type.type(:scaleio_sds).provide(:scaleio_sds) do
   include Puppet::Provider::Scli
 
   desc "Manages ScaleIO SDS's."
@@ -8,82 +8,70 @@ Puppet::Type.type(:scaleio_sds).provide(:scaleio_sds) do
   confine :osfamily => :redhat
 
   mk_resource_methods
-  
+
   def self.instances
     Puppet.debug("Getting SDS instances.")
 
-    sds_instances=[]
-    query_all_sds_lines = scli('--query_all_sds').split("\n")
-    
-    # Iterate through each SDS block
-    query_all_sds_lines.each do |line|
-      next if line !~/SDS ID/
+    # get protection domains to lookup the name by the id
+    pdos = scli_query_properties('--object_type', 'PROTECTION_DOMAIN', '--all_objects', '--properties', 'NAME')
 
-      # Get information about the SDS
-      name = line.match(/Name:(.*)State/m)[1].strip
-      ip = line.match(/IP:(.*)Port/m)[1].strip
-      ips = ip.split(",").sort!
-      port = line.split(' ')[-1]
+    # get storage pools to lookup the name by the id
+    pools = scli_query_properties('--object_type', 'STORAGE_POOL', '--all_objects', '--properties', 'NAME')
 
-      # Get devices and pool info for each SDS
-      query_sds_lines = scli("--query_sds", "--sds_name", name).split("\n")
-      protection_domain = ''
-      original_path = ''
-      ramcache_size = ''
-      pool_devices = Hash.new {|h,k| h[k] = [] }
+    # get devices to lookup the path by the id
+    devices = scli_query_properties('--object_type', 'DEVICE', '--all_objects', '--properties', 'ORIGINAL_PATH,STORAGE_POOL_ID')
 
-      # First pull out the device path, then the pool it is assigned to
-      query_sds_lines.each do |line|
-        if line =~/Protection Domain/
-          protection_domain = line.match(/Name: (.*)/)[1].strip
-        elsif line =~/Path/
-          original_path = line.match(/Original-path: (.*)  /m)[1].strip
-        elsif line =~/Storage Pool/
-          pool = line.match(/Storage Pool: (.*?),/m)[1].strip 
-          pool_devices[pool].push original_path
-        elsif line =~ /Cache is disabled/
-          ramcache_size = -1
-        elsif line =~ /total size$/
-          ramcache_size = line.match(/([0-9]+)(\.[0-9]+)? MB/)[1].strip
-        end
+    sds_instances = []
+
+    sdss = scli_query_properties('--object_type', 'SDS', '--all_objects', '--properties', 'NAME,IPS,DEVICE_ID_LIST,PORT,RMCACHE_ENABLED,RMCACHE_SIZE,PROTECTION_DOMAIN_ID')
+    sdss.each do |sds_id, sds|
+
+      # create a hash with all devices of the SDS grouped by the storage pool they are in
+      pool_devices = Hash.new { |h, k| h[k] = [] }
+      sds['DEVICE_ID_LIST'].split(',').each do |device_id|
+        device = devices[device_id]
+        device_pool = pools[device['STORAGE_POOL_ID']]['NAME']
+        pool_devices[device_pool] << device['ORIGINAL_PATH']
       end
 
-      # Create sds instances hash
-      new sds_instance = { 
-        :name => name,
-        :ensure => :present,
-        :protection_domain => protection_domain,
-        :ips => ips,
-        :port => port,
-        :pool_devices => pool_devices,
-        :ramcache_size => ramcache_size,
-      }
-      sds_instances << new(sds_instance)
+      ramcache_size = -1
+      if sds['RMCACHE_ENABLED'] =~ /Yes/i
+        ramcache_size = convert_size_to_bytes(sds['RMCACHE_SIZE']) / 1024**2 # convert the size to MB
+      end
+
+      sds_instances << new({
+                               :name => sds['NAME'],
+                               :ensure => :present,
+                               :protection_domain => pdos[sds['PROTECTION_DOMAIN_ID']]['NAME'],
+                               :ips => sds['IPS'].split(','),
+                               :port => sds['PORT'],
+                               :pool_devices => pool_devices,
+                               :ramcache_size => ramcache_size,
+                           })
     end
-    
-    # Return the SDS array
-    Puppet.debug("Returning the SDS instances array.")
+
+    Puppet.debug("Returning the SDS instances array: #{sds_instances}")
     sds_instances
   end
-  
+
   def self.prefetch(resources)
     Puppet.debug("Prefetching SDS instances")
     sds = instances
     resources.keys.each do |name|
-      if provider = sds.find{ |sdsname| sdsname.name == name }
+      if provider = sds.find { |sdsname| sdsname.name == name }
         resources[name].provider = provider
       end
     end
   end
 
-  def create 
+  def create
     Puppet.debug("Creating SDS #{@resource[:name]}")
 
     # Check if SDS is available/installed
     if @resource[:useconsul]
       first_ip = @resource[:ips][0]
       consul_key = "scaleio/cluster_setup/sds/#{first_ip}"
-      if(!port_open?(first_ip, 7072))
+      if (!port_open?(first_ip, 7072))
         consul_max_tries(consul_key, 48)
         @property_hash[:ensure] = :absent
         return
@@ -91,7 +79,7 @@ Puppet::Type.type(:scaleio_sds).provide(:scaleio_sds) do
       consul_delete_key(consul_key)
     end
 
-    first_add = true  # act differently when adding the first devive of and sds
+    first_add = true # act differently when adding the first devive of and sds
 
     # Go through each pool and add the devices
     @resource[:pool_devices].each do |storage_pool, devices|
@@ -120,13 +108,13 @@ Puppet::Type.type(:scaleio_sds).provide(:scaleio_sds) do
     scli("--remove_sds", "--sds_name", resource[:name])
     @property_hash[:ensure] = :absent
   end
-  
+
   def protection_domain=(value)
     fail("Changing the protection domain of a ScaleIO SDS is not supported")
   end
 
   def ramcache_size=(value)
-    if(value >= 0)
+    if (value >= 0)
       Puppet.debug("Setting SDS RAM cache size to #{value} MB")
       scli("--enable_sds_rmcache", "--sds_name", @resource[:name], "--i_am_sure")
       scli("--set_sds_rmcache_size", "--sds_name", @resource[:name], "--rmcache_size_mb", value, "--i_am_sure")
@@ -138,7 +126,7 @@ Puppet::Type.type(:scaleio_sds).provide(:scaleio_sds) do
 
   def ips=(value)
     fail("SDS must have at least one IP address") if value.empty?
-  
+
     # Add new IPs
     add_ips = value - @property_hash[:ips]
     add_ips.each do |ip|
@@ -154,17 +142,17 @@ Puppet::Type.type(:scaleio_sds).provide(:scaleio_sds) do
     end
     @property_hash[:ensure] = :present
   end
-     
+
   def pool_devices=(value)
     numDevices = 0
-    value.each { |k,v| numDevices += v.length }
+    value.each { |k, v| numDevices += v.length }
     fail("Cannot remove all SDS devices from SDS") if numDevices == 0
 
     # Loop over each defined pool and check for new devices
     value.each do |storage_pool, devices|
       existing_devices = @property_hash[:pool_devices][storage_pool]
       add_devices = devices - (existing_devices.kind_of?(Array) ? existing_devices : [])
-      add_devices.each do |device| 
+      add_devices.each do |device|
         Puppet.debug("Adding SDS device #{device} to SDS #{@resource[:name]}")
         scli("--add_sds_device", "--sds_name", @resource[:name], "--storage_pool_name", storage_pool, "--device_path", device)
       end
@@ -174,7 +162,7 @@ Puppet::Type.type(:scaleio_sds).provide(:scaleio_sds) do
     @property_hash[:pool_devices].each do |storage_pool, devices|
       defined_devices = value[storage_pool]
       remove_devices = devices - (defined_devices.kind_of?(Array) ? defined_devices : [])
-      remove_devices.each do |device| 
+      remove_devices.each do |device|
         Puppet.debug("Removing SDS device #{device} from SDS #{@resource[:name]}")
         scli("--remove_sds_device", "--sds_name", @resource[:name], "--device_path", device)
       end

@@ -1,5 +1,5 @@
 require File.expand_path(File.join(File.dirname(__FILE__), '..', 'scli'))
-Puppet::Type.type(:scaleio_volume).provide(:scaleio_volume) do 
+Puppet::Type.type(:scaleio_volume).provide(:scaleio_volume) do
   include Puppet::Provider::Scli
 
   desc "Manages ScaleIO volume's."
@@ -9,80 +9,69 @@ Puppet::Type.type(:scaleio_volume).provide(:scaleio_volume) do
   commands :sleep => 'sleep'
 
   mk_resource_methods
-  
+
   def self.instances
     Puppet.debug("Getting volume instances.")
-    volume_instances=[]
-    query_all_volumes_lines = scli('--query_all_volumes').split("\n")
-    
-    # Iterate over all configured volumes
-    query_all_volumes_lines.each do |line|
-      next if line !~/Volume ID/
-      next if line =~/Snapshot of/
 
-      # Get information about the volume
-      name = line.match(/Name:(.*)Size/m)[1].strip
-      size = line.match(/Size:.*?([\d\.]+)\s*GB/m)[1].strip.to_i
-      type = line.match(/([\w]+)-provisioned/m)[1].strip.downcase
-      pool=nil
-      pdomain=nil
+    # get protection domains to lookup the name by the id
+    pdos = scli_query_properties('--object_type', 'PROTECTION_DOMAIN', '--all_objects', '--properties', 'NAME')
+
+    # get pools to lookup the name by the id
+    pools = scli_query_properties('--object_type', 'STORAGE_POOL', '--all_objects', '--properties', 'NAME,PROTECTION_DOMAIN_ID')
+
+    # get sdcs to lookup the name by the id
+    sdcs = scli_query_properties('--object_type', 'SDC', '--all_objects', '--properties', 'NAME')
+
+    volume_instances = []
+
+    volumes = scli_query_properties('--object_type', 'VOLUME', '--all_objects', '--properties', 'NAME,SIZE,TYPE,STORAGE_POOL_ID,TYPE,MAPPED_SDC_ID_LIST')
+    volumes.each do |volume_id, volume|
+      next if volume['TYPE'] !~ /(THIN|THICK)_PROVISIONED/  # we do not manage snapshots
+
+      pool = pools[volume['STORAGE_POOL_ID']]
+      pool_name = pool['NAME']
+      pdomain = pdos[pool['PROTECTION_DOMAIN_ID']]['NAME']
+
       sdc_nodes = []
-
-      # Get more information about the volume
-      query_volume_lines = scli("--query_volume", "--volume_name", name).split("\n")
-      query_volume_lines.each do |line|
-        # extract pool and protection domain name
-        if line =~ /Protection Domain/
-          pdomain = line.match(/Name:(.*)/)[1].strip
-        elsif line =~ /Storage Pool/
-          pool = line.match(/Name:(.*)/)[1].strip
-        elsif line =~ /SDC ID/
-          sdc_ip = line.match(/IP:\s*([\d\.]+)/)[1].strip
-
-          # resolved sdc ip to sdc name
-          sdc_name = scli("--query_all_sdc").match(/Name:\s*([\w\-]+)\s*IP:\s*#{sdc_ip}/)[1].strip
-          sdc_nodes << sdc_name
-        end
+      volume['MAPPED_SDC_ID_LIST'].split(',').each do |sdc_id|
+        sdc_nodes << sdcs[sdc_id]['NAME']
       end
 
-      # Create volume instances hash
-      new volume_instance = { 
-        :name => name,
-        :ensure => :present,
-        :protection_domain => pdomain,
-        :storage_pool => pool,
-        :sdc_nodes => sdc_nodes,
-        :size => size,
-        :type => type,
-      }
-      volume_instances << new(volume_instance)
+      volume_instances << new({
+                                :name => name,
+                                :ensure => :present,
+                                :protection_domain => pdomain,
+                                :storage_pool => pool_name,
+                                :sdc_nodes => sdc_nodes,
+                                :size => convert_size_to_bytes(volume['SIZE']) / 1024 ** 3,
+                                :type => volume['TYPE'] =~ /THICK_PROVISIONED/ ? 'thick' : 'thin',
+                            })
     end
-    
-    # Return the volume array
-    Puppet.debug("Returning the volume instances array.")
+
+    Puppet.debug("Returning the SDS instances array: #{volume_instances}")
     volume_instances
   end
-  
+
   def self.prefetch(resources)
     Puppet.debug("Prefetching volume instances")
     volume = instances
     resources.keys.each do |name|
-      if provider = volume.find{ |volumename| volumename.name == name }
+      if provider = volume.find { |volumename| volumename.name == name }
         resources[name].provider = provider
       end
     end
   end
 
-  def create 
+  def create
     Puppet.debug("Creating volume #{@resource[:name]}")
-    sleep(1)  # wait for rebalance in case the pool has just been created
+    sleep(1) # wait for rebalance in case the pool has just been created
     cmd = [] << '--add_volume' << '--protection_domain_name' << @resource[:protection_domain] << '--storage_pool_name' << @resource[:storage_pool] << '--volume_name' << @resource[:name] << '--size_gb' << @resource[:size]
     cmd << '--thin_provisioned' if @resource[:type] == 'thin'
     scli(*cmd)
 
     sdc_names = get_all_sdc_names()
     @resource[:sdc_nodes].each do |node|
-      if(sdc_names.include?(node))
+      if (sdc_names.include?(node))
         Puppet.debug("Mapping volume #{@resource[:name]} to SDC node #{node}")
         scli('--map_volume_to_sdc', '--volume_name', @resource[:name], '--sdc_name', node, '--allow_multi_map')
       end
@@ -91,26 +80,26 @@ Puppet::Type.type(:scaleio_volume).provide(:scaleio_volume) do
   end
 
   def destroy
-   Puppet.debug("Destroying volume #{@resource[:name]}")
-   scli("--remove_volume", "--volume_name", resource[:name], '--i_am_sure')
-   @property_hash[:ensure] = :absent
+    Puppet.debug("Destroying volume #{@resource[:name]}")
+    scli("--remove_volume", "--volume_name", resource[:name], '--i_am_sure')
+    @property_hash[:ensure] = :absent
   end
-  
+
   def protection_domain=(value)
     fail("Changing the protection domain of a ScaleIO volume is not supported")
   end
-  
+
   def storage_pool=(value)
     fail("Changing the storage pool of a ScaleIO volume is not supported")
   end
-  
+
   def type=(value)
     fail("Changing the type of a ScaleIO volume is not supported")
   end
-  
+
   def size=(value)
     fail("Decreasing the size of a ScaleIO volume is not allowed through Puppet.") if value < @property_hash[:size]
-     Puppet.debug("Resizing volume #{@resource[:name]} to #{value} GB")
+    Puppet.debug("Resizing volume #{@resource[:name]} to #{value} GB")
     scli('--modify_volume_capacity', '--volume_name', @resource[:name], '--size_gb', value)
   end
 
@@ -120,7 +109,7 @@ Puppet::Type.type(:scaleio_volume).provide(:scaleio_volume) do
     # Check for new SDC nodes
     new_nodes = value - @property_hash[:sdc_nodes]
     new_nodes.each do |new_node|
-      if(sdc_names.include?(new_node))
+      if (sdc_names.include?(new_node))
         Puppet.debug("Mapping volume #{@resource[:name]} to SDC node #{new_node}")
         scli('--map_volume_to_sdc', '--volume_name', @resource[:name], '--sdc_name', new_node, '--allow_multi_map')
       end
@@ -137,7 +126,7 @@ Puppet::Type.type(:scaleio_volume).provide(:scaleio_volume) do
   def get_all_sdc_names()
     sdc_names=[]
     query_all_sdc_lines = scli('--query_all_sdc').split("\n")
-    
+
     # Iterate through each SDS block
     query_all_sdc_lines.each do |line|
       next if line !~/SDC ID/
