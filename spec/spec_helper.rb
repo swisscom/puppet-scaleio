@@ -1,5 +1,10 @@
 require 'puppetlabs_spec_helper/module_spec_helper'
 require 'rake'
+require 'simplecov'
+
+SimpleCov.start do
+  add_filter "/fixtures/"
+end
 
 # This code is being added as a recommended workaround
 # because of a known issue discussed here:

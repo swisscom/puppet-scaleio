@@ -4,3 +4,4 @@ spec/fixtures/modules
 .tmp
 *.lock
 .idea
+coverage

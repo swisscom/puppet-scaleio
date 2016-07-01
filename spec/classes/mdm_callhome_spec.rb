@@ -1,4 +1,4 @@
-require File.expand_path(File.join(File.dirname(__FILE__),'../spec_helper'))
+require File.expand_path(File.join(File.dirname(__FILE__), '../spec_helper'))
 
 describe 'scaleio::mdm::callhome', :type => 'class' do
   # facts definition
@@ -33,84 +33,86 @@ describe 'scaleio::mdm::callhome', :type => 'class' do
     it { should contain_package__verifiable('EMC-ScaleIO-callhome').with_version('installed') }
 
     it { should contain_file('/opt/emc/scaleio/callhome/cfg/conf.txt').with(
-      :owner   => 'root',
-      :group   => 0,
-      :mode    => '0644',
-      :require => 'Package::Verifiable[EMC-ScaleIO-callhome]',
-      :notify  => ['Exec[restart_callhome_service]'],
-    )}
+        :owner => 'root',
+        :group => 0,
+        :mode => '0644',
+        :require => 'Package::Verifiable[EMC-ScaleIO-callhome]',
+        :notify => ['Exec[restart_callhome_service]'],
+    ) }
     it { should contain_file('/opt/emc/scaleio/callhome/cfg/conf.txt').with(
-      :content => /email_from = callhome@node1\.example\.com/,
-    )}
+        :content => /email_from = callhome@node1\.example\.com/,
+    ) }
     it { should contain_file('/opt/emc/scaleio/callhome/cfg/conf.txt').with(
-      :content => /username = callhome/,
-    )}
+        :content => /username = callhome/,
+    ) }
     it { should contain_file('/opt/emc/scaleio/callhome/cfg/conf.txt').with(
-      :content => /password = Callhome13/,
-    )}
+        :content => /password = Callhome13/,
+    ) }
     it { should contain_file('/opt/emc/scaleio/callhome/cfg/conf.txt').with(
-      :content => /customer_name = "example\.com"/,
-    )}
+        :content => /customer_name = "example\.com"/,
+    ) }
     it { should contain_file('/opt/emc/scaleio/callhome/cfg/conf.txt').with(
-      :content => /host = localhost/,
-    )}
+        :content => /host = localhost/,
+    ) }
     it { should contain_file('/opt/emc/scaleio/callhome/cfg/conf.txt').with(
-      :content => /email_to = root@localhost/,
-    )}    
+        :content => /email_to = root@localhost/,
+    ) }
+
+    it { should contain_package('mutt') }
   end
 
   describe 'with other params' do
     let(:facts) { facts_default.merge({
                                           :scaleio_is_primary_mdm => true,
                                       }) }
-    let(:params){
-     {
-       :from_mail           => 'root@localhost',
-       :user                => 'otheruser',
-       :user_role           => 'otherrole',
-       :password            => 'callhomepassword',
-       :mail_server_address => '10.0.0.1',
-       :customer_name       => 'ACME Corp',
-       :to_mail             => 'test@puppet.test',
-     }
+    let(:params) {
+      {
+          :from_mail => 'root@localhost',
+          :user => 'otheruser',
+          :user_role => 'otherrole',
+          :password => 'callhomepassword',
+          :mail_server_address => '10.0.0.1',
+          :customer_name => 'ACME Corp',
+          :to_mail => 'test@puppet.test',
+      }
     }
     it { should contain_scaleio_user('otheruser').with(
-      :password  => 'callhomepassword',
-      :role      => 'otherrole',
-      :require   => 'File[/opt/emc/scaleio/scripts/add_scaleio_user.sh]',
-      :before    => 'File[/opt/emc/scaleio/callhome/cfg/conf.txt]',
-    )}
+        :password => 'callhomepassword',
+        :role => 'otherrole',
+        :require => 'File[/opt/emc/scaleio/scripts/add_scaleio_user.sh]',
+        :before => 'File[/opt/emc/scaleio/callhome/cfg/conf.txt]',
+    ) }
 
     it { should contain_file('/opt/emc/scaleio/callhome/cfg/conf.txt').with(
-      :owner   => 'root',
-      :group   => 0,
-      :mode    => '0644',
-      :require => 'Package::Verifiable[EMC-ScaleIO-callhome]',
-      :notify  => ['Exec[restart_callhome_service]'],
-    )}
+        :owner => 'root',
+        :group => 0,
+        :mode => '0644',
+        :require => 'Package::Verifiable[EMC-ScaleIO-callhome]',
+        :notify => ['Exec[restart_callhome_service]'],
+    ) }
     it { should contain_file('/opt/emc/scaleio/callhome/cfg/conf.txt').with(
-      :content => /email_from = root@localhost/,
-    )}
+        :content => /email_from = root@localhost/,
+    ) }
     it { should contain_file('/opt/emc/scaleio/callhome/cfg/conf.txt').with(
-      :content => /username = otheruser/,
-    )}
+        :content => /username = otheruser/,
+    ) }
     it { should contain_file('/opt/emc/scaleio/callhome/cfg/conf.txt').with(
-      :content => /password = callhomepassword/,
-    )}
+        :content => /password = callhomepassword/,
+    ) }
     it { should contain_file('/opt/emc/scaleio/callhome/cfg/conf.txt').with(
-      :content => /customer_name = "ACME Corp"/,
-    )}
+        :content => /customer_name = "ACME Corp"/,
+    ) }
     it { should contain_file('/opt/emc/scaleio/callhome/cfg/conf.txt').with(
-      :content => /host = 10.0.0.1/,
-    )}
+        :content => /host = 10.0.0.1/,
+    ) }
     it { should contain_file('/opt/emc/scaleio/callhome/cfg/conf.txt').with(
-      :content => /email_to = test@puppet.test/,
-    )}
-    
+        :content => /email_to = test@puppet.test/,
+    ) }
+
     it { should contain_exec('restart_callhome_service').with(
-      :command     => 'pkill -f \'scaleio/callhome\'',
-      :refreshonly => true,
-    )}
+        :command => 'pkill -f \'scaleio/callhome\'',
+        :refreshonly => true,
+    ) }
   end
   context 'should not update SIO packages' do
     let(:facts) { facts_default.merge({
@@ -118,8 +120,8 @@ describe 'scaleio::mdm::callhome', :type => 'class' do
                                       }) }
 
     it { should contain_package__verifiable('EMC-ScaleIO-callhome').with(
-      :version        => 'installed',
-      :manage_package => false
-    )}
+        :version => 'installed',
+        :manage_package => false
+    ) }
   end
 end

@@ -28,7 +28,7 @@ describe 'scaleio::mdm::installation', :type => 'class' do
   end
 
   describe 'with standard' do
-    it { is_expected.to compile.with_all_deps }
+    it { should compile.with_all_deps }
 
     it { should contain_file_line('scaleio::mdm::installation::actor').with(
         :path => '/opt/emc/scaleio/mdm/cfg/conf.txt',

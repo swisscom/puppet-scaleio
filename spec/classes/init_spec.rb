@@ -33,6 +33,8 @@ describe 'scaleio', :type => 'class' do
     it { should contain_package('numactl').with_ensure('present') }
     it { should contain_package('python').with_ensure('present') }
 
+    it { should contain_class('scaleio::rpmkey') }
+
     it { should_not contain_class('sdc') }
     it { should_not contain_class('sds') }
     it { should_not contain_class('lia') }
@@ -101,3 +103,4 @@ describe 'scaleio', :type => 'class' do
     it { should contain_class('scaleio::lia') }
   end
 end
+

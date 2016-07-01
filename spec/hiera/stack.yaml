@@ -16,3 +16,62 @@ scaleio::tiebreakers:
     ips: '10.0.0.4'
   myTB2:
     ips: '10.0.0.5'
+
+
+scaleio::users:
+  'api_admin':
+    role: 'Administrator'
+    password: 'myPassAPI1'
+
+scaleio::protection_domains:
+  - 'pdo'
+
+scaleio::storage_pools:
+  'pdo:pool1':
+    spare_policy: 34%
+    ramcache: 'enabled'
+    zeropadding: true
+  'pdo:pool2':
+    spare_policy: 34%
+    ramcache: 'disabled'
+    zeropadding: false
+
+scaleio::sds_defaults:
+  protection_domain: 'pdo'
+  pool_devices:
+    'pool1':
+      - '/dev/sdb'
+
+scaleio::sds:
+  'sds-1':
+    ips: ['192.168.56.121']
+  'sds-2':
+    ips: ['192.168.56.122']
+  'sds-3':
+    ips: ['192.168.56.123']
+    ramcache_size: -1
+
+scaleio::sdcs:
+  '192.168.56.121':
+    desc: 'sdc-1'
+  '192.168.56.122':
+    desc: 'sdc-2'
+  '192.168.56.123':
+    desc: 'sdc-3'
+
+scaleio::volumes:
+  'volume-1':
+    protection_domain: pdo
+    storage_pool: pool1
+    size: 8
+    type: thick
+    sdc_nodes:
+      - sdc-1
+  'volume-2':
+    protection_domain: pdo
+    storage_pool: pool2
+    size: 16
+    type: thin
+    sdc_nodes:
+      - sdc-1
+      - sdc-2
