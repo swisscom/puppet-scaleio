@@ -1,6 +1,6 @@
 #require 'puppet/provider/blocker'
 require File.expand_path(File.join(File.dirname(__FILE__), '..', 'scli'))
-Puppet::Type.type(:scaleio_sds).provide(:scaleio_sds) do
+Puppet::Type.type(:scaleio_sds).provide(:scli) do
   include Puppet::Provider::Scli
 
   desc "Manages ScaleIO SDS's."

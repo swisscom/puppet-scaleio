@@ -74,10 +74,10 @@ describe 'scaleio::mdm', :type => 'class' do
         :target => '/opt/emc/scaleio/scripts/scli_wrap.sh',
     ) }
 
-    it { should_not include_class('scaleio::mdm::primary') }
-    it { should_not include_class('scaleio::mdm::callhome') }
-    it { should include_class('scaleio::mdm::monitoring') }
-    it { should include_class('scaleio::mdm::installation') }
+    it { should_not contain_class('scaleio::mdm::primary') }
+    it { should_not contain_class('scaleio::mdm::callhome') }
+    it { should contain_class('scaleio::mdm::monitoring') }
+    it { should contain_class('scaleio::mdm::installation') }
   end
 
   describe 'on the primary MDM' do

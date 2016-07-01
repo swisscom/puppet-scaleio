@@ -26,6 +26,8 @@ describe 'scaleio::mdm::monitoring', :type => 'class' do
   end
 
   describe 'with standard' do
+    it { is_expected.to compile.with_all_deps }
+
     it { should contain_file('/opt/emc/scaleio/scripts/scli_wrap_monitoring.sh').with(
           :content => /--username monitoring/,
           :owner   => 'root',

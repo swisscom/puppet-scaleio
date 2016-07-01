@@ -1,5 +1,5 @@
 require File.expand_path(File.join(File.dirname(__FILE__), '..', 'scli'))
-Puppet::Type.type(:scaleio_sdc).provide(:scaleio_sdc) do
+Puppet::Type.type(:scaleio_sdc).provide(:scli) do
   include Puppet::Provider::Scli
 
   desc "Manages ScaleIO SDC."

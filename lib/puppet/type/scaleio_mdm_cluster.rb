@@ -44,6 +44,4 @@ Puppet::Type.newtype(:scaleio_mdm_cluster) do
       end
     end
   end
-
 end
-

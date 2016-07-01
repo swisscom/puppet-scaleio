@@ -1,5 +1,5 @@
 require File.expand_path(File.join(File.dirname(__FILE__), '..', 'scli'))
-Puppet::Type.type(:scaleio_volume).provide(:scaleio_volume) do
+Puppet::Type.type(:scaleio_volume).provide(:scli) do
   include Puppet::Provider::Scli
 
   desc "Manages ScaleIO volume's."
@@ -38,7 +38,7 @@ Puppet::Type.type(:scaleio_volume).provide(:scaleio_volume) do
       end
 
       volume_instances << new({
-                                :name => name,
+                                :name => volume['NAME'],
                                 :ensure => :present,
                                 :protection_domain => pdomain,
                                 :storage_pool => pool_name,
@@ -64,7 +64,7 @@ Puppet::Type.type(:scaleio_volume).provide(:scaleio_volume) do
 
   def create
     Puppet.debug("Creating volume #{@resource[:name]}")
-    sleep(1) # wait for rebalance in case the pool has just been created
+    sleep(5) # wait for rebalance
     cmd = [] << '--add_volume' << '--protection_domain_name' << @resource[:protection_domain] << '--storage_pool_name' << @resource[:storage_pool] << '--volume_name' << @resource[:name] << '--size_gb' << @resource[:size]
     cmd << '--thin_provisioned' if @resource[:type] == 'thin'
     scli(*cmd)

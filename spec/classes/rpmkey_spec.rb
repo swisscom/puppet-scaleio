@@ -26,6 +26,8 @@ describe 'scaleio::rpmkey', :type => 'class' do
   end
 
   describe 'with standard' do
+    it { is_expected.to compile.with_all_deps }
+
     it { should contain_file('/etc/pki/rpm-gpg/RPM-GPG-KEY-ScaleIO').with(
         :source => 'puppet:///modules/scaleio/RPM-GPG-KEY-ScaleIO',
         :owner => 'root',

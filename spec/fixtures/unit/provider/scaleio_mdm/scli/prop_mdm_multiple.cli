@@ -1,0 +1,48 @@
+MDM 372b69f156c062f0:
+	ID                                                 372b69f156c062f0
+	NAME                                               node1
+	IPS                                                192.168.56.121
+	CLUSTER_PORT                                       9011
+	MGMT_IPS                                           192.168.56.121
+	SOFTWARE_VERSION_INFO                              Version: 2.0.6035
+	CERTIFICATE_EXPIRY                                 Jun 29 07:31:18 2026 GMT
+	ROLE                                               MDM_ROLE_MANAGER
+	IS_MASTER                                          Yes
+	IS_STANDBY                                         No
+	STATUS                                             MDM_STATUS_NORMAL
+	ACTOR_ID                                           39edc945227d8a00
+	VOTER_ID                                           29edd9b873f2b960
+	CERTIFICATE_THUMBPRINT                             ED:3C:F2:84:B7:4F:95:A6:DA:AC:CD:00:0A:28:0D:FB:FE:A2:6C:7F
+
+MDM 61ef7c464a4d7db1:
+	ID                                                 61ef7c464a4d7db1
+	NAME                                               node2
+	IPS                                                192.168.56.122
+	CLUSTER_PORT                                       9011
+	MGMT_IPS                                           192.168.56.122
+	SOFTWARE_VERSION_INFO                              Version: 2.0.6035
+	CERTIFICATE_EXPIRY                                 Jun 29 07:31:23 2026 GMT
+	ROLE                                               MDM_ROLE_MANAGER
+	IS_MASTER                                          No
+	IS_STANDBY                                         No
+	STATUS                                             MDM_STATUS_NORMAL
+	ACTOR_ID                                           1039273919809181
+	VOTER_ID                                           29b2640b7dffd861
+	CERTIFICATE_THUMBPRINT                             CD:D5:9D:AB:F6:94:5A:12:97:78:4C:6D:A5:F5:9A:E8:96:EF:9D:BB
+
+MDM 28a84cc00f638cb2:
+	ID                                                 28a84cc00f638cb2
+	NAME                                               node3
+	IPS                                                192.168.56.123
+	CLUSTER_PORT                                       9011
+	MGMT_IPS                                           192.168.56.123
+	SOFTWARE_VERSION_INFO                              Version: 2.0.6035
+	CERTIFICATE_EXPIRY                                 <Not Set>
+	ROLE                                               MDM_ROLE_TIE_BREAKER
+	IS_MASTER                                          No
+	IS_STANDBY                                         No
+	STATUS                                             MDM_STATUS_NORMAL
+	ACTOR_ID                                           <Not Set>
+	VOTER_ID                                           31122ed24126b352
+	CERTIFICATE_THUMBPRINT                             <Not Set>
+

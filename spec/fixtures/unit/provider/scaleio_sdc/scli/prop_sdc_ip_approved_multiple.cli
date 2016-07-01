@@ -1,0 +1,15 @@
+SDC f0d91c5d00000002:
+	NAME                                               sdc-2
+	IP                                                 192.168.56.122
+	APPROVED                                           Yes
+
+SDC f0d91c5c00000001:
+	NAME                                               sdc-1
+	IP                                                 192.168.56.121
+	APPROVED                                           No
+
+SDC f0d91c5b00000000:
+	NAME                                               sdc-3
+	IP                                                 192.168.56.123
+	APPROVED                                           Yes
+

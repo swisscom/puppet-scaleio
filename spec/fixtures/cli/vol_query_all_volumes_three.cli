@@ -1,9 +1,0 @@
-Query-all-volumes returned 3 volumes
-Protection Domain ade063bf00000000 Name: myPDomain
-Storage Pool f8bd86f600000001 Name: myPool
- Volume ID: d555c6ab00000000 Name: myVol Size: 24.0 GB (24576 MB) Mapped to 2 SDC Thin-provisioned 
-
-Storage Pool f8bd86f700000002 Name: myPool2
- Volume ID: d555edbc00000001 Name: myVol2 Size: 24.0 TB (24576 GB) Mapped to 2 SDC Thin-provisioned
- Volume ID: d555edbd00000002 Name: myVol3 Size: 24.0 GB (24576 MB) Unmapped Thick-provisioned 
-

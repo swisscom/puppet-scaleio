@@ -1,6 +1,6 @@
 require 'resolv'
 require File.expand_path(File.join(File.dirname(__FILE__), '..', 'scli'))
-Puppet::Type.type(:scaleio_syslog).provide(:scaleio_syslog) do
+Puppet::Type.type(:scaleio_syslog).provide(:scli) do
   include Puppet::Provider::Scli
 
   desc "Manages ScaleIO syslog destinations."

@@ -28,6 +28,8 @@ describe 'scaleio', :type => 'class' do
   end
 
   describe 'with standard' do
+    it { is_expected.to compile.with_all_deps }
+
     it { should contain_package('numactl').with_ensure('present') }
     it { should contain_package('python').with_ensure('present') }
 

@@ -28,7 +28,8 @@ describe 'scaleio::tb', :type => 'class' do
   end
 
   describe 'with standard' do
-    it { should compile.with_all_deps }
+    it { is_expected.to compile.with_all_deps }
+
     it { should contain_class('scaleio::mdm::installation') }
     it { should_not contain_consul_kv('scaleio/sysname/cluster_setup/tiebreaker')}
   end

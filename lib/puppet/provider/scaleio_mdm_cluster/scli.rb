@@ -1,6 +1,6 @@
 #require 'puppet/provider/blocker'
 require File.expand_path(File.join(File.dirname(__FILE__), '..', 'scli'))
-Puppet::Type.type(:scaleio_mdm_cluster).provide(:scaleio_mdm_cluster) do
+Puppet::Type.type(:scaleio_mdm_cluster).provide(:scli) do
   include Puppet::Provider::Scli
 
   desc "Manages ScaleIO MDM cluster."

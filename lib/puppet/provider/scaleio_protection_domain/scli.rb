@@ -1,5 +1,5 @@
 require File.expand_path(File.join(File.dirname(__FILE__), '..', 'scli'))
-Puppet::Type.type(:scaleio_protection_domain).provide(:scaleio_protection_domain) do
+Puppet::Type.type(:scaleio_protection_domain).provide(:scli) do
   include Puppet::Provider::Scli
 
   desc "Manages ScaleIO Protection Domains."

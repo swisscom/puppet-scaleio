@@ -15,7 +15,7 @@ module Puppet::Provider::Scli
 
     def scli_query_properties(*args)
       Puppet.debug("Querying scaleio properties #{args}")
-      query_result = scli('--query_properties', args).split("\n")
+      query_result = scli('--query_properties', *args).split("\n")
       group_name = ''
       properties = {}
 

@@ -1,5 +1,5 @@
 require File.expand_path(File.join(File.dirname(__FILE__), '..', 'scli'))
-Puppet::Type.type(:scaleio_storage_pool).provide(:scaleio_storage_pool) do
+Puppet::Type.type(:scaleio_storage_pool).provide(:scli) do
   include Puppet::Provider::Scli
 
   desc "Manages ScaleIO Storage Pool."
@@ -57,7 +57,7 @@ Puppet::Type.type(:scaleio_storage_pool).provide(:scaleio_storage_pool) do
       enable_zeropadding()
     end
 
-    sleep(1)  # wait for rebalance after creating pool
+    sleep(5)  # wait for rebalance after creating pool
     @property_hash[:ensure] = :present
   end
 

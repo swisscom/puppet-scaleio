@@ -1,5 +1,5 @@
 require File.expand_path(File.join(File.dirname(__FILE__), '..', 'scli'))
-Puppet::Type.type(:scaleio_user).provide(:scaleio_user) do
+Puppet::Type.type(:scaleio_user).provide(:scli) do
   include Puppet::Provider::Scli
 
   desc "Manages ScaleIO users."
@@ -29,7 +29,7 @@ Puppet::Type.type(:scaleio_user).provide(:scaleio_user) do
          username = user_info[4].strip
          role = user_info[2].strip
 
-        Puppet.debug(username)
+         next if username =~ /admin/
 
         # Create user instances hash
         new user = { 

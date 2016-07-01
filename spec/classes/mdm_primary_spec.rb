@@ -27,6 +27,8 @@ describe 'scaleio::mdm::primary', :type => 'class' do
   end
 
   describe 'with standard' do
+    it { is_expected.to compile.with_all_deps }
+
     it { should contain_class('scaleio::mdm::cluster_setup') }
     it { should contain_exec('scaleio::mdm::primary::manage_sdc_access_restriction').with(
         :command => '/opt/emc/scaleio/scripts/scli_wrap.sh --set_restricted_sdc_mode --restricted_sdc_mode enabled',
