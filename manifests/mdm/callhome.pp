@@ -13,7 +13,7 @@ class scaleio::mdm::callhome(
   ensure_packages(['mutt'])
 
   # only do a new installation of the package
-  package::verifiable{'EMC-ScaleIO-callhome':
+  package_verifiable{'EMC-ScaleIO-callhome':
     version        => $scaleio::version,
     manage_package => !$::package_emc_scaleio_callhome_version,
     tag            => 'scaleio-install',
@@ -36,7 +36,7 @@ class scaleio::mdm::callhome(
     owner   => root,
     group   => 0,
     mode    => '0644',
-    require => Package::Verifiable['EMC-ScaleIO-callhome'];
+    require => Package_verifiable['EMC-ScaleIO-callhome'];
   } ~> exec{'restart_callhome_service':
     command     => 'pkill -f \'scaleio/callhome\'',
     refreshonly => true,

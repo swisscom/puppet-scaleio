@@ -30,13 +30,13 @@ describe 'scaleio::mdm::callhome', :type => 'class' do
   describe 'with standard' do
     it { is_expected.to compile.with_all_deps }
 
-    it { should contain_package__verifiable('EMC-ScaleIO-callhome').with_version('installed') }
+    it { should contain_package_verifiable('EMC-ScaleIO-callhome').with_version('installed') }
 
     it { should contain_file('/opt/emc/scaleio/callhome/cfg/conf.txt').with(
         :owner => 'root',
         :group => 0,
         :mode => '0644',
-        :require => 'Package::Verifiable[EMC-ScaleIO-callhome]',
+        :require => 'Package_verifiable[EMC-ScaleIO-callhome]',
         :notify => ['Exec[restart_callhome_service]'],
     ) }
     it { should contain_file('/opt/emc/scaleio/callhome/cfg/conf.txt').with(
@@ -87,7 +87,7 @@ describe 'scaleio::mdm::callhome', :type => 'class' do
         :owner => 'root',
         :group => 0,
         :mode => '0644',
-        :require => 'Package::Verifiable[EMC-ScaleIO-callhome]',
+        :require => 'Package_verifiable[EMC-ScaleIO-callhome]',
         :notify => ['Exec[restart_callhome_service]'],
     ) }
     it { should contain_file('/opt/emc/scaleio/callhome/cfg/conf.txt').with(
@@ -119,7 +119,7 @@ describe 'scaleio::mdm::callhome', :type => 'class' do
                                           :package_emc_scaleio_callhome_version => '1',
                                       }) }
 
-    it { should contain_package__verifiable('EMC-ScaleIO-callhome').with(
+    it { should contain_package_verifiable('EMC-ScaleIO-callhome').with(
         :version => 'installed',
         :manage_package => false
     ) }

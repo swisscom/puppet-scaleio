@@ -28,12 +28,12 @@ describe 'scaleio::sdc', :type => 'class' do
     it { is_expected.to compile.with_all_deps }
 
     it { should contain_class('scaleio') }
-    it { should contain_package__verifiable('EMC-ScaleIO-sdc').with_version('installed') }
+    it { should contain_package_verifiable('EMC-ScaleIO-sdc').with_version('installed') }
 
     it { should contain_service('scini').with(
       :ensure  => 'running',
       :enable  => true,
-      :require => 'Package::Verifiable[EMC-ScaleIO-sdc]',
+      :require => 'Package_verifiable[EMC-ScaleIO-sdc]',
       :before  => 'Exec[scaleio::sdc_add_mdm]',
     )}
 
@@ -75,7 +75,7 @@ describe 'scaleio::sdc', :type => 'class' do
   context 'should not update SIO packages' do
     let(:facts) { facts_default.merge({:package_emc_scaleio_sdc_version => '1'}) }
 
-    it { should contain_package__verifiable('EMC-ScaleIO-sdc').with(
+    it { should contain_package_verifiable('EMC-ScaleIO-sdc').with(
       :version        => 'installed',
       :manage_package => false
     )}
