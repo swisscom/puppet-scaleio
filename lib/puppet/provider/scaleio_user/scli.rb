@@ -29,7 +29,7 @@ Puppet::Type.type(:scaleio_user).provide(:scli) do
          username = user_info[4].strip
          role = user_info[2].strip
 
-         next if username =~ /admin/
+         next if username == 'admin'
 
         # Create user instances hash
         new user = { 
