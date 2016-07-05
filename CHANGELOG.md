@@ -1,5 +1,10 @@
 # Changelog
 
+## 3.0.0 (2016-07-04)
+* ScaleIO 2.0
+** module now supports only 2.X and drops support for 1.3X
+** refactoring of the whole module and parameters
+
 ## 2.2.5 (2016-06-14)
 * manage lia service
 

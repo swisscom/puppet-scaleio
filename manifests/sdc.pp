@@ -3,7 +3,7 @@ class scaleio::sdc {
   include ::scaleio
 
   # only do a new installation of the package
-  package::verifiable{'EMC-ScaleIO-sdc':
+  package_verifiable{'EMC-ScaleIO-sdc':
     version        => $scaleio::version,
     manage_package => !$::package_emc_scaleio_sdc_version,
     tag            => 'scaleio-install',
@@ -19,7 +19,7 @@ class scaleio::sdc {
   service{'scini':
     ensure  => running,
     enable  => true,
-    require => Package::Verifiable['EMC-ScaleIO-sdc'],
+    require => Package_verifiable['EMC-ScaleIO-sdc'],
     before  => Exec['scaleio::sdc_add_mdm'],
   }
 

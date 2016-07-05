@@ -31,7 +31,7 @@ describe 'scaleio::mdm', :type => 'class' do
   describe 'with standard' do
     it { should compile.with_all_deps }
 
-    it { should contain_package__verifiable('EMC-ScaleIO-mdm').with(
+    it { should contain_package_verifiable('EMC-ScaleIO-mdm').with(
         :version => 'installed',
         :manage_package => true,
         :tag => 'scaleio-install',
@@ -42,7 +42,7 @@ describe 'scaleio::mdm', :type => 'class' do
         :owner => 'root',
         :group => 'root',
         :mode => '0600',
-        :require => 'Package::Verifiable[EMC-ScaleIO-mdm]',
+        :require => 'Package_verifiable[EMC-ScaleIO-mdm]',
     ) }
     it { should contain_file('/opt/emc/scaleio/scripts/scli_wrap.sh').with(
         :owner => 'root',

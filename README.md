@@ -1,4 +1,5 @@
 # puppet-scaleio
+[![Build Status](https://travis-ci.org/swisscom/puppet-scaleio.svg?branch=master)](https://travis-ci.org/swisscom/puppet-scaleio)
 
 ## Overview
 

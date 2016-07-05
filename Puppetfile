@@ -1,5 +1,7 @@
 # Add your dependencies here
-mod 'stdlib', :git => 'https://gitlab.swisscloud.io/puppet-forge/stdlib.git'
-mod 'consul', :git => 'https://gitlab.swisscloud.io/puppet-forge/consul.git'
-mod 'orchestration_utils', :git => "https://gitlab.swisscloud.io/puppet-forge/orchestration_utils.git"
-mod 'package', :git => "https://gitlab.swisscloud.io/puppet-osbase/package.git"
+forge "https://forgeapi.puppetlabs.com"
+
+mod 'puppetlabs/stdlib'
+mod 'KyleAnderson/consul'
+mod 'orchestration_utils', :git => "https://github.com/JioCloud/puppet-orchestration_utils.git"
+mod 'swisscom/package_verifiable', :git => "https://github.com/swisscom/puppet-package_verifiable.git"

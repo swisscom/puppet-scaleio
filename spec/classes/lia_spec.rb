@@ -29,7 +29,7 @@ describe 'scaleio::lia', :type => 'class' do
 
     it { should contain_class('scaleio') }
 
-    it { should contain_package__verifiable('EMC-ScaleIO-lia').with(
+    it { should contain_package_verifiable('EMC-ScaleIO-lia').with(
       :version        => 'installed',
       :manage_package => false
     )}
@@ -64,7 +64,7 @@ describe 'scaleio::lia', :type => 'class' do
     it { should compile.with_all_deps }
     it { should contain_class('scaleio') }
 
-    it { should contain_package__verifiable('EMC-ScaleIO-lia').with(
+    it { should contain_package_verifiable('EMC-ScaleIO-lia').with(
       :version        => '1.44-6-el7',
       :manage_package => false
     )}

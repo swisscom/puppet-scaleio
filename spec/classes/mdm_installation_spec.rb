@@ -41,7 +41,7 @@ describe 'scaleio::mdm::installation', :type => 'class' do
         :refreshonly => true,
     ) }
 
-    it { should contain_package__verifiable('EMC-ScaleIO-mdm').with(
+    it { should contain_package_verifiable('EMC-ScaleIO-mdm').with(
         :version => 'installed',
         :manage_package => true
     ) }
@@ -54,7 +54,7 @@ describe 'scaleio::mdm::installation', :type => 'class' do
         :path => '/opt/emc/scaleio/mdm/cfg/conf.txt',
         :match => '^actor_role_is_manager=',
         :line => 'actor_role_is_manager=1',
-        :require => 'Package::Verifiable[EMC-ScaleIO-mdm]',
+        :require => 'Package_verifiable[EMC-ScaleIO-mdm]',
     ).that_notifies('Exec[scaleio::mdm::installation::restart_mdm]') }
 
     it { should contain_exec('scaleio::mdm::installation::restart_mdm').with(
@@ -62,7 +62,7 @@ describe 'scaleio::mdm::installation', :type => 'class' do
         :refreshonly => true,
     ) }
 
-    it { should contain_package__verifiable('EMC-ScaleIO-mdm').with(
+    it { should contain_package_verifiable('EMC-ScaleIO-mdm').with(
         :version => 'installed',
         :manage_package => true
     ) }
@@ -71,7 +71,7 @@ describe 'scaleio::mdm::installation', :type => 'class' do
   describe 'should not update SIO packages' do
     let(:facts) { facts_default.merge({:package_emc_scaleio_mdm_version => '1'}) }
 
-    it { should contain_package__verifiable('EMC-ScaleIO-mdm').with(
+    it { should contain_package_verifiable('EMC-ScaleIO-mdm').with(
         :version => 'installed',
         :manage_package => false
     ) }

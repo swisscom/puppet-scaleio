@@ -12,7 +12,7 @@ class scaleio::mdm::installation(
   ensure_packages(['python'])
 
   # only do a new installation of the package
-  package::verifiable{ 'EMC-ScaleIO-mdm':
+  package_verifiable{ 'EMC-ScaleIO-mdm':
     version        => $scaleio::version,
     manage_package => !$::package_emc_scaleio_mdm_version,
     tag            => 'scaleio-install',
@@ -30,7 +30,7 @@ class scaleio::mdm::installation(
     path    => '/opt/emc/scaleio/mdm/cfg/conf.txt',
     line    => "actor_role_is_manager=${actor_role_is_manager}",
     match   => '^actor_role_is_manager=',
-    require => Package::Verifiable['EMC-ScaleIO-mdm'],
+    require => Package_verifiable['EMC-ScaleIO-mdm'],
   } ~>
   exec{ 'scaleio::mdm::installation::restart_mdm':
     # give the mdm time to switch its role
