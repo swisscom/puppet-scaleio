@@ -25,6 +25,11 @@ And it can manage this resources:
 Below you can find the various parameters explained - hiera is taken as an example backend. For sure the same parameters can be passed when declaring the scaleio class.
 See [spec/hiera/stack.yaml](spec/hiera/stack.yaml) for a complete hiera example.
 
+The general idea behind the workflow is as follows:
+
+1. Install all components (SDS/SDC/LIA/MDM) on all nodes (one Puppet run per node)
+2. Configure the ScaleIO cluster on the primary MDM/bootstrap node and create/manage the specified resources (such as pool, SDS, SDC, etc.)
+
 ### ScaleIO packages
 It is expected that the following RPM packages are available in a repository so they can be installed with the package manager (ie. yum):
 
@@ -34,18 +39,25 @@ It is expected that the following RPM packages are available in a repository so 
 - EMC-ScaleIO-lia
 
 ### Version locking
-This module locks the versions of the RPMs using the yum-versionlock plugin. This prevents an unintended upgrade of the ScaleIO RPMs by running `yum update``.
+The puppet module locks the versions of the RPMs using the yum-versionlock plugin. This prevents an unintended upgrade of the ScaleIO RPMs by running `yum update``
+
+### Components
+Per node one or many of the following components can be specified and thus will installed. The MDM component will be installed automatically on the corresponding nodes based on the IP address.
+```yaml
+scaleio::components: ['sdc', 'sds', 'lia']
+```
+Note: this is only for installation the appropriate package on the node. The configuration (ie: add it to the cluster) will happen on the primary MDM.
 
 ### Bootstrapping
 To bootstrap a MDM cluster, one needs to define all MDMs and Tiebreakers.
 Moreover the cluster bootstrap node needs to be specified.
 The order during the bootstrapping is important, it needs to be as follows:
 
-1. Configure all components except MDM primary/bootstrap node.
-  1. Run puppet on secondary MDMs and tiebreakers (install & configure MDM package)
-  2. Run puppet on all SDS
-2. Bootstrap cluster on primary
-  1. Run puppet on the bootstrap node 
+1. Install all components except MDM primary/bootstrap node, thus
+  1. run puppet on secondary MDMs and tiebreakers (install & configure MDM package)
+  2. run puppet on all SDS
+2. Bootstrap cluster on primary, thus
+  1. run puppet on the bootstrap node 
 
 ```yaml
 scaleio::version: '2.0-6035.0.el7'
@@ -70,16 +82,14 @@ scaleio::tiebreakers:
 
 #### Consul
 This module can make use of an exsting consul cluster to manage the bootstrap ordering.
-Thus set the parameter `scaleio::use_consul: true`. With that all MDMs will create the key `scaleio/${::scaleio::system_name}/cluster_setup/${mdm_tb_ip}` in the consul KV store, as soon as the MDM service is running.
+Thus set the parameter 
+```yaml
+scaleio::use_consul: true
+```
+With that all MDMs will create the key `scaleio/${::scaleio::system_name}/cluster_setup/${mdm_tb_ip}` in the consul KV store, as soon as the MDM service is running.
 The bootstrap node itself will wait until all MDMs have created their consul key. 
 
 
-### Components
-Per node one or many of the following components can be specified and installed:
-```yaml
-scaleio::components: ['sdc', 'sds', 'lia']
-```
-Note: this is only for installation the appropriate package on the node. The configuration (add it to the cluster) will happen on the primary MDM.
 
 ### Protection domains
 An array of protection domain names.
