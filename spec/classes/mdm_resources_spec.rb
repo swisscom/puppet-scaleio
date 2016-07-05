@@ -60,7 +60,7 @@ describe 'scaleio::mdm::resources', :type => 'class' do
         :protection_domain => 'pdo',
         :pool_devices => {'pool1' => ['/dev/sdb']},
         :ips => ['192.168.56.122'],
-        :ramcache_size => 128,
+        :ramcache_size => 1024,
     ) }
 
     it { should contain_scaleio_sds('sds-3').with(

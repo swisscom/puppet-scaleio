@@ -47,6 +47,7 @@ scaleio::sds:
     ips: ['192.168.56.121']
   'sds-2':
     ips: ['192.168.56.122']
+    ramcache_size: 1024
   'sds-3':
     ips: ['192.168.56.123']
     ramcache_size: -1

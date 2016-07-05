@@ -1,8 +1,6 @@
 # puppet-scaleio
 [![Build Status](https://travis-ci.org/swisscom/puppet-scaleio.svg?branch=master)](https://travis-ci.org/swisscom/puppet-scaleio)
 
-## Overview
-
 This module manages EMC ScaleIO deployments, configuration and management of ScaleIO components. The current version is able to handle ScaleIO 2.0 environments.
 
 This puppet module installs and configures ScaleIO clusters with the following components:

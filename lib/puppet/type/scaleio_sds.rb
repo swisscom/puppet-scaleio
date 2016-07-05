@@ -31,7 +31,7 @@ Puppet::Type.newtype(:scaleio_sds) do
     validate do |value|
       fail("#{value} is not a valid value for SDS port.") unless value.is_a? Integer
     end
-  end  
+  end
 
   newparam(:useconsul, :boolean => true) do
     desc "Use consul to wait for SDS being available"
