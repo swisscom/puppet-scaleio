@@ -87,7 +87,7 @@ Thus set the parameter
 scaleio::use_consul: true
 ```
 With that all MDMs will create the key `scaleio/${::scaleio::system_name}/cluster_setup/${mdm_tb_ip}` in the consul KV store, as soon as the MDM service is running.
-The bootstrap node itself will wait until all MDMs have created their consul key. 
+The bootstrap node itself will wait until all MDMs have created their consul key, and then bootstrap the cluster.
 
 
 
@@ -239,3 +239,5 @@ Please log tickets and issues at our [Projects site](https://github.com/swisscom
 ## Puppet Supported Versions
 
 This module requires a minimum version of Puppet 3.7.0.
+
+MIT license, see [LICENSE.md](LICENSE.md)
