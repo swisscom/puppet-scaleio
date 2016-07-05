@@ -11,4 +11,5 @@ class scaleio::mdm::monitoring(
         mode    => '0700',
     }
   }
+
 }

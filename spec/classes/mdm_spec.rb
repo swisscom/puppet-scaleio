@@ -75,7 +75,6 @@ describe 'scaleio::mdm', :type => 'class' do
     ) }
 
     it { should_not contain_class('scaleio::mdm::primary') }
-    it { should_not contain_class('scaleio::mdm::callhome') }
     it { should contain_class('scaleio::mdm::monitoring') }
     it { should contain_class('scaleio::mdm::installation') }
   end
@@ -106,11 +105,4 @@ describe 'scaleio::mdm', :type => 'class' do
                     .that_requires('File[/opt/emc/scaleio/scripts/change_scaleio_password.sh]')}
   end
 
-  describe 'with callhome' do
-    let(:facts) { facts_default.merge({
-                                          :fqdn => 'use_callhome.example.com',
-                                      }) }
-
-    it { should contain_class('scaleio::mdm::callhome') }
-  end
 end

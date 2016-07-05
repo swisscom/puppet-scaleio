@@ -27,7 +27,7 @@ class scaleio::mdm::resources(
     merge($scaleio::sds_defaults, {
       ensure        => present,
       useconsul     => $scaleio::use_consul,
-      ramcache_size => $scaleio::ramcache_size + 0
+      ramcache_size => 128
     })
   )
 

@@ -3,8 +3,7 @@
 # Parameters:
 #
 # * version: which version to be installed. default: installed (latest in repo)
-# * callhome: should callhome on the mdms be installed?
-# * mdm_ips: a list of IPs, which will be mdms. On first setup, the first entry in the list will be the primary mdm. 
+# * mdm_ips: a list of IPs, which will be mdms. On first setup, the first entry in the list will be the primary mdm.
 #   The initial ScaleIO configuration will be done on this host.
 # * tb_ips: a list of IPs, which will be tiebreakers. On first setup, the first entry in the list will be the actively used tb.
 # * password: for the mdm
@@ -69,7 +68,6 @@ class scaleio(
   $tiebreakers              = { },
   $bootstrap_mdm_name       = '',
 
-  $callhome                 = false,
   $use_consul               = false,
 
   $users                    = { },
@@ -83,7 +81,6 @@ class scaleio(
   $purge                    = false,
 
   $restricted_sdc_mode      = true,
-  $ramcache_size            = 128,
 
   $lvm                      = false,
   $syslog_ip_port           = undef,

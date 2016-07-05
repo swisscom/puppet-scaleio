@@ -11,10 +11,6 @@ class scaleio::mdm {
     is_tiebreaker => false,
   }
 
-  if $scaleio::callhome{
-    include scaleio::mdm::callhome
-  }
-
   file{
     $script_dir:
       ensure  => directory,
