@@ -1,9 +1,12 @@
 require 'puppetlabs_spec_helper/module_spec_helper'
 require 'rake'
-require 'simplecov'
 
-SimpleCov.start do
-  add_filter "/fixtures/"
+if Gem::Version.new(RUBY_VERSION) > Gem::Version.new('2.0.0')
+  require 'simplecov'
+
+  SimpleCov.start do
+    add_filter "/fixtures/"
+  end
 end
 
 # This code is being added as a recommended workaround

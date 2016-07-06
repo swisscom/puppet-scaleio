@@ -12,6 +12,6 @@ gem 'puppetlabs_spec_helper'
 gem 'rake'
 gem 'librarian-puppet'
 
-if RUBY_VERSION == '2.3.0'
+if Gem::Version.new(RUBY_VERSION) > Gem::Version.new('2.0.0')
   gem 'simplecov', :require => false, :group => :test
 end
