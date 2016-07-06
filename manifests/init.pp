@@ -3,9 +3,6 @@
 # Parameters:
 #
 # * version: which version to be installed. default: installed (latest in repo)
-# * mdm_ips: a list of IPs, which will be mdms. On first setup, the first entry in the list will be the primary mdm.
-#   The initial ScaleIO configuration will be done on this host.
-# * tb_ips: a list of IPs, which will be tiebreakers. On first setup, the first entry in the list will be the actively used tb.
 # * password: for the mdm
 # * old_password: if you want to change the password, you have to provide the
 #                 old one for change.
@@ -13,12 +10,11 @@
 # * monitoring_passwd: password for mionitoring user
 # * external_monitoring_user: external monitoring software user (eq splunk user)i that allow running scli cmd for monitoring
 # * syslog_ip_port: if set we will configure a syslog server
-# * mgmt_addresses: array of ip addresses to be configured as SIO management addresses
 # * users: scaleio users to be created
 #     userName:
 #       role     : 'Monitor'   # one of Monitor, Configure, Administrator
 #       password : 'myPw'      # pw to be set when creating the account
-# * protection_domains: hash with names of protection domains to be configured
+# * protection_domains: array with names of protection domains to be configured
 # * storage_pools: storage pool to be created/managed, hash looking as follows:
 #     myPoolName:
 #       protection_domain : myProtectionDomainName
@@ -56,7 +52,6 @@
 #    - to wait for tiebreak being ready for setup
 #    - to wait for SDSs being ready for adding to cluster
 # * restricted_sdc_mode: use restricted SDC mode (true/false)
-# * ramcache_size: ram cache size in MB (-1 to disable)
 #
 class scaleio(
   $version                  = 'installed',
@@ -98,27 +93,30 @@ class scaleio(
   }
 
   # extract all local ip addresses of all interfaces
-  $interface_names = split($::interfaces, ',')
-  $interfaces_addresses = split(inline_template('<%=
-    @interface_names.reject{ |ifc| ifc == "lo" }.map{
-      |ifc| scope.lookupvar("ipaddress_#{ifc}")
-    }.join(" ")%>'), ' ')
+  if $::interfaces {
+    $interface_names = split($::interfaces, ',')
+    $interfaces_addresses = split(inline_template('<%=
+      @interface_names.reject{ |ifc| ifc == "lo" }.map{
+        |ifc| scope.lookupvar("ipaddress_#{ifc}")
+      }.join(" ")%>'), ' ')
 
-  if ! empty($mdms) {
-    $cluster_setup_ips = any2array($mdms[$bootstrap_mdm_name]['ips'])
-    $cluster_setup_ip = $cluster_setup_ips[0]
 
-    # check whether one of the local IPs matches with one of the defined MDM IPs
-    # => if so, install MDM on this host
-    $mdm_ips = scaleio_get_first_mdm_ips($mdms, 'ips')
-    $current_mdm_ip = intersection($mdm_ips, $interfaces_addresses)
-  }
+    if ! empty($mdms) {
+      $cluster_setup_ips = any2array($mdms[$bootstrap_mdm_name]['ips'])
+      $cluster_setup_ip = $cluster_setup_ips[0]
 
-  if ! empty($tiebreakers) {
-    # check whether one of the local IPs matches with one of the defined tb IPs
-    # => if so, install tb on this host
-    $tb_ips = scaleio_get_first_mdm_ips($tiebreakers, 'ips')
-    $current_tb_ip = intersection($tb_ips, $interfaces_addresses)
+      # check whether one of the local IPs matches with one of the defined MDM IPs
+      # => if so, install MDM on this host
+      $mdm_ips = scaleio_get_first_mdm_ips($mdms, 'ips')
+      $current_mdm_ip = intersection($mdm_ips, $interfaces_addresses)
+    }
+
+    if ! empty($tiebreakers) {
+      # check whether one of the local IPs matches with one of the defined tb IPs
+      # => if so, install tb on this host
+      $tb_ips = scaleio_get_first_mdm_ips($tiebreakers, 'ips')
+      $current_tb_ip = intersection($tb_ips, $interfaces_addresses)
+    }
   }
 
   if 'sdc' in $components {
