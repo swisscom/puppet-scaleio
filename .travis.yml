@@ -7,17 +7,26 @@ bundler_args: --jobs=3 --retry=3
 
 cache: bundler
 
-rvm:
-  - 1.9.3
-  - 2.2.0
-
 matrix:
-  exclude:
-    - rvm: 1.9.3
-      env: PUPPET_VERSION=4.5
+  include:
     - rvm: 2.2.0
+      env: PUPPET_VERSION=4.0
+    - rvm: 2.2.0
+      env: PUPPET_VERSION=4.1
+    - rvm: 2.2.0
+      env: PUPPET_VERSION=4.2
+    - rvm: 2.2.0
+      env: PUPPET_VERSION=4.3
+    - rvm: 2.2.0
+      env: PUPPET_VERSION=4.4
+    - rvm: 2.2.0
+      env: PUPPET_VERSION=4.5
+    - rvm: 1.9.3
       env: PUPPET_VERSION=3.8.7
-
-env:
-  - PUPPET_VERSION=3.8.7
-  - PUPPET_VERSION=4.5
+  allow_failures:
+    - env: PUPPET_VERSION=4.0
+    - env: PUPPET_VERSION=4.1
+    - env: PUPPET_VERSION=4.2
+    - env: PUPPET_VERSION=4.3
+    - env: PUPPET_VERSION=4.4
+    - env: PUPPET_VERSION=4.5
