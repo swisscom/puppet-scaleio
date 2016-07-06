@@ -11,5 +11,7 @@ gem 'puppet-lint'
 gem 'puppetlabs_spec_helper'
 gem 'rake'
 gem 'librarian-puppet'
-gem 'simplecov', :require => false, :group => :test
 
+if RUBY_VERSION == '2.3.0'
+  gem 'simplecov', :require => false, :group => :test
+end
