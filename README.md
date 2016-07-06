@@ -186,7 +186,7 @@ scaleio::volumes:
 
 Create users and manage their passwords (except the admin user):
 ```yaml
-scaleio::users:               
+scaleio::users:
   'api_admin':
     role: 'Administrator'
     password: 'myPassAPI1'
