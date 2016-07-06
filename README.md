@@ -221,7 +221,12 @@ Proceed with the following steps:
 3. Upgrade the installation manager
 4. Do the actual upgrade using the installation manager
 5. Set the correct (new) version (`scaleio::version: XXXX`) for version locking.
-6. Enable Puppet again 
+6. Enable Puppet again
+
+## scli_wrap
+This module uses a script called 'scli_wrap.sh' for executing scli commands. That wrapper script basically does a login, executes the command and does a logout at the end.
+To avoid race condition, there is a locking mechanism around those three commands.
+As a byproduct this puppet module creates a symlink from /usr/bin/si to that wrapper script and adds bash completion to it. Enjoy running scli commands ;)
 
 
 ## Limitations - OS Support, etc.

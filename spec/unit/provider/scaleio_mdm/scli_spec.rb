@@ -58,7 +58,7 @@ describe Puppet::Type.type(:scaleio_mdm).provider(:scli) do
 
   describe 'create' do
     it 'creates a mdm' do
-      provider.expects(:scli).with('--add_standby_mdm', '--new_mdm_ip', '192.168.1.1,192.168.1.2', '--new_mdm_name', 'mdm-1', '--mdm_role', 'tb').returns([])
+      provider.expects(:scli).with('--add_standby_mdm', '--new_mdm_ip', '192.168.1.1,192.168.1.2', '--new_mdm_name', 'mdm-1', '--mdm_role', 'tb', '--new_mdm_management_ip', '192.168.2.1').returns([])
       provider.create
     end
   end

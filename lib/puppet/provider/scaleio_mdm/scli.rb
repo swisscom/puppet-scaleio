@@ -55,7 +55,11 @@ Puppet::Type.type(:scaleio_mdm).provide(:scli) do
   end
 
   def create
-    scli('--add_standby_mdm', '--new_mdm_ip', resource[:ips].join(','), '--new_mdm_name', resource[:name], '--mdm_role', resource[:is_tiebreaker] ? 'tb' : 'manager')
+    args = ['--add_standby_mdm', '--new_mdm_ip', resource[:ips].join(','), '--new_mdm_name', resource[:name], '--mdm_role', resource[:is_tiebreaker] ? 'tb' : 'manager']
+    if !resource[:mgmt_ips].empty?
+      args << '--new_mdm_management_ip' << resource[:mgmt_ips].join(',')
+    end
+    scli(*args)
     @property_hash[:ensure] = :present
   end
 
