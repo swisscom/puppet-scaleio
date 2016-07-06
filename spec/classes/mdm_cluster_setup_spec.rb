@@ -32,7 +32,7 @@ describe 'scaleio::mdm::cluster_setup', :type => 'class' do
     it { is_expected.to compile.with_all_deps }
 
     it { should contain_exec('scaleio::mdm::cluster_setup::create_cluster').with(
-        :command => 'scli --create_mdm_cluster --master_mdm_ip 10.0.0.1 --master_mdm_management_ip 11.0.0.1 --master_mdm_name myMDM1 --use_nonsecure_communication --accept_license; sleep 5',
+        :command => 'scli --create_mdm_cluster --master_mdm_ip 10.0.0.1 --master_mdm_name myMDM1 --use_nonsecure_communication --accept_license; sleep 5',
         :onlyif => 'scli --query_cluster --approve_certificate 2>&1 |grep -qE "Error: MDM failed command.  Status: The MDM cluster state is incorrect"',
         :require => 'Exec[scaleio::mdm::installation::restart_mdm]',
     ).that_comes_before('Exec[scaleio::mdm::cluster_setup::login_default]') }
@@ -95,7 +95,7 @@ describe 'scaleio::mdm::cluster_setup', :type => 'class' do
     let(:facts) { facts_default.merge({:fqdn => '5_node_cluster.example.com'}) }
 
     it { should contain_exec('scaleio::mdm::cluster_setup::create_cluster').with(
-        :command => 'scli --create_mdm_cluster --master_mdm_ip 10.0.0.1,10.0.0.2 --master_mdm_management_ip 11.0.0.1,11.0.0.2 --master_mdm_name myMDM1 --use_nonsecure_communication --accept_license; sleep 5',
+        :command => 'scli --create_mdm_cluster --master_mdm_ip 10.0.0.1,10.0.0.2 --master_mdm_name myMDM1 --use_nonsecure_communication --accept_license; sleep 5',
         :onlyif => 'scli --query_cluster --approve_certificate 2>&1 |grep -qE "Error: MDM failed command.  Status: The MDM cluster state is incorrect"',
         :require => 'Exec[scaleio::mdm::installation::restart_mdm]',
     ).that_comes_before('Exec[scaleio::mdm::cluster_setup::login_default]') }

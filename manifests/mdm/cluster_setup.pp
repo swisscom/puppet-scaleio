@@ -5,7 +5,7 @@ class scaleio::mdm::cluster_setup {
   $primary_mdm_mgmt_ips = join(any2array($::scaleio::mdms[$::scaleio::bootstrap_mdm_name]['mgmt_ips']), ',')
 
   exec{ 'scaleio::mdm::cluster_setup::create_cluster':
-    command => "scli --create_mdm_cluster --master_mdm_ip ${primary_mdm_ips} --master_mdm_management_ip ${primary_mdm_mgmt_ips} --master_mdm_name ${::scaleio::bootstrap_mdm_name} --use_nonsecure_communication --accept_license; sleep 5",
+    command => "scli --create_mdm_cluster --master_mdm_ip ${primary_mdm_ips} --master_mdm_name ${::scaleio::bootstrap_mdm_name} --use_nonsecure_communication --accept_license; sleep 5",
     onlyif  => 'scli --query_cluster --approve_certificate 2>&1 |grep -qE "Error: MDM failed command.  Status: The MDM cluster state is incorrect"',
     require => Exec['scaleio::mdm::installation::restart_mdm'],
   }->
