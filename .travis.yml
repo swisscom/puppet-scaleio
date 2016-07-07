@@ -27,3 +27,8 @@ deploy:
   user: swisscom
   password:
     secure: "oIdQd9HkNrNZH7rVC6RVe4JJSeSksljSxtpzzPfgh1vpKF0Jo9pTDqBmwepXHqDwfI9D3KlvkHeGxSyyQbmdq3d6H+s2FhXAiGeZHhDn/DTtRIcxEOEKzJ71DOTD6Y5ojVZFi/b8OTECpCVDdAUgnpVC7Ivvjft/IJyiYwWP4Dq7g/t+n9tjK/xjJRuasW+5202kE8XEGEr2cfqrmrxJ28dhTd7U4qZZomLneITn75mjcHAS2QUk9DcL86dwyBZpJ76B6KyL5drtggz/91P8Kz4+YYHVDNOIDyq3XUnZatQbkL8zAGFguIlzYNh8XFLfJ71LP5RA2mB+Oz3FNrxGwXB1Ca85F7Oi/EQyNZm9k1Vsb3vupHkxaUIxkNXxdkUfW3O4I19nEkV4nLqtnxpjmhel2D2hXOujEZlH/oCRaVaVuAa94wZog34PMvOeXb0IQ1ve8oNlIVmaU2RTjglJT0gkzmRXXizlfMRdMqL8fxxnM1v5LnsZ5fHqWYgjcRQYbiJKtJpL9EJQ3seS0FT12pUOhrsjqNcWFfJ8bSIBqQTCCOJpU4yJ/aEQFnHVEPc4tx1MTTrZWOMtytSMcB5SfJMnwpkJyB7UHGRBi216AuKViHzgxQSF1LB6phhUXLmY4LL+W+cdec3EnJFbUwvRABzXWN8owK0CKJOh+o6AAxY="
+  on:
+    tags: true
+    branch: 'master'
+    # Only publish if our main Ruby target builds
+    rvm: 1.9.3
