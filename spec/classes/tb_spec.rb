@@ -6,6 +6,7 @@ describe 'scaleio::tb', :type => 'class' do
     {
         :osfamily => 'RedHat',
         :operatingsystem => 'RedHat',
+        :operatingsystemrelease => '7.2',
         :operatingsystemmajrelease => '7',
         :concat_basedir => '/var/lib/puppet/concat',
         :is_virtual => false,
@@ -30,7 +31,7 @@ describe 'scaleio::tb', :type => 'class' do
   describe 'with standard' do
     it { is_expected.to compile.with_all_deps }
 
-    it { should contain_class('scaleio::mdm::installation') }
+    it { is_expected.to contain_class('scaleio::mdm::installation') }
     it { should_not contain_consul_kv('scaleio/sysname/cluster_setup/tiebreaker')}
   end
 end

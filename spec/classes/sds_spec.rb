@@ -6,6 +6,7 @@ describe 'scaleio::sds', :type => 'class' do
     {
         :osfamily => 'RedHat',
         :operatingsystem => 'RedHat',
+        :operatingsystemrelease => '7.2',
         :operatingsystemmajrelease => '7',
         :concat_basedir => '/var/lib/puppet/concat',
         :is_virtual => false,
@@ -27,14 +28,14 @@ describe 'scaleio::sds', :type => 'class' do
   describe 'with standard' do
     it { is_expected.to compile.with_all_deps }
 
-    it { should contain_class('scaleio') }
-    it { should contain_package_verifiable('EMC-ScaleIO-sds').with_version('installed') }
+    it { is_expected.to contain_class('scaleio') }
+    it { is_expected.to contain_package_verifiable('EMC-ScaleIO-sds').with_version('installed') }
   end
 
   context 'should not update SIO packages' do
     let(:facts) { facts_default.merge({:package_emc_scaleio_sds_version => '1'}) }
 
-    it { should contain_package_verifiable('EMC-ScaleIO-sds').with(
+    it { is_expected.to contain_package_verifiable('EMC-ScaleIO-sds').with(
         :version => 'installed',
         :manage_package => false
     ) }

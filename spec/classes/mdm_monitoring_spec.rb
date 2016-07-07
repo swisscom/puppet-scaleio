@@ -6,6 +6,7 @@ describe 'scaleio::mdm::monitoring', :type => 'class' do
     {
         :osfamily => 'RedHat',
         :operatingsystem => 'RedHat',
+        :operatingsystemrelease => '7.2',
         :operatingsystemmajrelease => '7',
         :concat_basedir => '/var/lib/puppet/concat',
         :is_virtual => false,
@@ -28,7 +29,7 @@ describe 'scaleio::mdm::monitoring', :type => 'class' do
   describe 'with standard' do
     it { is_expected.to compile.with_all_deps }
 
-    it { should contain_file('/opt/emc/scaleio/scripts/scli_wrap_monitoring.sh').with(
+    it { is_expected.to contain_file('/opt/emc/scaleio/scripts/scli_wrap_monitoring.sh').with(
           :content => /--username monitoring/,
           :owner   => 'root',
           :group   => 'root',

@@ -7,6 +7,7 @@ describe 'scaleio', :type => 'class' do
     {
         :osfamily => 'RedHat',
         :operatingsystem => 'RedHat',
+        :operatingsystemrelease => '7.2',
         :operatingsystemmajrelease => '7',
         :concat_basedir => '/var/lib/puppet/concat',
         :is_virtual => false,
@@ -30,10 +31,10 @@ describe 'scaleio', :type => 'class' do
   describe 'with standard' do
     it { is_expected.to compile.with_all_deps }
 
-    it { should contain_package('numactl').with_ensure('present') }
-    it { should contain_package('python').with_ensure('present') }
+    it { is_expected.to contain_package('numactl').with_ensure('present') }
+    it { is_expected.to contain_package('python').with_ensure('present') }
 
-    it { should contain_class('scaleio::rpmkey') }
+    it { is_expected.to contain_class('scaleio::rpmkey') }
 
     it { should_not contain_class('sdc') }
     it { should_not contain_class('sds') }
@@ -45,7 +46,7 @@ describe 'scaleio', :type => 'class' do
 
   describe 'mdm install' do
     context 'on the primary mdm node' do
-      it { should contain_class('scaleio::mdm') }
+      it { is_expected.to contain_class('scaleio::mdm') }
     end
     context 'on the third mdm node' do
       let(:facts) { facts_default.merge({
@@ -54,7 +55,7 @@ describe 'scaleio', :type => 'class' do
                                             :ipaddress_eth0 => '10.0.0.3',
                                         }) }
 
-      it { should contain_class('scaleio::mdm') }
+      it { is_expected.to contain_class('scaleio::mdm') }
     end
   end
 
@@ -66,7 +67,7 @@ describe 'scaleio', :type => 'class' do
                                             :ipaddress_eth0 => '10.0.0.4',
                                         }) }
 
-      it { should contain_class('scaleio::tb') }
+      it { is_expected.to contain_class('scaleio::tb') }
     end
     context 'on the second tie-breaker node' do
       let(:facts) { facts_default.merge({
@@ -75,7 +76,7 @@ describe 'scaleio', :type => 'class' do
                                             :ipaddress_eth0 => '10.0.0.5',
                                         }) }
 
-      it { should contain_class('scaleio::tb') }
+      it { is_expected.to contain_class('scaleio::tb') }
     end
   end
 
@@ -84,7 +85,7 @@ describe 'scaleio', :type => 'class' do
         :components => ['sdc'],
     } }
 
-    it { should contain_class('scaleio::sdc') }
+    it { is_expected.to contain_class('scaleio::sdc') }
   end
 
   describe 'sds install' do
@@ -92,7 +93,7 @@ describe 'scaleio', :type => 'class' do
         :components => ['sds'],
     } }
 
-    it { should contain_class('scaleio::sds') }
+    it { is_expected.to contain_class('scaleio::sds') }
   end
 
   describe 'lia install' do
@@ -100,7 +101,7 @@ describe 'scaleio', :type => 'class' do
         :components => ['lia'],
     } }
 
-    it { should contain_class('scaleio::lia') }
+    it { is_expected.to contain_class('scaleio::lia') }
   end
 end
 

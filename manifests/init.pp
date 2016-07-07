@@ -108,14 +108,16 @@ class scaleio(
       # check whether one of the local IPs matches with one of the defined MDM IPs
       # => if so, install MDM on this host
       $mdm_ips = scaleio_get_first_mdm_ips($mdms, 'ips')
-      $current_mdm_ip = intersection($mdm_ips, $interfaces_addresses)
+      $current_mdm_ips = any2array(intersection($mdm_ips, $interfaces_addresses))
+      $current_mdm_ip = $current_mdm_ips[0]
     }
 
     if ! empty($tiebreakers) {
       # check whether one of the local IPs matches with one of the defined tb IPs
       # => if so, install tb on this host
       $tb_ips = scaleio_get_first_mdm_ips($tiebreakers, 'ips')
-      $current_tb_ip = intersection($tb_ips, $interfaces_addresses)
+      $current_tb_ips = any2array(intersection($tb_ips, $interfaces_addresses))
+      $current_tb_ip = $current_tb_ips[0]
     }
   }
 
@@ -128,10 +130,10 @@ class scaleio(
   if 'lia' in $components {
     include scaleio::lia
   }
-  if 'mdm' in $components or (size($current_mdm_ip) >= 1 and has_ip_address($current_mdm_ip[0])) {
+  if 'mdm' in $components or has_ip_address($current_mdm_ip) {
     include scaleio::mdm
   }
-  if 'tb' in $components or (size($current_tb_ip) >= 1 and has_ip_address($current_tb_ip[0])) {
+  if 'tb' in $components or has_ip_address($current_tb_ip) {
     include scaleio::tb
   }
 }

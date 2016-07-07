@@ -6,6 +6,7 @@ describe 'scaleio::lia', :type => 'class' do
     {
         :osfamily => 'RedHat',
         :operatingsystem => 'RedHat',
+        :operatingsystemrelease => '7.2',
         :operatingsystemmajrelease => '7',
         :concat_basedir => '/var/lib/puppet/concat',
         :is_virtual => false,
@@ -27,24 +28,24 @@ describe 'scaleio::lia', :type => 'class' do
   describe 'with standard' do
     it { is_expected.to compile.with_all_deps }
 
-    it { should contain_class('scaleio') }
+    it { is_expected.to contain_class('scaleio') }
 
-    it { should contain_package_verifiable('EMC-ScaleIO-lia').with(
+    it { is_expected.to contain_package_verifiable('EMC-ScaleIO-lia').with(
       :version        => 'installed',
       :manage_package => false
     )}
 
-    it { should contain_exec("yum install -y 'EMC-ScaleIO-lia'").with(
+    it { is_expected.to contain_exec("yum install -y 'EMC-ScaleIO-lia'").with(
       :environment => [ "TOKEN=myS3cr3t" ],
 	  	:unless			 => "rpm -q 'EMC-ScaleIO-lia'",
     )}
 
-    it { should contain_tidy('/opt/emc/scaleio/lia/rpm').with(
+    it { is_expected.to contain_tidy('/opt/emc/scaleio/lia/rpm').with(
 	  	:age     => '1w',
 	  	:recurse => true,
 	  	:matches => [ '*rpm' ]
     )}
-    it { should contain_service('lia').with(
+    it { is_expected.to contain_service('lia').with(
       :ensure => 'running',
       :enable => true
     )}
@@ -62,24 +63,24 @@ describe 'scaleio::lia', :type => 'class' do
       }
     }
     it { should compile.with_all_deps }
-    it { should contain_class('scaleio') }
+    it { is_expected.to contain_class('scaleio') }
 
-    it { should contain_package_verifiable('EMC-ScaleIO-lia').with(
+    it { is_expected.to contain_package_verifiable('EMC-ScaleIO-lia').with(
       :version        => '1.44-6-el7',
       :manage_package => false
     )}
 
-    it { should contain_exec("yum install -y 'EMC-ScaleIO-lia-1.44-6-el7'").with(
+    it { is_expected.to contain_exec("yum install -y 'EMC-ScaleIO-lia-1.44-6-el7'").with(
       :environment => [ "TOKEN=myS3cr3t" ],
 	  	:unless			 => "rpm -q 'EMC-ScaleIO-lia-1.44-6-el7'",
     )}
 
-    it { should contain_tidy('/opt/emc/scaleio/lia/rpm').with(
+    it { is_expected.to contain_tidy('/opt/emc/scaleio/lia/rpm').with(
 	  	:age     => '1w',
 	  	:recurse => true,
 	  	:matches => [ '*rpm' ]
     )}
-    it { should contain_service('lia').with(
+    it { is_expected.to contain_service('lia').with(
       :ensure => 'running',
       :enable => true
     )}

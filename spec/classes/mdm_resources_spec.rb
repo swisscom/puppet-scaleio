@@ -7,6 +7,7 @@ describe 'scaleio::mdm::resources', :type => 'class' do
     {
         :osfamily => 'RedHat',
         :operatingsystem => 'RedHat',
+        :operatingsystemrelease => '7.2',
         :operatingsystemmajrelease => '7',
         :concat_basedir => '/var/lib/puppet/concat',
         :is_virtual => false,
@@ -30,59 +31,59 @@ describe 'scaleio::mdm::resources', :type => 'class' do
   describe 'with standard' do
     it { should compile.with_all_deps }
 
-    it { should contain_scaleio_user('api_admin').with(
+    it { is_expected.to contain_scaleio_user('api_admin').with(
         :role => 'Administrator',
         :password => 'myPassAPI1',
     ) }
 
-    it { should contain_scaleio_protection_domain('pdo') }
+    it { is_expected.to contain_scaleio_protection_domain('pdo') }
 
-    it { should contain_scaleio_storage_pool('pdo:pool1').with(
+    it { is_expected.to contain_scaleio_storage_pool('pdo:pool1').with(
         :spare_policy => '34%',
         :ramcache => 'enabled',
         :zeropadding => true
     ) }
 
-    it { should contain_scaleio_storage_pool('pdo:pool2').with(
+    it { is_expected.to contain_scaleio_storage_pool('pdo:pool2').with(
         :spare_policy => '34%',
         :ramcache => 'disabled',
         :zeropadding => false
     ) }
 
-    it { should contain_scaleio_sds('sds-1').with(
+    it { is_expected.to contain_scaleio_sds('sds-1').with(
         :protection_domain => 'pdo',
         :pool_devices => {'pool1' => ['/dev/sdb']},
         :ips => ['192.168.56.121'],
         :ramcache_size => 128,
     ) }
 
-    it { should contain_scaleio_sds('sds-2').with(
+    it { is_expected.to contain_scaleio_sds('sds-2').with(
         :protection_domain => 'pdo',
         :pool_devices => {'pool1' => ['/dev/sdb']},
         :ips => ['192.168.56.122'],
         :ramcache_size => 1024,
     ) }
 
-    it { should contain_scaleio_sds('sds-3').with(
+    it { is_expected.to contain_scaleio_sds('sds-3').with(
         :protection_domain => 'pdo',
         :pool_devices => {'pool1' => ['/dev/sdb']},
         :ips => ['192.168.56.123'],
         :ramcache_size => -1,
     ) }
 
-    it { should contain_scaleio_sdc('192.168.56.121').with(
+    it { is_expected.to contain_scaleio_sdc('192.168.56.121').with(
         :desc => 'sdc-1',
     ) }
 
-    it { should contain_scaleio_sdc('192.168.56.122').with(
+    it { is_expected.to contain_scaleio_sdc('192.168.56.122').with(
         :desc => 'sdc-2',
     ) }
 
-    it { should contain_scaleio_sdc('192.168.56.123').with(
+    it { is_expected.to contain_scaleio_sdc('192.168.56.123').with(
         :desc => 'sdc-3',
     ) }
 
-    it { should contain_scaleio_volume('volume-1').with(
+    it { is_expected.to contain_scaleio_volume('volume-1').with(
         :protection_domain => 'pdo',
         :storage_pool => 'pool1',
         :size => 8,
@@ -90,7 +91,7 @@ describe 'scaleio::mdm::resources', :type => 'class' do
         :sdc_nodes => ['sdc-1'],
     ) }
 
-    it { should contain_scaleio_volume('volume-2').with(
+    it { is_expected.to contain_scaleio_volume('volume-2').with(
         :protection_domain => 'pdo',
         :storage_pool => 'pool2',
         :size => 16,
@@ -98,19 +99,19 @@ describe 'scaleio::mdm::resources', :type => 'class' do
         :sdc_nodes => ['sdc-1', 'sdc-2'],
     ) }
 
-    it { should contain_resources('scaleio_protection_domain').with(
+    it { is_expected.to contain_resources('scaleio_protection_domain').with(
         :purge => false,
     ) }
-    it { should contain_resources('scaleio_storage_pool').with(
+    it { is_expected.to contain_resources('scaleio_storage_pool').with(
         :purge => false,
     ) }
-    it { should contain_resources('scaleio_sds').with(
+    it { is_expected.to contain_resources('scaleio_sds').with(
         :purge => false,
     ) }
-    it { should contain_resources('scaleio_sdc').with(
+    it { is_expected.to contain_resources('scaleio_sdc').with(
         :purge => false,
     ) }
-    it { should contain_resources('scaleio_volume').with(
+    it { is_expected.to contain_resources('scaleio_volume').with(
         :purge => false,
     ) }
   end

@@ -6,6 +6,7 @@ describe 'scaleio::sdc', :type => 'class' do
     {
         :osfamily => 'RedHat',
         :operatingsystem => 'RedHat',
+        :operatingsystemrelease => '7.2',
         :operatingsystemmajrelease => '7',
         :concat_basedir => '/var/lib/puppet/concat',
         :is_virtual => false,
@@ -29,23 +30,23 @@ describe 'scaleio::sdc', :type => 'class' do
   describe 'with standard' do
     it { is_expected.to compile.with_all_deps }
 
-    it { should contain_class('scaleio') }
-    it { should contain_package_verifiable('EMC-ScaleIO-sdc').with_version('installed') }
+    it { is_expected.to contain_class('scaleio') }
+    it { is_expected.to contain_package_verifiable('EMC-ScaleIO-sdc').with_version('installed') }
 
-    it { should contain_service('scini').with(
+    it { is_expected.to contain_service('scini').with(
       :ensure  => 'running',
       :enable  => true,
       :require => 'Package_verifiable[EMC-ScaleIO-sdc]',
       :before  => 'Exec[scaleio::sdc_add_mdm]',
     )}
 
-    it { should contain_exec('scaleio::sdc_add_mdm').with(
+    it { is_expected.to contain_exec('scaleio::sdc_add_mdm').with(
       :command  => '/bin/emc/scaleio/drv_cfg --add_mdm --ip 10.0.0.1,10.0.0.2,10.0.0.3 --file /bin/emc/scaleio/drv_cfg.txt',
       :unless   => 'grep -qE \'^mdm \' /bin/emc/scaleio/drv_cfg.txt',
       :before   => ['Exec[scaleio::sdc_mod_mdm]'],
     )}
 
-    it { should contain_exec('scaleio::sdc_mod_mdm').with(
+    it { is_expected.to contain_exec('scaleio::sdc_mod_mdm').with(
       :command => "/bin/emc/scaleio/drv_cfg --mod_mdm_ip --ip $(grep -E '^mdm' /bin/emc/scaleio/drv_cfg.txt |awk '{print $2}' |awk -F ',' '{print $1}') --new_mdm_ip 10.0.0.1,10.0.0.2,10.0.0.3 --file /bin/emc/scaleio/drv_cfg.txt",
       :unless  => "grep -qE '^mdm 10.0.0.1,10.0.0.2,10.0.0.3$' /bin/emc/scaleio/drv_cfg.txt",
     )}
@@ -67,7 +68,7 @@ describe 'scaleio::sdc', :type => 'class' do
     let(:pre_condition){
       "class{'scaleio': lvm => true }"
     }
-    it { should contain_file_line('scaleio_lvm_types').with(
+    it { is_expected.to contain_file_line('scaleio_lvm_types').with(
       :ensure => 'present',
       :path   => '/etc/lvm/lvm.conf',
       :line   => '    types = [ "scini", 16 ]',
@@ -77,7 +78,7 @@ describe 'scaleio::sdc', :type => 'class' do
   context 'should not update SIO packages' do
     let(:facts) { facts_default.merge({:package_emc_scaleio_sdc_version => '1'}) }
 
-    it { should contain_package_verifiable('EMC-ScaleIO-sdc').with(
+    it { is_expected.to contain_package_verifiable('EMC-ScaleIO-sdc').with(
       :version        => 'installed',
       :manage_package => false
     )}

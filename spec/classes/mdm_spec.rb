@@ -7,6 +7,7 @@ describe 'scaleio::mdm', :type => 'class' do
     {
         :osfamily => 'RedHat',
         :operatingsystem => 'RedHat',
+        :operatingsystemrelease => '7.2',
         :operatingsystemmajrelease => '7',
         :concat_basedir => '/var/lib/puppet/concat',
         :is_virtual => false,
@@ -31,65 +32,65 @@ describe 'scaleio::mdm', :type => 'class' do
   describe 'with standard' do
     it { should compile.with_all_deps }
 
-    it { should contain_package_verifiable('EMC-ScaleIO-mdm').with(
+    it { is_expected.to contain_package_verifiable('EMC-ScaleIO-mdm').with(
         :version => 'installed',
         :manage_package => true,
         :tag => 'scaleio-install',
     ) }
 
-    it { should contain_file('/opt/emc/scaleio/scripts').with(
+    it { is_expected.to contain_file('/opt/emc/scaleio/scripts').with(
         :ensure => 'directory',
         :owner => 'root',
         :group => 'root',
         :mode => '0600',
         :require => 'Package_verifiable[EMC-ScaleIO-mdm]',
     ) }
-    it { should contain_file('/opt/emc/scaleio/scripts/scli_wrap.sh').with(
+    it { is_expected.to contain_file('/opt/emc/scaleio/scripts/scli_wrap.sh').with(
         :owner => 'root',
         :group => 'root',
         :mode => '0700',
         :require => 'File[/opt/emc/scaleio/scripts]',
     ) }
-    it { should contain_file('/opt/emc/scaleio/scripts/add_scaleio_user.sh').with(
+    it { is_expected.to contain_file('/opt/emc/scaleio/scripts/add_scaleio_user.sh').with(
         :owner => 'root',
         :group => 'root',
         :mode => '0700',
         :require => 'File[/opt/emc/scaleio/scripts/scli_wrap.sh]',
     ) }
-    it { should contain_file('/opt/emc/scaleio/scripts/change_scaleio_password.sh').with(
+    it { is_expected.to contain_file('/opt/emc/scaleio/scripts/change_scaleio_password.sh').with(
         :owner => 'root',
         :group => 'root',
         :mode => '0700',
         :require => 'File[/opt/emc/scaleio/scripts/add_scaleio_user.sh]',
     ) }
-    it { should contain_file('/etc/bash_completion.d/si').with(
+    it { is_expected.to contain_file('/etc/bash_completion.d/si').with(
         :content => 'complete -o bashdefault -o default -o nospace -F _scli si',
         :owner => 'root',
         :group => 'root',
         :mode => '0644',
         :require => 'File[/opt/emc/scaleio/scripts]',
     ) }
-    it { should contain_file('/usr/bin/si').with(
+    it { is_expected.to contain_file('/usr/bin/si').with(
         :ensure => 'link',
         :target => '/opt/emc/scaleio/scripts/scli_wrap.sh',
     ) }
 
     it { should_not contain_class('scaleio::mdm::primary') }
-    it { should contain_class('scaleio::mdm::monitoring') }
-    it { should contain_class('scaleio::mdm::installation') }
+    it { is_expected.to contain_class('scaleio::mdm::monitoring') }
+    it { is_expected.to contain_class('scaleio::mdm::installation') }
   end
 
   describe 'on the primary MDM' do
     let(:facts) { facts_default.merge({:scaleio_is_primary_mdm => true}) }
 
-    it { should contain_class('scaleio::mdm::primary')
+    it { is_expected.to contain_class('scaleio::mdm::primary')
                     .that_requires('File[/opt/emc/scaleio/scripts/change_scaleio_password.sh]') }
   end
 
   describe 'on the first MDM when cluster_setupping' do
     let(:facts) { facts_default.merge({:scaleio_mdm_clustersetup_needed => true}) }
 
-    it { should contain_class('scaleio::mdm::primary')
+    it { is_expected.to contain_class('scaleio::mdm::primary')
                     .that_requires('File[/opt/emc/scaleio/scripts/change_scaleio_password.sh]')}
   end
 
@@ -101,7 +102,7 @@ describe 'scaleio::mdm', :type => 'class' do
                                           :ipaddress_eth10 => '10.0.0.1',
                                       }) }
 
-    it { should contain_class('scaleio::mdm::primary')
+    it { is_expected.to contain_class('scaleio::mdm::primary')
                     .that_requires('File[/opt/emc/scaleio/scripts/change_scaleio_password.sh]')}
   end
 

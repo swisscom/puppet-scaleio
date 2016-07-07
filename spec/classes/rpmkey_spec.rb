@@ -7,6 +7,7 @@ describe 'scaleio::rpmkey', :type => 'class' do
     {
         :osfamily => 'RedHat',
         :operatingsystem => 'RedHat',
+        :operatingsystemrelease => '7.2',
         :operatingsystemmajrelease => '7',
         :concat_basedir => '/var/lib/puppet/concat',
         :is_virtual => false,
@@ -28,14 +29,14 @@ describe 'scaleio::rpmkey', :type => 'class' do
   describe 'with standard' do
     it { is_expected.to compile.with_all_deps }
 
-    it { should contain_file('/etc/pki/rpm-gpg/RPM-GPG-KEY-ScaleIO').with(
+    it { is_expected.to contain_file('/etc/pki/rpm-gpg/RPM-GPG-KEY-ScaleIO').with(
         :source => 'puppet:///modules/scaleio/RPM-GPG-KEY-ScaleIO',
         :owner => 'root',
         :group => '0',
         :mode => '0644',
     ).that_notifies('Exec[scaleio::rpmkey::import]') }
 
-    it { should contain_exec('scaleio::rpmkey::import').with(
+    it { is_expected.to contain_exec('scaleio::rpmkey::import').with(
         :command => 'rpm --import /etc/pki/rpm-gpg/RPM-GPG-KEY-ScaleIO',
         :refreshonly => true,
     )}
