@@ -4,6 +4,10 @@ Bundler.require(:rake)
 require 'puppetlabs_spec_helper/rake_tasks'
 require 'puppet-lint/tasks/puppet-lint'
 
+if Gem::Version.new(RUBY_VERSION) > Gem::Version.new('2.0.0')
+  require 'puppet_blacksmith/rake_tasks'
+end
+
 Rake::Task[:lint].clear
 PuppetLint::RakeTask.new :lint do |config|
   config.ignore_paths = ["spec/**/*.pp", "vendor/**/*.pp"]
