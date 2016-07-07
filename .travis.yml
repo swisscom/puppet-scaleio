@@ -8,7 +8,9 @@ cache: bundler
 matrix:
   include:
     - rvm: 1.9.3
-      env: PUPPET_VERSION=3.8.7
+      env: PUPPET_VERSION=3.7
+    - rvm: 1.9.3
+      env: PUPPET_VERSION=3.8
     - rvm: 2.2.0
       env: PUPPET_VERSION=4.0
     - rvm: 2.2.0
