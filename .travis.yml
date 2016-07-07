@@ -23,3 +23,11 @@ matrix:
       env: PUPPET_VERSION=4.5
     - rvm: 1.9.3
       env: PUPPET_VERSION=3.8.7
+
+env:
+  global:
+    - secure: "EP09Ta5/nlvhkRyrFAUnk1JBD1mN5/UV1j/VajBWS/hBmh/V2o3qYtzEBXQu4UU0+lfcGPYSqmXRojeJpmbxa7oHb6Q/Ubgre4hrFtdP0Y8JPzGdvO0WCPbbZb2HNw5Ldd7JPSiv7JGMRFeB+nVap1PGSiqlmJ7mqu7bsY/5bbjZJzlZFA9CpUU4dEYIfjYrPcNmuWQhiGeQXJPA/MZJlZhHUaRG2+Io5Qbvi+QeWbYQGk8GLj/rgFnrnrIQOGs7atmwH7nP4q9i4YpQ74sR3ZEUolhH+UDLAcpW98FCgdY2C+XZSxDOuoZhqb2tYAmDu0l5V4nCSBMoy4/pRU5nrP5osvW5WlT3wvfuwmdM87Zsh+yKO4Z5mbngXdZiKfRbbJhcWxnCP0UTnSXM99JSQAnY5qF6wGd6RES5MHos3g7+D2pafCZBRrLktcbBB1AXUhrj05sfgfJd3ReSbNvYi1krFvGZvtRToQGt32kBZaejA6J/aXKjbAaB8/JzqsZNzOErrdgneVGR5yxLZ0qZkfbjhUKxKp41jwYvm8okuvhlLJ/+hwWSXeu5IfD2NhdD/PKMG0lqFy3uBdMqatKh+rJVB6YEOFflMWVF9+ls+vAM9GpEP11ty40YrUE06L3Tx3ExRdIxvpyjZMA3HjAqrj0iq8oWlGL/yIWFZVCf8ao="
+
+after_success:
+  - dpl --provider=puppetforge --user=swisscom --password=$FORGE_PW
+
