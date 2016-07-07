@@ -1,5 +1,5 @@
 {
-  "name": "puppet-scaleio",
+  "name": "swisscom-scaleio",
   "version": "3.0.0",
   "author": "Swisscom (Schweiz) AG",
   "summary": "Install and configure a complete ScaleIO environment.",
