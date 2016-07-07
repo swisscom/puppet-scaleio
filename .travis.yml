@@ -9,16 +9,16 @@ matrix:
   include:
     - rvm: 1.9.3
       env: PUPPET_VERSION=3.8.7
-#    - rvm: 2.2.0
-#      env: PUPPET_VERSION=4.0
-#    - rvm: 2.2.0
-#      env: PUPPET_VERSION=4.1
-#    - rvm: 2.2.0
-#      env: PUPPET_VERSION=4.2
-#    - rvm: 2.2.0
-#      env: PUPPET_VERSION=4.3
-#    - rvm: 2.2.0
-#      env: PUPPET_VERSION=4.4
+    - rvm: 2.2.0
+      env: PUPPET_VERSION=4.0
+    - rvm: 2.2.0
+      env: PUPPET_VERSION=4.1
+    - rvm: 2.2.0
+      env: PUPPET_VERSION=4.2
+    - rvm: 2.2.0
+      env: PUPPET_VERSION=4.3
+    - rvm: 2.2.0
+      env: PUPPET_VERSION=4.4
     - rvm: 2.2.0
       env: PUPPET_VERSION=4.5
 
@@ -29,7 +29,7 @@ deploy:
   provider: puppetforge
   user: swisscom
   password:
-    secure: "oIdQd9HkNrNZH7rVC6RVe4JJSeSksljSxtpzzPfgh1vpKF0Jo9pTDqBmwepXHqDwfI9D3KlvkHeGxSyyQbmdq3d6H+s2FhXAiGeZHhDn/DTtRIcxEOEKzJ71DOTD6Y5ojVZFi/b8OTECpCVDdAUgnpVC7Ivvjft/IJyiYwWP4Dq7g/t+n9tjK/xjJRuasW+5202kE8XEGEr2cfqrmrxJ28dhTd7U4qZZomLneITn75mjcHAS2QUk9DcL86dwyBZpJ76B6KyL5drtggz/91P8Kz4+YYHVDNOIDyq3XUnZatQbkL8zAGFguIlzYNh8XFLfJ71LP5RA2mB+Oz3FNrxGwXB1Ca85F7Oi/EQyNZm9k1Vsb3vupHkxaUIxkNXxdkUfW3O4I19nEkV4nLqtnxpjmhel2D2hXOujEZlH/oCRaVaVuAa94wZog34PMvOeXb0IQ1ve8oNlIVmaU2RTjglJT0gkzmRXXizlfMRdMqL8fxxnM1v5LnsZ5fHqWYgjcRQYbiJKtJpL9EJQ3seS0FT12pUOhrsjqNcWFfJ8bSIBqQTCCOJpU4yJ/aEQFnHVEPc4tx1MTTrZWOMtytSMcB5SfJMnwpkJyB7UHGRBi216AuKViHzgxQSF1LB6phhUXLmY4LL+W+cdec3EnJFbUwvRABzXWN8owK0CKJOh+o6AAxY="
+    secure: "RW9hoPcdRCxSSCcKYLtmz4RUy4UwmmS1mmDT/lmHNqdMBizoR+/9ealy0vGEhGvMpzoACETHVgyMUp/E7oDCFIT5XV77/3ibdjU/RL1voFgbkdf7GAAp8BWXbtiUjj6e21WdRCN+T1xkAWrOPV+RhFn0kFpDcFEpZ8VhalhcgCmBHhoa9LFuyusa8OazVkWFUfWzsZb134+kNp6bd3MVsuVongjvUnIQUrV3q/1E1/43g/otrI9qLkiTlZgEAEoxMtDzFk7qLfRWHK5jOu2AeSItIjXuUjQ9zEg7bXkrFejAANX/FYRqPPpdMeUqEeAFM+MdjXV/KADWjcmQHexwc2RWNwnOPC88OTkZJGCkzbJXylqPGcnade7CjyO/Yubs4NRxv52tuFU+GdoMDVTe1wCNkfcV42nnxL3uBeqv5phWo2YgXBZfbKKXXokiTSyaxIavpKtQJSVJN5v68ZnhUsCCkFJJ6FYsiurfrOJCSbRBPVptEZADbLL62WRYQs3j4V1bCIgGntXZ4Xg2oz+YKIJ0cjMgb0SHpNU22qnLuP369Z1ZVVtuGhc2sAz9BMfRVw4BGp0v/r3v92HwNwzu9P3RXOjcaAkqQPuRYJFPl+7K3HwviRnY8uUZncHbrrRFmWjqhYXqB/DDkMGKMAJ2mmGj/OIALmhEBD1/fUGbO2s="
   on:
     tags: true
     branch: 'master'
