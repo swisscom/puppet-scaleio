@@ -7,6 +7,8 @@ cache: bundler
 
 matrix:
   include:
+    - rvm: 1.9.3
+      env: PUPPET_VERSION=3.8.7
     - rvm: 2.2.0
       env: PUPPET_VERSION=4.0
     - rvm: 2.2.0
@@ -19,9 +21,9 @@ matrix:
       env: PUPPET_VERSION=4.4
     - rvm: 2.2.0
       env: PUPPET_VERSION=4.5
-    - rvm: 1.9.3
-      env: PUPPET_VERSION=3.8.7
 
+before_deploy:
+  - rvm 1.9.3 do gem install mime-types -v 2.6.2
 deploy:
   provider: puppetforge
   user: swisscom
@@ -31,5 +33,4 @@ deploy:
     tags: true
     branch: 'master'
     # only deploy once
-    rvm: 2.2.0
-    env: PUPPET_VERSION=4.5
+    rvm: 1.9.3
