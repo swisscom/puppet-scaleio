@@ -30,5 +30,5 @@ deploy:
   on:
     tags: true
     branch: 'master'
-    # Only publish if our main Ruby target builds
-    rvm: 1.9.3
+    rvm: 2.2.0
+    env: PUPPET_VERSION=4.5
