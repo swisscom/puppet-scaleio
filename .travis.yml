@@ -37,4 +37,4 @@ deploy:
     branch: 'master'
     # only deploy once
     rvm: 2.2.0
-    env: PUPPET_VERSION=4.5
+    env: PUPPET_VERSION=4.5.0
