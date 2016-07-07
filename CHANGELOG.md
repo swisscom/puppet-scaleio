@@ -1,5 +1,8 @@
 # Changelog
 
+## 3.0.1 (2016-07-07)
+* Add all MDM IPs to the SDC
+
 ## 3.0.0 (2016-07-04)
 * ScaleIO 2.0
 ** module now supports only 2.X and drops support for 1.3X
