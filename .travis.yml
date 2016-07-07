@@ -8,21 +8,21 @@ cache: bundler
 matrix:
   include:
     - rvm: 1.9.3
-      env: PUPPET_VERSION=3.7
+      env: PUPPET_VERSION=3.7.0
     - rvm: 1.9.3
-      env: PUPPET_VERSION=3.8
+      env: PUPPET_VERSION=3.8.0
     - rvm: 2.2.0
-      env: PUPPET_VERSION=4.0
+      env: PUPPET_VERSION=4.0.0
     - rvm: 2.2.0
-      env: PUPPET_VERSION=4.1
+      env: PUPPET_VERSION=4.1.0
     - rvm: 2.2.0
-      env: PUPPET_VERSION=4.2
+      env: PUPPET_VERSION=4.2.0
     - rvm: 2.2.0
-      env: PUPPET_VERSION=4.3
+      env: PUPPET_VERSION=4.3.0
     - rvm: 2.2.0
-      env: PUPPET_VERSION=4.4
+      env: PUPPET_VERSION=4.4.0
     - rvm: 2.2.0
-      env: PUPPET_VERSION=4.5
+      env: PUPPET_VERSION=4.5.0
 
 before_deploy:
   - rvm 1.9.3 do gem install mime-types -v 2.6.2
