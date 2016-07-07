@@ -23,10 +23,3 @@ matrix:
       env: PUPPET_VERSION=4.5
     - rvm: 1.9.3
       env: PUPPET_VERSION=3.8.7
-  allow_failures:
-    - env: PUPPET_VERSION=4.0
-    - env: PUPPET_VERSION=4.1
-    - env: PUPPET_VERSION=4.2
-    - env: PUPPET_VERSION=4.3
-    - env: PUPPET_VERSION=4.4
-    - env: PUPPET_VERSION=4.5
