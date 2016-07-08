@@ -26,26 +26,28 @@ Puppet::Type.type(:scaleio_volume).provide(:scli) do
 
     volumes = scli_query_properties('--object_type', 'VOLUME', '--all_objects', '--properties', 'NAME,SIZE,TYPE,STORAGE_POOL_ID,TYPE,MAPPED_SDC_ID_LIST')
     volumes.each do |volume_id, volume|
-      next if volume['TYPE'] !~ /(THIN|THICK)_PROVISIONED/  # we do not manage snapshots
+      next if volume['TYPE'] !~ /(THIN|THICK)_PROVISIONED/ # we do not manage snapshots
 
       pool = pools[volume['STORAGE_POOL_ID']]
       pool_name = pool['NAME']
       pdomain = pdos[pool['PROTECTION_DOMAIN_ID']]['NAME']
 
       sdc_nodes = []
-      volume['MAPPED_SDC_ID_LIST'].split(',').each do |sdc_id|
-        sdc_nodes << sdcs[sdc_id]['NAME']
+      if volume['MAPPED_SDC_ID_LIST'] !~ /none/i
+        volume['MAPPED_SDC_ID_LIST'].split(',').each do |sdc_id|
+          sdc_nodes << sdcs[sdc_id]['NAME']
+        end
       end
 
       volume_instances << new({
-                                :name => volume['NAME'],
-                                :ensure => :present,
-                                :protection_domain => pdomain,
-                                :storage_pool => pool_name,
-                                :sdc_nodes => sdc_nodes,
-                                :size => convert_size_to_bytes(volume['SIZE']) / 1024 ** 3,
-                                :type => volume['TYPE'] =~ /THICK_PROVISIONED/ ? 'thick' : 'thin',
-                            })
+                                  :name => volume['NAME'],
+                                  :ensure => :present,
+                                  :protection_domain => pdomain,
+                                  :storage_pool => pool_name,
+                                  :sdc_nodes => sdc_nodes,
+                                  :size => convert_size_to_bytes(volume['SIZE']) / 1024 ** 3,
+                                  :type => volume['TYPE'] =~ /THICK_PROVISIONED/ ? 'thick' : 'thin',
+                              })
     end
 
     Puppet.debug("Returning the SDS instances array: #{volume_instances}")

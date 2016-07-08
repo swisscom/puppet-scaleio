@@ -28,10 +28,12 @@ Puppet::Type.type(:scaleio_sds).provide(:scli) do
 
       # create a hash with all devices of the SDS grouped by the storage pool they are in
       pool_devices = Hash.new { |h, k| h[k] = [] }
-      sds['DEVICE_ID_LIST'].split(',').each do |device_id|
-        device = devices[device_id]
-        device_pool = pools[device['STORAGE_POOL_ID']]['NAME']
-        pool_devices[device_pool] << device['ORIGINAL_PATH']
+      if sds['DEVICE_ID_LIST'] !~ /none/i
+        sds['DEVICE_ID_LIST'].split(',').each do |device_id|
+          device = devices[device_id]
+          device_pool = pools[device['STORAGE_POOL_ID']]['NAME']
+          pool_devices[device_pool] << device['ORIGINAL_PATH']
+        end
       end
 
       ramcache_size = -1
