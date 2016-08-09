@@ -1,6 +1,6 @@
 # Changelog
 
-## 3.0.2 [unreleased]
+## 3.0.2
 * Bugfix: volumes might have no mappings
 * Bugfix: SDS might have no devices
 * Bugfix: MDMs without mgmt_ips should not lead to a ruby error

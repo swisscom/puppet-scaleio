@@ -1,6 +1,6 @@
 {
   "name": "swisscom-scaleio",
-  "version": "3.0.1",
+  "version": "3.0.2",
   "author": "Swisscom (Schweiz) AG",
   "summary": "Install and configure a complete ScaleIO environment.",
   "license": "MIT",
