@@ -3,6 +3,7 @@
 ## 3.0.2 [unreleased]
 * Bugfix: volumes might have no mappings
 * Bugfix: SDS might have no devices
+* Bugfix: MDMs without mgmt_ips should not lead to a ruby error
 
 ## 3.0.1 (2016-07-07)
 * Add all MDM IPs to the SDC

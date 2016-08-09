@@ -61,6 +61,21 @@ describe Puppet::Type.type(:scaleio_mdm).provider(:scli) do
       provider.expects(:scli).with('--add_standby_mdm', '--new_mdm_ip', '192.168.1.1,192.168.1.2', '--new_mdm_name', 'mdm-1', '--mdm_role', 'tb', '--new_mdm_management_ip', '192.168.2.1').returns([])
       provider.create
     end
+    it 'creates a mdm without mgmt ip' do
+      provider.instance_variable_set(:@resource,
+        Puppet::Type.type(:scaleio_mdm).new(
+            {
+                :ensure => :present,
+                :name => 'mdm-1',
+                :ips => ['192.168.1.1', '192.168.1.2'],
+                :is_tiebreaker => true,
+            }
+        )
+      )
+
+      provider.expects(:scli).with('--add_standby_mdm', '--new_mdm_ip', '192.168.1.1,192.168.1.2', '--new_mdm_name', 'mdm-1', '--mdm_role', 'tb').returns([])
+      provider.create
+    end
   end
 
   describe 'update desc' do
