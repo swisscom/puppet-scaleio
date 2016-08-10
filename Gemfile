@@ -12,7 +12,7 @@ gem 'puppetlabs_spec_helper'
 gem 'rake'
 gem 'librarian-puppet'
 
-if Gem::Version.new(RUBY_VERSION) > Gem::Version.new('2.0.0')
+if (RUBY_VERSION.split('.').map{|s|s.to_i} <=> [2,0,0]) >= 0
   gem 'puppet-blacksmith'
   gem 'simplecov', :require => false, :group => :test
 end

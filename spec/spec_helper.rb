@@ -1,7 +1,7 @@
 require 'puppetlabs_spec_helper/module_spec_helper'
 require 'rake'
 
-if Gem::Version.new(RUBY_VERSION) > Gem::Version.new('2.0.0')
+if (RUBY_VERSION.split('.').map{|s|s.to_i} <=> [2,0,0]) >= 0
   require 'simplecov'
 
   SimpleCov.start do
