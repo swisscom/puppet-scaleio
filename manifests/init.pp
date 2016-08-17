@@ -102,8 +102,10 @@ class scaleio(
 
 
     if ! empty($mdms) {
-      $cluster_setup_ips = any2array($mdms[$bootstrap_mdm_name]['ips'])
-      $cluster_setup_ip = $cluster_setup_ips[0]
+      if $bootstrap_mdm_name {
+        $cluster_setup_ips = any2array($mdms[$bootstrap_mdm_name]['ips'])
+        $cluster_setup_ip = $cluster_setup_ips[0]
+      }
 
       # check whether one of the local IPs matches with one of the defined MDM IPs
       # => if so, install MDM on this host

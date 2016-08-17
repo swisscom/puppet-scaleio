@@ -1,5 +1,8 @@
 # Changelog
 
+## 3.0.3 [unreleased]
+* Do not fail if bootstrap_mdm_name is undef (ie. on a SDC)
+
 ## 3.0.2
 * Bugfix: volumes might have no mappings
 * Bugfix: SDS might have no devices
