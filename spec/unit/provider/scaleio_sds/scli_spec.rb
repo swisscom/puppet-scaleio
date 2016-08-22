@@ -13,7 +13,7 @@ describe Puppet::Type.type(:scaleio_sds).provider(:scli) do
           :useconsul => false,
           :ramcache_size => 1024,
           :pool_devices => {'myPool' => ['/dev/sda', '/dev/sdb']},
-          :fault_set_name => 'myFaultSet',
+          :fault_set => 'myFaultSet',
       }
   ) }
 
@@ -33,7 +33,7 @@ describe Puppet::Type.type(:scaleio_sds).provider(:scli) do
 
 
   describe 'basics' do
-    properties = [:ips, :port, :pool_devices, :ramcache_size, :fault_set_name]
+    properties = [:ips, :port, :pool_devices, :ramcache_size, :fault_set]
 
     it("should have a create method") { expect(provider).to respond_to(:create) }
     it("should have a destroy method") { expect(provider).to respond_to(:destroy) }
@@ -80,9 +80,9 @@ describe Puppet::Type.type(:scaleio_sds).provider(:scli) do
         expect(@instances[2].ramcache_size).to match(98304)
       end
       it 'with correct fault set' do
-        expect(@instances[0].fault_set_name).to eql('faultset2')
-        expect(@instances[1].fault_set_name).to eql(:absent)
-        expect(@instances[2].fault_set_name).to eql('faultset1')
+        expect(@instances[0].fault_set).to eql('faultset2')
+        expect(@instances[1].fault_set).to eql(:absent)
+        expect(@instances[2].fault_set).to eql('faultset1')
       end
       it 'with correct protection domain' do
         expect(@instances[0].protection_domain).to match('pdo')

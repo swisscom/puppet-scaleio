@@ -15,6 +15,7 @@
 #       role     : 'Monitor'   # one of Monitor, Configure, Administrator
 #       password : 'myPw'      # pw to be set when creating the account
 # * protection_domains: array with names of protection domains to be configured
+# * fault_sets array with names of fault sets to be configured
 # * storage_pools: storage pool to be created/managed, hash looking as follows:
 #     myPoolName:
 #       protection_domain : myProtectionDomainName
@@ -68,7 +69,7 @@ class scaleio(
   $users                    = { },
   $protection_domains       = [ ],
   $storage_pools            = { },
-  $fault_sets               = { },
+  $fault_sets               = [ ],
   $sds                      = { },
   $sds_defaults             = { },
   $sdcs                     = { },

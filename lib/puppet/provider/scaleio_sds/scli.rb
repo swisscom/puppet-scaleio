@@ -57,7 +57,7 @@ Puppet::Type.type(:scaleio_sds).provide(:scli) do
                                :port => sds['PORT'],
                                :pool_devices => pool_devices,
                                :ramcache_size => ramcache_size,
-                               :fault_set_name => fault_set_name,
+                               :fault_set => fault_set_name,
                            })
     end
 
@@ -103,7 +103,7 @@ Puppet::Type.type(:scaleio_sds).provide(:scli) do
           create_sds << "--sds_ip" << @resource[:ips].join(",")
           create_sds << "--storage_pool_name" << "#{storage_pool}"
           create_sds << "--sds_port" << "#{@resource[:port]}" if @resource[:port]
-          create_sds << "--fault_set_name" << "#{@resource[:fault_set_name]}" if @resource[:fault_set_name]
+          create_sds << "--fault_set_name" << "#{@resource[:fault_set]}" if @resource[:fault_set]
           scli(*create_sds)
           self.ramcache_size = @resource[:ramcache_size]
           first_add = false
@@ -125,7 +125,7 @@ Puppet::Type.type(:scaleio_sds).provide(:scli) do
     fail("Changing the protection domain of a ScaleIO SDS is not supported")
   end
 
-  def fault_set_name=(value)
+  def fault_set=(value)
     fail("Changing the fault set of a ScaleIO SDS is not supported")
   end
 

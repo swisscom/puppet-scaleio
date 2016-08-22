@@ -96,6 +96,15 @@ scaleio::protection_domains:
   - 'pdo'
 ```
 
+### Fault sets
+An array of fault set names (optional):
+```yaml
+scaleio::fault_sets:
+  - 'pdo:FaultSetOne'
+  - 'pdo:FaultSetTwo'
+  - 'pdo:FaultSetThree'
+```
+
 ### Storage pools
 Besides creating a storage pool, the module supports managing,
 
@@ -121,6 +130,7 @@ On a SDS level the following setting are manageable:
 - What device belongs to what pool.
 - The IPs of the SDS (only one SDS per server supported).
 - Size of the RAM cache
+- What fault set is the SDS part of? (optional)
 
 To end up with less configuration, there can be defaults specified over all SDS.
 In the following example, the configuration would look as follows in the end:
@@ -139,10 +149,13 @@ scaleio::sds_defaults:
 
 scaleio::sds:
   'sds-1':
+    fault_set: FaultSetOne # optional
     ips: ['192.168.56.121']
   'sds-2':
+    fault_set: FaultSetTwo # optional
     ips: ['192.168.56.122']
   'sds-3':
+    fault_set: FaultSetThree # optional
     ips: ['192.168.56.123']
     ramcache_size: -1
     pool_devices:   

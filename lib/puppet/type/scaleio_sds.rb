@@ -33,7 +33,7 @@ Puppet::Type.newtype(:scaleio_sds) do
     end
   end
 
-  newproperty(:fault_set_name) do
+  newproperty(:fault_set) do
     desc "The fault set this SDS shall be part of."
     validate do |value|
       fail("#{value} is not a valid name for the fault set name of a SDS.") unless value =~ /^[\w\-]+$/
@@ -102,7 +102,7 @@ Puppet::Type.newtype(:scaleio_sds) do
   end
 
   autorequire(:scaleio_fault_set) do
-    self[:fault_set_name]
+    "#{self[:protection_domain]}:#{self[:fault_set]}"
   end
 
   # helper method, pass required parameters

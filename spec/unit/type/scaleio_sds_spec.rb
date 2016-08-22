@@ -17,7 +17,7 @@ describe Puppet::Type.type(:scaleio_sds) do
         :port              => 2342,
         :ramcache_size     => -1,
         :useconsul         => true,
-        :fault_set_name    => 'faultset1',
+        :fault_set    => 'faultset1',
         :ensure            => :present,
       })
     expect(@sds[:name]).to eq('mySDS')
@@ -25,7 +25,7 @@ describe Puppet::Type.type(:scaleio_sds) do
     expect(@sds[:ips]).to eq(['172.17.121.10'])
     expect(@sds[:pool_devices]).to eq({'myPool' => ['/dev/sda', '/dev/sdb']})
     expect(@sds[:port]).to eq(2342)
-    expect(@sds[:fault_set_name]).to eq('faultset1')
+    expect(@sds[:fault_set]).to eq('faultset1')
   end
 
   it 'should not accept name with whitespaces' do
@@ -120,7 +120,7 @@ describe Puppet::Type.type(:scaleio_sds) do
                                               :protection_domain => 'myPDomain',
                                               :ips               => ['172.17.121.10'],
                                               :pool_devices      => {'myPool' => ['/dev/sda', '/dev/sdb']},
-                                              :fault_set_name    => 'asdf.asdf$',
+                                              :fault_set         => 'asdf.asdf$',
                                               :ensure            => :present,
                                           })
     }.to raise_error Puppet::ResourceError, /valid name for the fault set name of a SDS/
