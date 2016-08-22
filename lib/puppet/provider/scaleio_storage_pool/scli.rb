@@ -57,7 +57,7 @@ Puppet::Type.type(:scaleio_storage_pool).provide(:scli) do
       enable_zeropadding()
     end
 
-    sleep(5)  # wait for rebalance after creating pool
+    sleep(30)  # wait for rebalance after creating pool
     @property_hash[:ensure] = :present
   end
 

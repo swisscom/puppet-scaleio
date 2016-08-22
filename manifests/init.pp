@@ -68,6 +68,7 @@ class scaleio(
   $users                    = { },
   $protection_domains       = [ ],
   $storage_pools            = { },
+  $fault_sets               = { },
   $sds                      = { },
   $sds_defaults             = { },
   $sdcs                     = { },

@@ -26,6 +26,11 @@ scaleio::users:
 scaleio::protection_domains:
   - 'pdo'
 
+scaleio::fault_sets:
+  - 'pdo:faultset1'
+  - 'pdo:faultset2'
+  - 'pdo:faultset3'
+
 scaleio::storage_pools:
   'pdo:pool1':
     spare_policy: 34%

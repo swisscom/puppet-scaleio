@@ -38,6 +38,10 @@ describe 'scaleio::mdm::resources', :type => 'class' do
 
     it { is_expected.to contain_scaleio_protection_domain('pdo') }
 
+    it { is_expected.to contain_scaleio_fault_set('pdo:faultset1') }
+    it { is_expected.to contain_scaleio_fault_set('pdo:faultset2') }
+    it { is_expected.to contain_scaleio_fault_set('pdo:faultset3') }
+
     it { is_expected.to contain_scaleio_storage_pool('pdo:pool1').with(
         :spare_policy => '34%',
         :ramcache => 'enabled',

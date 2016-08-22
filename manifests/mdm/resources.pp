@@ -22,6 +22,11 @@ class scaleio::mdm::resources(
     { ensure => present }
   )
 
+  scaleio_fault_set{
+    $scaleio::fault_sets:
+      ensure => present,
+  }
+
   create_resources('scaleio_sds',
     $scaleio::sds,
     merge($scaleio::sds_defaults, {

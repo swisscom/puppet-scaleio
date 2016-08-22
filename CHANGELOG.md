@@ -1,7 +1,8 @@
 # Changelog
 
-## 3.0.3 [unreleased]
-* Do not fail if bootstrap_mdm_name is undef (ie. on a SDC)
+## 3.1.0 [unreleased]
+* Add support for fault sets
+* Bugfix: Do not fail if bootstrap_mdm_name is undef (ie. on a SDC)
 
 ## 3.0.2
 * Bugfix: volumes might have no mappings

@@ -21,9 +21,12 @@ Puppet::Type.type(:scaleio_sds).provide(:scli) do
     # get devices to lookup the path by the id
     devices = scli_query_properties('--object_type', 'DEVICE', '--all_objects', '--properties', 'ORIGINAL_PATH,STORAGE_POOL_ID')
 
+    # get fault sets to lookup the path by the id
+    fault_sets = scli_query_properties('--object_type', 'FAULT_SET', '--all_objects', '--properties', 'NAME')
+
     sds_instances = []
 
-    sdss = scli_query_properties('--object_type', 'SDS', '--all_objects', '--properties', 'NAME,IPS,DEVICE_ID_LIST,PORT,RMCACHE_ENABLED,RMCACHE_SIZE,PROTECTION_DOMAIN_ID')
+    sdss = scli_query_properties('--object_type', 'SDS', '--all_objects', '--properties', 'NAME,IPS,DEVICE_ID_LIST,PORT,RMCACHE_ENABLED,RMCACHE_SIZE,PROTECTION_DOMAIN_ID,FAULT_SET_ID')
     sdss.each do |sds_id, sds|
 
       # create a hash with all devices of the SDS grouped by the storage pool they are in
@@ -41,6 +44,11 @@ Puppet::Type.type(:scaleio_sds).provide(:scli) do
         ramcache_size = convert_size_to_bytes(sds['RMCACHE_SIZE']) / 1024**2 # convert the size to MB
       end
 
+      fault_set_name = nil
+      if fault_sets.has_key?(sds['FAULT_SET_ID'])
+        fault_set_name = fault_sets[sds['FAULT_SET_ID']]['NAME']
+      end
+
       sds_instances << new({
                                :name => sds['NAME'],
                                :ensure => :present,
@@ -49,6 +57,7 @@ Puppet::Type.type(:scaleio_sds).provide(:scli) do
                                :port => sds['PORT'],
                                :pool_devices => pool_devices,
                                :ramcache_size => ramcache_size,
+                               :fault_set_name => fault_set_name,
                            })
     end
 
@@ -94,6 +103,7 @@ Puppet::Type.type(:scaleio_sds).provide(:scli) do
           create_sds << "--sds_ip" << @resource[:ips].join(",")
           create_sds << "--storage_pool_name" << "#{storage_pool}"
           create_sds << "--sds_port" << "#{@resource[:port]}" if @resource[:port]
+          create_sds << "--fault_set_name" << "#{@resource[:fault_set_name]}" if @resource[:fault_set_name]
           scli(*create_sds)
           self.ramcache_size = @resource[:ramcache_size]
           first_add = false
@@ -113,6 +123,10 @@ Puppet::Type.type(:scaleio_sds).provide(:scli) do
 
   def protection_domain=(value)
     fail("Changing the protection domain of a ScaleIO SDS is not supported")
+  end
+
+  def fault_set_name=(value)
+    fail("Changing the fault set of a ScaleIO SDS is not supported")
   end
 
   def ramcache_size=(value)

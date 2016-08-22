@@ -13,6 +13,7 @@ describe Puppet::Type.type(:scaleio_sds).provider(:scli) do
           :useconsul => false,
           :ramcache_size => 1024,
           :pool_devices => {'myPool' => ['/dev/sda', '/dev/sdb']},
+          :fault_set_name => 'myFaultSet',
       }
   ) }
 
@@ -28,9 +29,11 @@ describe Puppet::Type.type(:scaleio_sds).provider(:scli) do
   let(:pdos) { my_fixture_read('prop_pdo_multiple.cli') }
   let(:pools) { my_fixture_read('prop_pool_multiple.cli') }
   let(:devices) { my_fixture_read('prop_device_multiple.cli') }
+  let(:fault_sets) { my_fixture_read('prop_fault_set_multiple.cli') }
+
 
   describe 'basics' do
-    properties = [:ips, :port, :pool_devices, :ramcache_size]
+    properties = [:ips, :port, :pool_devices, :ramcache_size, :fault_set_name]
 
     it("should have a create method") { expect(provider).to respond_to(:create) }
     it("should have a destroy method") { expect(provider).to respond_to(:destroy) }
@@ -51,6 +54,7 @@ describe Puppet::Type.type(:scaleio_sds).provider(:scli) do
         provider.class.stubs(:scli).with('--query_properties', '--object_type', 'PROTECTION_DOMAIN', any_parameters()).returns(pdos)
         provider.class.stubs(:scli).with('--query_properties', '--object_type', 'STORAGE_POOL', any_parameters()).returns(pools)
         provider.class.stubs(:scli).with('--query_properties', '--object_type', 'DEVICE', any_parameters()).returns(devices)
+        provider.class.stubs(:scli).with('--query_properties', '--object_type', 'FAULT_SET', any_parameters()).returns(fault_sets)
         provider.class.stubs(:scli).with('--query_properties', '--object_type', 'SDS', any_parameters()).returns(multiple_sds)
         @instances = provider.class.instances
       end
@@ -75,6 +79,11 @@ describe Puppet::Type.type(:scaleio_sds).provider(:scli) do
         expect(@instances[1].ramcache_size).to match(-1)
         expect(@instances[2].ramcache_size).to match(98304)
       end
+      it 'with correct fault set' do
+        expect(@instances[0].fault_set_name).to eql('faultset2')
+        expect(@instances[1].fault_set_name).to eql(:absent)
+        expect(@instances[2].fault_set_name).to eql('faultset1')
+      end
       it 'with correct protection domain' do
         expect(@instances[0].protection_domain).to match('pdo')
       end
@@ -93,7 +102,7 @@ describe Puppet::Type.type(:scaleio_sds).provider(:scli) do
 
   describe 'create' do
     it 'creates a sds' do
-      provider.expects(:scli).with('--add_sds', '--sds_name', 'mySDS', '--protection_domain_name', 'myPDomain', '--device_path', '/dev/sda', '--sds_ip', '172.17.121.10', '--storage_pool_name', 'myPool', '--sds_port', '3454').returns([])
+      provider.expects(:scli).with('--add_sds', '--sds_name', 'mySDS', '--protection_domain_name', 'myPDomain', '--device_path', '/dev/sda', '--sds_ip', '172.17.121.10', '--storage_pool_name', 'myPool', '--sds_port', '3454', '--fault_set_name', 'myFaultSet').returns([])
       provider.expects(:scli).with('--add_sds_device', '--sds_name', 'mySDS', '--device_path', '/dev/sdb', '--storage_pool_name', 'myPool').returns([])
       provider.expects(:scli).with('--enable_sds_rmcache', '--sds_name', 'mySDS', '--i_am_sure').returns([])
       provider.expects(:scli).with('--set_sds_rmcache_size', '--sds_name', 'mySDS', '--rmcache_size_mb', 1024, '--i_am_sure').returns([])
@@ -115,7 +124,7 @@ describe Puppet::Type.type(:scaleio_sds).provider(:scli) do
       provider.class.stubs(:port_open?).with('172.17.121.10', 7072, 1).returns(true)
       provider.instance_variable_get(:@resource)[:useconsul] = true
       provider.expects(:consul_delete_key).returns()
-      provider.expects(:scli).with('--add_sds', '--sds_name', 'mySDS', '--protection_domain_name', 'myPDomain', '--device_path', '/dev/sda', '--sds_ip', '172.17.121.10', '--storage_pool_name', 'myPool', '--sds_port', '3454').returns([])
+      provider.expects(:scli).with('--add_sds', '--sds_name', 'mySDS', '--protection_domain_name', 'myPDomain', '--device_path', '/dev/sda', '--sds_ip', '172.17.121.10', '--storage_pool_name', 'myPool', '--sds_port', '3454', '--fault_set_name', 'myFaultSet').returns([])
       provider.expects(:scli).with('--add_sds_device', '--sds_name', 'mySDS', '--device_path', '/dev/sdb', '--storage_pool_name', 'myPool').returns([])
       provider.expects(:scli).with('--enable_sds_rmcache', '--sds_name', 'mySDS', '--i_am_sure').returns([])
       provider.expects(:scli).with('--set_sds_rmcache_size', '--sds_name', 'mySDS', '--rmcache_size_mb', 1024, '--i_am_sure').returns([])
