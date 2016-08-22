@@ -5,8 +5,6 @@ Puppet::Type.type(:scaleio_mdm_cluster).provide(:scli) do
 
   desc "Manages ScaleIO MDM cluster."
 
-  confine :osfamily => :redhat
-
   mk_resource_methods
 
   def initialize(value={})

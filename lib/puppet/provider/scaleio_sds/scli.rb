@@ -5,8 +5,6 @@ Puppet::Type.type(:scaleio_sds).provide(:scli) do
 
   desc "Manages ScaleIO SDS's."
 
-  confine :osfamily => :redhat
-
   mk_resource_methods
 
   def self.instances

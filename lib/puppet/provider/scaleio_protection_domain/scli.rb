@@ -4,8 +4,6 @@ Puppet::Type.type(:scaleio_protection_domain).provide(:scli) do
 
   desc "Manages ScaleIO Protection Domains."
 
-  confine :osfamily => :redhat
-
   mk_resource_methods
   
   def self.instances

@@ -4,8 +4,6 @@ Puppet::Type.type(:scaleio_storage_pool).provide(:scli) do
 
   desc "Manages ScaleIO Storage Pool."
 
-  confine :osfamily => :redhat
-
   commands :sleep => 'sleep'
 
   mk_resource_methods

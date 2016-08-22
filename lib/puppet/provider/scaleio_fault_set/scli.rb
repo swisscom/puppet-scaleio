@@ -4,8 +4,6 @@ Puppet::Type.type(:scaleio_fault_set).provide(:scli) do
 
   desc "Manages ScaleIO Fault Set."
 
-  confine :osfamily => :redhat
-
   mk_resource_methods
 
   def self.instances

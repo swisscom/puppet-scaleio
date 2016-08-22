@@ -5,8 +5,6 @@ Puppet::Type.type(:scaleio_syslog).provide(:scli) do
 
   desc "Manages ScaleIO syslog destinations."
 
-  confine :osfamily => :redhat
-
   mk_resource_methods
   
   def self.instances

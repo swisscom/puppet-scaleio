@@ -14,6 +14,7 @@ This puppet module installs and configures ScaleIO clusters with the following c
 And it can manage this resources:
 
 - Protection domains
+- Fault sets
 - Storage pools
 - Volumes
 - Users

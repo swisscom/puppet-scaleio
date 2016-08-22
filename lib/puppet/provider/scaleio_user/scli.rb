@@ -4,8 +4,6 @@ Puppet::Type.type(:scaleio_user).provide(:scli) do
 
   desc "Manages ScaleIO users."
 
-  confine :osfamily => :redhat
-
   commands :add_scaleio_user => '/opt/emc/scaleio/scripts/add_scaleio_user.sh'
 
   commands :change_scaleio_password =>

@@ -5,8 +5,6 @@ Puppet::Type.type(:scaleio_mdm).provide(:scli) do
 
   desc "Manages ScaleIO MDM's."
 
-  confine :osfamily => :redhat
-
   mk_resource_methods
 
 

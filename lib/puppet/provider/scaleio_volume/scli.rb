@@ -4,8 +4,6 @@ Puppet::Type.type(:scaleio_volume).provide(:scli) do
 
   desc "Manages ScaleIO volume's."
 
-  confine :osfamily => :redhat
-
   commands :sleep => 'sleep'
 
   mk_resource_methods
