@@ -33,6 +33,13 @@ Puppet::Type.newtype(:scaleio_sds) do
     end
   end
 
+  newproperty(:fault_set_name) do
+    desc "The fault set this SDS shall be part of."
+    validate do |value|
+      fail("#{value} is not a valid name for the fault set name of a SDS.") unless value =~ /^[\w\-]+$/
+    end
+  end
+
   newparam(:useconsul, :boolean => true) do
     desc "Use consul to wait for SDS being available"
 
@@ -92,6 +99,10 @@ Puppet::Type.newtype(:scaleio_sds) do
       pools << "#{self[:protection_domain]}:#{storage_pool}"
     end
     pools
+  end
+
+  autorequire(:scaleio_fault_set) do
+    self[:fault_set_name]
   end
 
   # helper method, pass required parameters

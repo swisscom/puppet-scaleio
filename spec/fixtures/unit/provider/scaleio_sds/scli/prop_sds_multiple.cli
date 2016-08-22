@@ -3,6 +3,7 @@ SDS 275ac7b900000000:
 	IPS                                                192.168.56.123
 	DEVICE_ID_LIST                                     8f82ea9f00000000
 	PORT                                               7072
+    FAULT_SET_ID                                       9fe2d6de00000001
 	RMCACHE_ENABLED                                    Yes
 	RMCACHE_SIZE                                       128.0 MB (131072 KB)
 	PROTECTION_DOMAIN_ID                               aed023d500000000
@@ -12,6 +13,7 @@ SDS 275ac7ba00000001:
 	IPS                                                192.168.56.121
 	DEVICE_ID_LIST                                     8f82eaa000010000
 	PORT                                               7072
+	FAULT_SET_ID                                       0000000000000000
 	RMCACHE_ENABLED                                    No
 	RMCACHE_SIZE                                       128.0 MB (131072 KB)
 	PROTECTION_DOMAIN_ID                               aed023d500000000
@@ -20,6 +22,7 @@ SDS 275ac7bb00000002:
 	NAME                                               sds-2
 	IPS                                                192.168.56.122,192.168.56.128
 	DEVICE_ID_LIST                                     8f82eaa100020000,8f82eaa300020000
+	FAULT_SET_ID                                       9fe2d6dd00000000
 	PORT                                               8000
 	RMCACHE_ENABLED                                    Yes
 	RMCACHE_SIZE                                       96.0 GB (98304 MB)

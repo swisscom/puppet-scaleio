@@ -1,0 +1,8 @@
+FAULT_SET 9fe2d6de00000001:
+	NAME                                               faultset2
+	PROTECTION_DOMAIN_ID                               aed023d500000000
+
+FAULT_SET 9fe2d6dd00000000:
+	NAME                                               faultset1
+	PROTECTION_DOMAIN_ID                               aed023d500000000
+

@@ -17,6 +17,7 @@ describe Puppet::Type.type(:scaleio_sds) do
         :port              => 2342,
         :ramcache_size     => -1,
         :useconsul         => true,
+        :fault_set_name    => 'faultset1',
         :ensure            => :present,
       })
     expect(@sds[:name]).to eq('mySDS')
@@ -24,6 +25,7 @@ describe Puppet::Type.type(:scaleio_sds) do
     expect(@sds[:ips]).to eq(['172.17.121.10'])
     expect(@sds[:pool_devices]).to eq({'myPool' => ['/dev/sda', '/dev/sdb']})
     expect(@sds[:port]).to eq(2342)
+    expect(@sds[:fault_set_name]).to eq('faultset1')
   end
 
   it 'should not accept name with whitespaces' do
@@ -109,6 +111,19 @@ describe Puppet::Type.type(:scaleio_sds) do
         :ensure            => :present,
         })
     }.to raise_error Puppet::ResourceError, /not a valid value for SDS port/
+  end
+
+  it 'should validate the fault set name' do
+    expect {
+      Puppet::Type.type(:scaleio_sds).new({
+                                              :name              => 'mySDS',
+                                              :protection_domain => 'myPDomain',
+                                              :ips               => ['172.17.121.10'],
+                                              :pool_devices      => {'myPool' => ['/dev/sda', '/dev/sdb']},
+                                              :fault_set_name    => 'asdf.asdf$',
+                                              :ensure            => :present,
+                                          })
+    }.to raise_error Puppet::ResourceError, /valid name for the fault set name of a SDS/
   end
 
   it 'deny a non-digit RAM cache size' do
