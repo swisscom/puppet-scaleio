@@ -97,7 +97,7 @@ scaleio::protection_domains:
 ```
 
 ### Fault sets
-An array of fault set names (optional):
+An array of fault set names - the name is splitted by a semicolon (${protection_domain:${fault_set_name}). This parameter is optional:
 ```yaml
 scaleio::fault_sets:
   - 'pdo:FaultSetOne'
