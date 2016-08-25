@@ -10,10 +10,12 @@ describe Puppet::Type.type(:scaleio_storage_pool) do
 
   it 'should accept valid parameters' do
     @pool = Puppet::Type.type(:scaleio_storage_pool).new({
-        :name         => 'test-PDO:myPool',
-        :spare_policy => '12%',
-        :ensure       => :present,
-        :ramcache     => 'enabled',
+        :name                     => 'test-PDO:myPool',
+        :spare_policy             => '12%',
+        :ensure                   => :present,
+        :ramcache                 => 'enabled',
+        :device_scanner_mode      => 'device_only',
+        :device_scanner_bandwidth => '10M',
       })
     expect(@pool[:name]).to eq('test-PDO:myPool')
   end
@@ -55,6 +57,17 @@ describe Puppet::Type.type(:scaleio_storage_pool) do
           :ensure       => 'present',
         })
     }.to raise_error Puppet::ResourceError, /not a valid value for the storage pool spare capacity/
+  end
+
+  it 'should validate device_scanner_mode' do
+    expect {
+      Puppet::Type.type(:scaleio_storage_pool).new({
+                                                       :name         => 'test-PDO:myPool',
+                                                       :spare_policy => '12%',
+                                                       :device_scanner_mode => 'adsf',
+                                                       :ensure       => 'present',
+                                                   })
+    }.to raise_error Puppet::ResourceError, /Valid values for storage pool device scanner mode/
   end
 
   it 'should validate ramcache' do

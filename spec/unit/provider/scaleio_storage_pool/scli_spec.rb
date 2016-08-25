@@ -14,10 +14,12 @@ describe Puppet::Type.type(:scaleio_storage_pool).provider(:scli) do
   let(:no_pool) { my_fixture_read('prop_empty.cli') }
   let(:multiple_pools) { my_fixture_read('prop_pool_details_multiple.cli') }
   let(:pdos) { my_fixture_read('prop_pdo_multiple.cli') }
+  let(:scanner_enabled) { my_fixture_read('scanner_enabled.cli') }
+  let(:scanner_disabled) { my_fixture_read('scanner_disabled.cli') }
 
 
   describe 'basics' do
-    properties = [:spare_policy, :ramcache]
+    properties = [:spare_policy, :ramcache, :device_scanner_mode, :device_scanner_bandwidth]
 
     it("should have a create method") { expect(provider).to respond_to(:create) }
     it("should have a destroy method") { expect(provider).to respond_to(:destroy) }
@@ -40,9 +42,10 @@ describe Puppet::Type.type(:scaleio_storage_pool).provider(:scli) do
     context 'with multiple pools' do
       before :each do
         provider.class.stubs(:scli).with('--query_properties', '--object_type', 'STORAGE_POOL', any_parameters()).returns(multiple_pools)
+        provider.class.stubs(:scli).with('--query_storage_pool', any_parameters()).returns(scanner_disabled)
         @instances = provider.class.instances
-
       end
+
       it 'detects all pools' do
         names = @instances.collect { |x| x.name }
         expect(['pdo:pool1', 'pdo:pool2']).to match_array(names)
@@ -59,6 +62,22 @@ describe Puppet::Type.type(:scaleio_storage_pool).provider(:scli) do
 
       it 'with ram cache disabled ' do
         expect(@instances[1].ramcache).to match('disabled')
+      end
+
+      it 'with device scanner disabled ' do
+        expect(@instances[0].device_scanner_mode).to match('disabled')
+        expect(@instances[0].device_scanner_bandwidth).to match('1024KB')
+      end
+    end
+    context 'with device scanner enabled' do
+      before :each do
+        provider.class.stubs(:scli).with('--query_properties', '--object_type', 'STORAGE_POOL', any_parameters()).returns(multiple_pools)
+      end
+      it 'detects it as enabled ' do
+        provider.class.stubs(:scli).with('--query_storage_pool', any_parameters()).returns(scanner_enabled)
+        @instances = provider.class.instances
+        expect(@instances[0].device_scanner_mode).to match('device_only')
+        expect(@instances[0].device_scanner_bandwidth).to match('1024KB')
       end
     end
     context 'with no pool' do
@@ -79,6 +98,7 @@ describe Puppet::Type.type(:scaleio_storage_pool).provider(:scli) do
       provider.expects(:scli).with('--modify_spare_policy', '--protection_domain_name', 'myPDomain', '--storage_pool_name', 'myNewPool', '--spare_percentage', '34%', '--i_am_sure').returns([])
       provider.expects(:scli).with('--modify_zero_padding_policy', '--protection_domain_name', 'myPDomain', '--storage_pool_name', 'myNewPool', '--enable_zero_padding').returns([])
       provider.expects(:scli).with('--set_rmcache_usage', '--protection_domain_name', 'myPDomain', '--storage_pool_name', 'myNewPool', '--i_am_sure', '--use_rmcache').returns([])
+      provider.expects(:scli).with('--enable_background_device_scanner', '--protection_domain_name', 'myPDomain', '--storage_pool_name', 'myNewPool', '--scanner_mode', 'device_only', '--scanner_bandwidth_limit', '1024KB').returns([])
       provider.expects(:sleep).with(30).returns([])
       provider.create
     end
@@ -99,6 +119,18 @@ describe Puppet::Type.type(:scaleio_storage_pool).provider(:scli) do
     it 'updates the ramcache' do
       provider.expects(:scli).with('--set_rmcache_usage', '--protection_domain_name', 'myPDomain', '--storage_pool_name', 'myNewPool', '--i_am_sure', '--dont_use_rmcache').returns([])
       provider.update_ramcache('disabled')
+    end
+    it 'updates the device scanner bandwidth' do
+      provider.expects(:scli).with('--enable_background_device_scanner', '--protection_domain_name', 'myPDomain', '--storage_pool_name', 'myNewPool', '--scanner_mode', 'device_only', '--scanner_bandwidth_limit', '512KB').returns([])
+      provider.enable_device_scanner('device_only', '512KB')
+    end
+    it 'updates the device scanner mode' do
+      provider.expects(:scli).with('--enable_background_device_scanner', '--protection_domain_name', 'myPDomain', '--storage_pool_name', 'myNewPool', '--scanner_mode', 'data_comparison', '--scanner_bandwidth_limit', '512KB').returns([])
+      provider.enable_device_scanner('data_comparison', '512KB')
+    end
+    it 'disables the device scanner' do
+      provider.expects(:scli).with('--disable_background_device_scanner', '--protection_domain_name', 'myPDomain', '--storage_pool_name', 'myNewPool').returns([])
+      provider.disable_device_scanner()
     end
   end
 end

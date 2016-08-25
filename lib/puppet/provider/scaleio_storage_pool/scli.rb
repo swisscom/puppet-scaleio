@@ -20,13 +20,27 @@ Puppet::Type.type(:scaleio_storage_pool).provide(:scli) do
     pools.each do |pool_id, pool|
       pdomain = pdos[pool['PROTECTION_DOMAIN_ID']]['NAME']
 
+      # get device scanner settings
+      scanner_value = scli('--query_storage_pool', '--protection_domain_name', pdomain, '--storage_pool_name', pool['NAME'])
+          .split("\n").find{|l| l.match(/Background device scanner:/)}
+          .match(/Background device scanner: (.*)/)[1]
+
+      scanner_mode = 'disabled'
+      scanner_limit = '1024KB'
+      if scanner_value !~ /disabled/i
+        scanner_mode, scanner_limit = scanner_value.match(/Mode: (.*), Bandwidth Limit (.*)ps per device/).captures
+        scanner_limit.sub!(' ', '')
+      end
+
       pool_instances << new({
-                                :name               => "#{pdomain}:#{pool['NAME']}",
-                                :pool_name          => pool['NAME'],
-                                :ensure             => :present,
-                                :protection_domain  => pdomain,
-                                :spare_policy       => pool['SPARE_PERCENT'],
-                                :ramcache           => pool['USE_RMCACHE'] =~ /^Yes$/i ? 'enabled' : 'disabled',
+                                :name                     => "#{pdomain}:#{pool['NAME']}",
+                                :pool_name                => pool['NAME'],
+                                :ensure                   => :present,
+                                :protection_domain        => pdomain,
+                                :spare_policy             => pool['SPARE_PERCENT'],
+                                :ramcache                 => pool['USE_RMCACHE'] =~ /^Yes$/i ? 'enabled' : 'disabled',
+                                :device_scanner_mode      => scanner_mode,
+                                :device_scanner_bandwidth => scanner_limit,
                                })
     end
 
@@ -49,6 +63,10 @@ Puppet::Type.type(:scaleio_storage_pool).provide(:scli) do
     scli("--add_storage_pool", "--protection_domain_name", @resource[:protection_domain], "--storage_pool_name", @resource[:pool_name])
     updateSparePolicy(@resource[:spare_policy])
     update_ramcache(@resource[:ramcache])
+
+    if device_scanner_mode != 'off'
+      enable_device_scanner(@resource[:device_scanner_mode], @resource[:device_scanner_bandwidth])
+    end
 
     # Should zero padding be enabled?
     if @resource[:zeropadding]
@@ -84,6 +102,30 @@ Puppet::Type.type(:scaleio_storage_pool).provide(:scli) do
 
   def enable_zeropadding()
     scli("--modify_zero_padding_policy", "--protection_domain_name", @resource[:protection_domain], "--storage_pool_name", @resource[:pool_name], "--enable_zero_padding")
+  end
+
+  def device_scanner_bandwidth=(value)
+    enable_device_scanner(@resource[:device_scanner_mode], value)
+  end
+
+  def device_scanner_mode=(value)
+    if value == 'off'
+      enable_device_scanner(value, @resource[:device_scanner_bandwidth])
+    else
+      disable_device_scanner()
+    end
+  end
+
+  def enable_device_scanner(mode, limit)
+    scli("--enable_background_device_scanner", "--protection_domain_name", @resource[:protection_domain],
+         "--storage_pool_name", @resource[:pool_name],
+         "--scanner_mode", mode,
+         "--scanner_bandwidth_limit", limit)
+  end
+
+  def disable_device_scanner()
+    scli("--disable_background_device_scanner", "--protection_domain_name", @resource[:protection_domain],
+         "--storage_pool_name", @resource[:pool_name])
   end
 
   def exists?

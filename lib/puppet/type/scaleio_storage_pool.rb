@@ -45,6 +45,20 @@ Puppet::Type.newtype(:scaleio_storage_pool) do
     defaultto 'enabled'
   end
 
+  newproperty(:device_scanner_mode) do
+    desc "Mode of the background device scanner (disabled|device_only|data_comparison). Default: device_only"
+    validate do |value|
+      raise ArgumentError, "Valid values for storage pool device scanner mode: disabled|device_only|data_comparison." unless value =~ /^disabled|device_only|data_comparison$/
+    end
+    defaultto 'device_only'
+  end
+
+  newproperty(:device_scanner_bandwidth) do
+    desc "Bandwidth limit of the background device scanner. Default: 1024KB"
+
+    defaultto '1024KB'
+  end
+
   # This is a parameter as zeropadding, as updating zero padding is no more allowed once the pool has devices 
   newparam(:zeropadding, :boolean => true) do
     desc "Should zero padding be enabled?"

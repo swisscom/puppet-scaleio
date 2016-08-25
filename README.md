@@ -110,6 +110,7 @@ scaleio::fault_sets:
 Besides creating a storage pool, the module supports managing,
 
 - the spare policy,
+- the background device scanner,
 - enabling/disabling RAM cache on a per-pool basis,
 - Activating/deactivating zeropadding
 
@@ -119,10 +120,13 @@ scaleio::storage_pools:
     spare_policy: 34%
     ramcache: 'enabled'
     zeropadding: true
+    device_scanner_mode: device_only
+    device_scanner_bandwidth: 512KB
   'pdo:pool2':
     spare_policy: 34%
     ramcache: 'disabled'
     zeropadding: false
+    device_scanner_mode: disabled
 ```
 
 ### SDS

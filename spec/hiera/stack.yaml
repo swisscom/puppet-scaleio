@@ -36,10 +36,13 @@ scaleio::storage_pools:
     spare_policy: 34%
     ramcache: 'enabled'
     zeropadding: true
+    device_scanner_mode: device_only
+    device_scanner_bandwidth: 512KB
   'pdo:pool2':
     spare_policy: 34%
     ramcache: 'disabled'
     zeropadding: false
+    device_scanner_mode: disabled
 
 scaleio::sds_defaults:
   protection_domain: 'pdo'
