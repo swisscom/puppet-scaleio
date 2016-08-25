@@ -66,7 +66,7 @@ describe Puppet::Type.type(:scaleio_storage_pool).provider(:scli) do
 
       it 'with device scanner disabled ' do
         expect(@instances[0].device_scanner_mode).to match('disabled')
-        expect(@instances[0].device_scanner_bandwidth).to match('1024KB')
+        expect(@instances[0].device_scanner_bandwidth).to match('1024')
       end
     end
     context 'with device scanner enabled' do
@@ -77,7 +77,7 @@ describe Puppet::Type.type(:scaleio_storage_pool).provider(:scli) do
         provider.class.stubs(:scli).with('--query_storage_pool', any_parameters()).returns(scanner_enabled)
         @instances = provider.class.instances
         expect(@instances[0].device_scanner_mode).to match('device_only')
-        expect(@instances[0].device_scanner_bandwidth).to match('1024KB')
+        expect(@instances[0].device_scanner_bandwidth).to match('1024')
       end
     end
     context 'with no pool' do
@@ -98,7 +98,7 @@ describe Puppet::Type.type(:scaleio_storage_pool).provider(:scli) do
       provider.expects(:scli).with('--modify_spare_policy', '--protection_domain_name', 'myPDomain', '--storage_pool_name', 'myNewPool', '--spare_percentage', '34%', '--i_am_sure').returns([])
       provider.expects(:scli).with('--modify_zero_padding_policy', '--protection_domain_name', 'myPDomain', '--storage_pool_name', 'myNewPool', '--enable_zero_padding').returns([])
       provider.expects(:scli).with('--set_rmcache_usage', '--protection_domain_name', 'myPDomain', '--storage_pool_name', 'myNewPool', '--i_am_sure', '--use_rmcache').returns([])
-      provider.expects(:scli).with('--enable_background_device_scanner', '--protection_domain_name', 'myPDomain', '--storage_pool_name', 'myNewPool', '--scanner_mode', 'device_only', '--scanner_bandwidth_limit', '1024KB').returns([])
+      provider.expects(:scli).with('--enable_background_device_scanner', '--protection_domain_name', 'myPDomain', '--storage_pool_name', 'myNewPool', '--scanner_mode', 'device_only', '--scanner_bandwidth_limit', '1024').returns([])
       provider.expects(:sleep).with(30).returns([])
       provider.create
     end
@@ -121,12 +121,12 @@ describe Puppet::Type.type(:scaleio_storage_pool).provider(:scli) do
       provider.update_ramcache('disabled')
     end
     it 'updates the device scanner bandwidth' do
-      provider.expects(:scli).with('--enable_background_device_scanner', '--protection_domain_name', 'myPDomain', '--storage_pool_name', 'myNewPool', '--scanner_mode', 'device_only', '--scanner_bandwidth_limit', '512KB').returns([])
-      provider.enable_device_scanner('device_only', '512KB')
+      provider.expects(:scli).with('--enable_background_device_scanner', '--protection_domain_name', 'myPDomain', '--storage_pool_name', 'myNewPool', '--scanner_mode', 'device_only', '--scanner_bandwidth_limit', '512').returns([])
+      provider.enable_device_scanner('device_only', '512')
     end
     it 'updates the device scanner mode' do
-      provider.expects(:scli).with('--enable_background_device_scanner', '--protection_domain_name', 'myPDomain', '--storage_pool_name', 'myNewPool', '--scanner_mode', 'data_comparison', '--scanner_bandwidth_limit', '512KB').returns([])
-      provider.enable_device_scanner('data_comparison', '512KB')
+      provider.expects(:scli).with('--enable_background_device_scanner', '--protection_domain_name', 'myPDomain', '--storage_pool_name', 'myNewPool', '--scanner_mode', 'data_comparison', '--scanner_bandwidth_limit', '512').returns([])
+      provider.enable_device_scanner('data_comparison', '512')
     end
     it 'disables the device scanner' do
       provider.expects(:scli).with('--disable_background_device_scanner', '--protection_domain_name', 'myPDomain', '--storage_pool_name', 'myNewPool').returns([])

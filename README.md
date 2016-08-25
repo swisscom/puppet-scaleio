@@ -121,7 +121,7 @@ scaleio::storage_pools:
     ramcache: 'enabled'
     zeropadding: true
     device_scanner_mode: device_only
-    device_scanner_bandwidth: 512KB
+    device_scanner_bandwidth: 512
   'pdo:pool2':
     spare_policy: 34%
     ramcache: 'disabled'

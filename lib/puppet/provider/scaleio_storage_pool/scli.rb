@@ -21,15 +21,12 @@ Puppet::Type.type(:scaleio_storage_pool).provide(:scli) do
       pdomain = pdos[pool['PROTECTION_DOMAIN_ID']]['NAME']
 
       # get device scanner settings
-      scanner_value = scli('--query_storage_pool', '--protection_domain_name', pdomain, '--storage_pool_name', pool['NAME'])
-          .split("\n").find{|l| l.match(/Background device scanner:/)}
-          .match(/Background device scanner: (.*)/)[1]
+      scanner_value = scli('--query_storage_pool', '--protection_domain_name', pdomain, '--storage_pool_name', pool['NAME']).split("\n").find{|l| l.match(/Background device scanner:/)}.match(/Background device scanner: (.*)/)[1]
 
       scanner_mode = 'disabled'
       scanner_limit = '1024KB'
       if scanner_value !~ /disabled/i
-        scanner_mode, scanner_limit = scanner_value.match(/Mode: (.*), Bandwidth Limit (.*)ps per device/).captures
-        scanner_limit.sub!(' ', '')
+        scanner_mode, scanner_limit = scanner_value.match(/Mode: (.*), Bandwidth Limit (.*) KBps per device/).captures
       end
 
       pool_instances << new({
@@ -64,7 +61,7 @@ Puppet::Type.type(:scaleio_storage_pool).provide(:scli) do
     updateSparePolicy(@resource[:spare_policy])
     update_ramcache(@resource[:ramcache])
 
-    if device_scanner_mode != 'off'
+    if device_scanner_mode != 'disabled'
       enable_device_scanner(@resource[:device_scanner_mode], @resource[:device_scanner_bandwidth])
     end
 
@@ -109,23 +106,19 @@ Puppet::Type.type(:scaleio_storage_pool).provide(:scli) do
   end
 
   def device_scanner_mode=(value)
-    if value == 'off'
-      enable_device_scanner(value, @resource[:device_scanner_bandwidth])
-    else
+    if value == 'disabled'
       disable_device_scanner()
+    else
+      enable_device_scanner(value, @resource[:device_scanner_bandwidth])
     end
   end
 
   def enable_device_scanner(mode, limit)
-    scli("--enable_background_device_scanner", "--protection_domain_name", @resource[:protection_domain],
-         "--storage_pool_name", @resource[:pool_name],
-         "--scanner_mode", mode,
-         "--scanner_bandwidth_limit", limit)
+    scli("--enable_background_device_scanner", "--protection_domain_name", @resource[:protection_domain], "--storage_pool_name", @resource[:pool_name], "--scanner_mode", mode, "--scanner_bandwidth_limit", limit)
   end
 
   def disable_device_scanner()
-    scli("--disable_background_device_scanner", "--protection_domain_name", @resource[:protection_domain],
-         "--storage_pool_name", @resource[:pool_name])
+    scli("--disable_background_device_scanner", "--protection_domain_name", @resource[:protection_domain], "--storage_pool_name", @resource[:pool_name])
   end
 
   def exists?
