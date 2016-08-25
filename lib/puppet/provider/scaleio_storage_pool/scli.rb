@@ -24,7 +24,7 @@ Puppet::Type.type(:scaleio_storage_pool).provide(:scli) do
       scanner_value = scli('--query_storage_pool', '--protection_domain_name', pdomain, '--storage_pool_name', pool['NAME']).split("\n").find{|l| l.match(/Background device scanner:/)}.match(/Background device scanner: (.*)/)[1]
 
       scanner_mode = 'disabled'
-      scanner_limit = '1024KB'
+      scanner_limit = '1024'
       if scanner_value !~ /disabled/i
         scanner_mode, scanner_limit = scanner_value.match(/Mode: (.*), Bandwidth Limit (.*) KBps per device/).captures
       end
@@ -37,7 +37,7 @@ Puppet::Type.type(:scaleio_storage_pool).provide(:scli) do
                                 :spare_policy             => pool['SPARE_PERCENT'],
                                 :ramcache                 => pool['USE_RMCACHE'] =~ /^Yes$/i ? 'enabled' : 'disabled',
                                 :device_scanner_mode      => scanner_mode,
-                                :device_scanner_bandwidth => scanner_limit,
+                                :device_scanner_bandwidth => scanner_limit.to_i,
                                })
     end
 

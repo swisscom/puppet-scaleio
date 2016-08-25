@@ -15,7 +15,7 @@ describe Puppet::Type.type(:scaleio_storage_pool) do
         :ensure                   => :present,
         :ramcache                 => 'enabled',
         :device_scanner_mode      => 'device_only',
-        :device_scanner_bandwidth => '10M',
+        :device_scanner_bandwidth => 10240,
       })
     expect(@pool[:name]).to eq('test-PDO:myPool')
   end

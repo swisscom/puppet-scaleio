@@ -56,9 +56,9 @@ Puppet::Type.newtype(:scaleio_storage_pool) do
   newproperty(:device_scanner_bandwidth) do
     desc "Bandwidth limit of the background device scanner (in kb). Default: 1024"
     validate do |value|
-      raise ArgumentError, "#{value} is not a valid value for the device scanner bandwidth limit." unless value =~ /^[0-9]*$/
+      raise ArgumentError, "#{value} is not a valid value for the device scanner bandwidth limit." unless value.is_a? Integer
     end
-    defaultto '1024'
+    defaultto 1024
   end
 
   # This is a parameter as zeropadding, as updating zero padding is no more allowed once the pool has devices 
