@@ -29,11 +29,14 @@ class scaleio::mdm::resources(
 
   create_resources('scaleio_sds',
     $scaleio::sds,
-    merge($scaleio::sds_defaults, {
-      ensure        => present,
-      useconsul     => $scaleio::use_consul,
-      ramcache_size => 128 + 0
-    })
+    merge(
+      {ramcache_size => 128 + 0},
+      $scaleio::sds_defaults,
+      {
+        ensure        => present,
+        useconsul     => $scaleio::use_consul,
+      }
+    )
   )
 
   create_resources('scaleio_sdc',

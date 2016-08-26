@@ -4,8 +4,9 @@
 * Add support for fault sets
 * Add support for background device scanner
 * Bugfix: Do not fail if bootstrap_mdm_name is undef (ie. on a SDC)
+* Bugfix: Don't ignore ramcache_size from defaults
 
-## 3.0.2
+## 3.0.2 (2016-08-10)
 * Bugfix: volumes might have no mappings
 * Bugfix: SDS might have no devices
 * Bugfix: MDMs without mgmt_ips should not lead to a ruby error

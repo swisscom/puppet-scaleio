@@ -158,6 +158,7 @@ scaleio::sds:
     ips: ['192.168.56.121']
   'sds-2':
     fault_set: FaultSetTwo # optional
+    ramcache_size: 1024
     ips: ['192.168.56.122']
   'sds-3':
     fault_set: FaultSetThree # optional
