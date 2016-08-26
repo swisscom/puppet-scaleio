@@ -1,6 +1,6 @@
 # Changelog
 
-## 3.1.0 [unreleased]
+## 3.1.0 (2016-08-24)
 * Add support for fault sets
 * Add support for background device scanner
 * Bugfix: Do not fail if bootstrap_mdm_name is undef (ie. on a SDC)
