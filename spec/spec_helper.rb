@@ -9,6 +9,8 @@ if (RUBY_VERSION.split('.').map{|s|s.to_i} <=> [2,0,0]) >= 0
   end
 end
 
+ENV['STRICT_VARIABLES'] = 'no' # TODO: make the code using STRICT_VARIABLES pass
+
 # This code is being added as a recommended workaround
 # because of a known issue discussed here:
 # https://github.com/puppetlabs/puppet/pull/3114
