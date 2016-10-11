@@ -34,7 +34,7 @@ describe 'scaleio::mdm::cluster_setup', :type => 'class' do
 
     it { is_expected.to contain_exec('scaleio::mdm::cluster_setup::create_cluster').with(
         :command => 'scli --create_mdm_cluster --master_mdm_ip 10.0.0.1 --master_mdm_name myMDM1 --use_nonsecure_communication --accept_license; sleep 5',
-        :onlyif => 'scli --query_cluster --approve_certificate 2>&1 |grep -qE "Error: MDM failed command.  Status: The MDM cluster state is incorrect"',
+        :onlyif => 'scli --query_cluster --approve_certificate 2>&1 |grep -qE "Error: MDM failed command.  Status: (This MDM is not attached to a system.|The MDM cluster state is incorrect)"',
         :require => 'Exec[scaleio::mdm::installation::restart_mdm]',
     ).that_comes_before('Exec[scaleio::mdm::cluster_setup::login_default]') }
 
@@ -97,7 +97,7 @@ describe 'scaleio::mdm::cluster_setup', :type => 'class' do
 
     it { is_expected.to contain_exec('scaleio::mdm::cluster_setup::create_cluster').with(
         :command => 'scli --create_mdm_cluster --master_mdm_ip 10.0.0.1,10.0.0.2 --master_mdm_name myMDM1 --use_nonsecure_communication --accept_license; sleep 5',
-        :onlyif => 'scli --query_cluster --approve_certificate 2>&1 |grep -qE "Error: MDM failed command.  Status: The MDM cluster state is incorrect"',
+        :onlyif => 'scli --query_cluster --approve_certificate 2>&1 |grep -qE "Error: MDM failed command.  Status: (This MDM is not attached to a system.|The MDM cluster state is incorrect)"',
         :require => 'Exec[scaleio::mdm::installation::restart_mdm]',
     ).that_comes_before('Exec[scaleio::mdm::cluster_setup::login_default]') }
 

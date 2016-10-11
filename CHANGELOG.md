@@ -1,5 +1,8 @@
 # Changelog
 
+## 3.1.1 [unreleased]
+* add support for ScaleIO 2.0.1
+
 ## 3.1.0 (2016-08-24)
 * Add support for fault sets
 * Add support for background device scanner

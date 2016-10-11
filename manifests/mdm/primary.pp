@@ -14,7 +14,7 @@ class scaleio::mdm::primary {
     validate_re($scaleio::system_name, '^[a-z0-9-]+$', 'ScaleIO system name must be alphanumeric')
     exec{ 'scaleio::mdm::primary::rename_system':
       command => "${scli_wrap} --rename_system --new_name ${scaleio::system_name}",
-      unless  => "${scli_wrap} --query_cluster | grep -qE '^\\s*Name: ${scaleio::system_name}\\s*Mode'",
+      unless  => "${scli_wrap} --query_cluster | grep -qE '^\\s*Name: ${scaleio::system_name},?\\s*Mode'",
       require => Class['scaleio::mdm::cluster_setup'],
     }
   }

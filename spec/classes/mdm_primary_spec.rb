@@ -42,7 +42,7 @@ describe 'scaleio::mdm::primary', :type => 'class' do
 
     it { is_expected.to contain_exec('scaleio::mdm::primary::rename_system').with(
         :command => '/opt/emc/scaleio/scripts/scli_wrap.sh --rename_system --new_name sysname',
-        :unless => "/opt/emc/scaleio/scripts/scli_wrap.sh --query_cluster | grep -qE '^\\s*Name: sysname\\s*Mode'",
+        :unless => "/opt/emc/scaleio/scripts/scli_wrap.sh --query_cluster | grep -qE '^\\s*Name: sysname,?\\s*Mode'",
         :require => 'Class[Scaleio::Mdm::Cluster_setup]',
     ) }
 
