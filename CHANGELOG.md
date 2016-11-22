@@ -1,6 +1,6 @@
 # Changelog
 
-## 3.1.1 [unreleased]
+## 3.1.1
 * add support for ScaleIO 2.0.1
 
 ## 3.1.0 (2016-08-24)
