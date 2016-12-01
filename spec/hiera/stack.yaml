@@ -1,6 +1,10 @@
 ---
 scaleio::bootstrap_mdm_name: myMDM1
+scaleio::version: '2.0-10000.2072.el7'    # must correspond to binaries available
+scaleio::components: [sds, lia]           # mdm/tb will be auto installed
 scaleio::system_name: sysname
+
+# example 5-node cluster, separate storage and managent network
 scaleio::mdms:
   myMDM1:
     ips: '10.0.0.1'
@@ -16,6 +20,24 @@ scaleio::tiebreakers:
     ips: '10.0.0.4'
   myTB2:
     ips: '10.0.0.5'
+    
+# example 3-node cluster:
+#scaleio::mdms:
+#  myMDM1:
+#    ips: '10.0.0.1'
+#    mgmt_ips: '11.0.0.1'
+#  myMDM2:
+#    ips: '10.0.0.2'
+#    mgmt_ips: '11.0.0.2'
+#scaleio::tiebreakers:
+#  myTB1:
+#    ips: '10.0.0.4'
+
+scaleio::password: 'ChangeThis'       # password of the admin user
+scaleio::use_consul: false            # use consul for bootstrapping
+scaleio::purge: false                 # purge the resources if not defined in puppet parameter (for more granularity, see scaleio::mdm::resources)
+scaleio::restricted_sdc_mode: true    # use the restricted SDC mode
+#scaleio::syslog_ip_port: undef       # syslog destination, eg: 'host:1245'
 
 
 scaleio::users:
@@ -26,6 +48,8 @@ scaleio::users:
 scaleio::protection_domains:
   - 'pdo'
 
+# to group nodes into groups based on physical
+# fault tolerance
 scaleio::fault_sets:
   - 'pdo:faultset1'
   - 'pdo:faultset2'
@@ -34,22 +58,24 @@ scaleio::fault_sets:
 scaleio::storage_pools:
   'pdo:pool1':
     spare_policy: 34%
-    ramcache: 'enabled'
+    ramcache: 'enabled'     # for storage-only nodes
     zeropadding: true
-    device_scanner_mode: device_only
-    device_scanner_bandwidth: 512
+    device_scanner_mode: device_only  # todo: explain
+    device_scanner_bandwidth: 512     # todo: explain
   'pdo:pool2':
     spare_policy: 34%
-    ramcache: 'disabled'
-    zeropadding: false
+    ramcache: 'disabled'   # converged nodes
+    zeropadding: false     # max. performance
     device_scanner_mode: disabled
 
 scaleio::sds_defaults:
   protection_domain: 'pdo'
+  ramcache_size: -1
   pool_devices:
     'pool1':
       - '/dev/sdb'
 
+# Servers providing storage
 scaleio::sds:
   'sds-1':
     fault_set: faultset1
@@ -63,6 +89,7 @@ scaleio::sds:
     ips: ['192.168.56.123']
     ramcache_size: -1
 
+# Storage clients, desc=hostname
 scaleio::sdcs:
   '192.168.56.121':
     desc: 'sdc-1'
@@ -75,7 +102,7 @@ scaleio::volumes:
   'volume-1':
     protection_domain: pdo
     storage_pool: pool1
-    size: 8
+    size: 8      # GB
     type: thick
     sdc_nodes:
       - sdc-1
