@@ -26,11 +26,12 @@ See [spec/hiera/stack.yaml](spec/hiera/stack.yaml) for a complete hiera example.
 
 The general idea behind the workflow is as follows:
 
-1. Install all components (SDS/SDC/LIA/MDM) on all nodes (one Puppet run per node)
-2. Configure the ScaleIO cluster on the primary MDM/bootstrap node and create/manage the specified resources (such as pool, SDS, SDC, etc.)
+1. Install all components (SDS/SDC/LIA/MDM) on all nodes except the primary MDM (one Puppet run per node)
+2. Install all components (SDS/SDC/LIA/MDM) on the primary MDM
+3. Configure the ScaleIO cluster on the primary MDM/bootstrap node and create/manage the specified resources (such as pool, SDS, SDC, etc.)
 
 ### ScaleIO packages
-It is expected that the following RPM packages are available in a repository so they can be installed with the package manager (ie. yum):
+It is expected that the following RPM packages are available in a repository so they can be installed with the package manager (ie. yum). If not available they can be installed via the ScaleIO Install Manager (IM).
 
 - EMC-ScaleIO-mdm
 - EMC-ScaleIO-sdc
@@ -41,7 +42,7 @@ It is expected that the following RPM packages are available in a repository so 
 The puppet module locks the versions of the RPMs using the yum-versionlock plugin. This prevents an unintended upgrade of the ScaleIO RPMs by running `yum update``
 
 ### Components
-Per node one or many of the following components can be specified and thus will installed. The MDM component will be installed automatically on the corresponding nodes based on the IP address.
+Per node, one or many of the following components can be specified and thus will installed. The MDM and Tiebreaker component will be installed automatically on the corresponding nodes based on the IP address.
 ```yaml
 scaleio::components: ['sdc', 'sds', 'lia']
 ```
@@ -57,10 +58,17 @@ The order during the bootstrapping is important, it needs to be as follows:
   2. run puppet on all SDS
 2. Bootstrap cluster on primary, thus
   1. run puppet on the bootstrap node 
+  
+The puppet code to run for each node is the same
+```
+class { scaleio: }              # see hiera
+```
+And a common hiera file can be used for all elements in the cluster.
 
 ```yaml
-scaleio::version: '2.0-6035.0.el7'
+scaleio::version: '2.0-6035.0.el7'    # must correspond to binaries
 scaleio::bootstrap_mdm_name: myMDM1   # node that does the cluster bootstrapping
+scaleio::components: [sds, sdc, lia]  # mdm/tb will be auto installed
 scaleio::system_name: sysname
 scaleio::mdms:
   myMDM1:                             # name of the MDM
