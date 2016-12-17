@@ -1,5 +1,8 @@
 # Changelog
 
+## 3.1.2 [unreleased]
+* improvements on the README and stack example - thanks @Boran
+
 ## 3.1.1
 * add support for ScaleIO 2.0.1
 
