@@ -13,9 +13,8 @@ describe Puppet::Type.type(:scaleio_storage_pool).provider(:scli) do
 
   let(:no_pool) { my_fixture_read('prop_empty.cli') }
   let(:multiple_pools) { my_fixture_read('prop_pool_details_multiple.cli') }
+  let(:device_scanner_disabled) { my_fixture_read('prop_pool_device_scanner_disabled.cli') }
   let(:pdos) { my_fixture_read('prop_pdo_multiple.cli') }
-  let(:scanner_enabled) { my_fixture_read('scanner_enabled.cli') }
-  let(:scanner_disabled) { my_fixture_read('scanner_disabled.cli') }
 
 
   describe 'basics' do
@@ -42,7 +41,6 @@ describe Puppet::Type.type(:scaleio_storage_pool).provider(:scli) do
     context 'with multiple pools' do
       before :each do
         provider.class.stubs(:scli).with('--query_properties', '--object_type', 'STORAGE_POOL', any_parameters()).returns(multiple_pools)
-        provider.class.stubs(:scli).with('--query_storage_pool', any_parameters()).returns(scanner_disabled)
         @instances = provider.class.instances
       end
 
@@ -64,19 +62,18 @@ describe Puppet::Type.type(:scaleio_storage_pool).provider(:scli) do
         expect(@instances[1].ramcache).to match('disabled')
       end
 
-      it 'with device scanner disabled ' do
-        expect(@instances[0].device_scanner_mode).to match('disabled')
+      it 'with device scanner enbled ' do
+        expect(@instances[0].device_scanner_mode).to match('device_only')
         expect(@instances[0].device_scanner_bandwidth).to match(1024)
       end
     end
-    context 'with device scanner enabled' do
+    context 'with device scanner disabled' do
       before :each do
-        provider.class.stubs(:scli).with('--query_properties', '--object_type', 'STORAGE_POOL', any_parameters()).returns(multiple_pools)
+        provider.class.stubs(:scli).with('--query_properties', '--object_type', 'STORAGE_POOL', any_parameters()).returns(device_scanner_disabled)
       end
-      it 'detects it as enabled ' do
-        provider.class.stubs(:scli).with('--query_storage_pool', any_parameters()).returns(scanner_enabled)
+      it 'detects it as disabled ' do
         @instances = provider.class.instances
-        expect(@instances[0].device_scanner_mode).to match('device_only')
+        expect(@instances[0].device_scanner_mode).to match('disabled')
         expect(@instances[0].device_scanner_bandwidth).to match(1024)
       end
     end

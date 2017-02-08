@@ -1,7 +1,8 @@
 # Changelog
 
-## 3.1.2 [unreleased]
+## 3.1.2 (2017-02-08)
 * improvements on the README and stack example - thanks @Boran
+* read device scanner settings using --query_properties
 
 ## 3.1.1
 * add support for ScaleIO 2.0.1
