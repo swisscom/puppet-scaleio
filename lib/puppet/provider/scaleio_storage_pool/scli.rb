@@ -16,19 +16,10 @@ Puppet::Type.type(:scaleio_storage_pool).provide(:scli) do
 
     pool_instances = []
 
-    pools = scli_query_properties('--object_type', 'STORAGE_POOL', '--all_objects', '--properties', 'NAME,SPARE_PERCENT,USE_RMCACHE,PROTECTION_DOMAIN_ID')
+    pools = scli_query_properties('--object_type', 'STORAGE_POOL', '--all_objects', '--properties', 'NAME,SPARE_PERCENT,USE_RMCACHE,PROTECTION_DOMAIN_ID,DI_SCANNER_MODE,DI_SCANNER_BANDWIDTH_LIMIT')
     pools.each do |pool_id, pool|
       pdomain = pdos[pool['PROTECTION_DOMAIN_ID']]['NAME']
-
-      # get device scanner settings
-      scanner_value = scli('--query_storage_pool', '--protection_domain_name', pdomain, '--storage_pool_name', pool['NAME']).split("\n").find{|l| l.match(/Background device scanner:/)}.match(/Background device scanner: (.*)/)[1]
-
-      scanner_mode = 'disabled'
-      scanner_limit = '1024'
-      if scanner_value !~ /disabled/i
-        scanner_mode, scanner_limit = scanner_value.match(/Mode: (.*), Bandwidth Limit (.*) KBps per device/).captures
-      end
-
+      
       pool_instances << new({
                                 :name                     => "#{pdomain}:#{pool['NAME']}",
                                 :pool_name                => pool['NAME'],
@@ -36,8 +27,8 @@ Puppet::Type.type(:scaleio_storage_pool).provide(:scli) do
                                 :protection_domain        => pdomain,
                                 :spare_policy             => pool['SPARE_PERCENT'],
                                 :ramcache                 => pool['USE_RMCACHE'] =~ /^Yes$/i ? 'enabled' : 'disabled',
-                                :device_scanner_mode      => scanner_mode,
-                                :device_scanner_bandwidth => scanner_limit.to_i,
+                                :device_scanner_mode      => pool['DI_SCANNER_MODE'].downcase,
+                                :device_scanner_bandwidth => pool['DI_SCANNER_BANDWIDTH_LIMIT'].to_i
                                })
     end
 

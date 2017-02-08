@@ -1,0 +1,7 @@
+STORAGE_POOL 46ac865700000000:
+	NAME                                               pool2
+	SPARE_PERCENT                                      8%
+	USE_RMCACHE                                        No
+	PROTECTION_DOMAIN_ID                               aed023d500000000
+	DI_SCANNER_MODE                                    DISABLED
+	DI_SCANNER_BANDWIDTH_LIMIT                         1024
