@@ -1,0 +1,28 @@
+{
+  "name": "swisscom-scaleio",
+  "version": "3.1.2",
+  "author": "Swisscom (Schweiz) AG",
+  "summary": "Install and configure a complete ScaleIO environment.",
+  "license": "MIT",
+  "source": "https://github.com/swisscom/puppet-scaleio",
+  "project_page": "https://github.com/swisscom/puppet-scaleio",
+  "issues_url": "https://github.com/swisscom/puppet-scaleio/issues",
+  "operatingsystem_support": [
+    {
+      "operatingsystem": "CentOS",
+      "operatingsystemrelease": [
+        "6",
+        "7"
+      ]
+    },
+    {
+      "operatingsystem": "RedHat",
+      "operatingsystemrelease": [
+        "6",
+        "7"
+      ]
+    }
+  ],
+  "dependencies": [
+  ]
+}

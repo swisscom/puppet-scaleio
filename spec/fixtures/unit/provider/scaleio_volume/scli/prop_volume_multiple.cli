@@ -1,0 +1,16 @@
+VOLUME 823491ba00000001:
+	NAME                                               volume-1
+	SIZE                                               8.0 GB (8192 MB)
+	TYPE                                               THICK_PROVISIONED
+	STORAGE_POOL_ID                                    46ac865800000001
+	TYPE                                               THICK_PROVISIONED
+	MAPPED_SDC_ID_LIST                                 f0d91c5c00000001
+
+VOLUME 823491b900000000:
+	NAME                                               volume-2
+	SIZE                                               32.0 GB (32768 MB)
+	TYPE                                               THIN_PROVISIONED
+	STORAGE_POOL_ID                                    46ac865800000001
+	TYPE                                               THIN_PROVISIONED
+	MAPPED_SDC_ID_LIST                                 f0d91c5b00000000,f0d91c5d00000002,f0d91c5c00000001
+

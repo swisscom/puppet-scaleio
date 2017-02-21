@@ -1,0 +1,16 @@
+DEVICE 8f82ea9f00000000:
+	ORIGINAL_PATH                                      /dev/sdb
+	STORAGE_POOL_ID                                    46ac865800000001
+
+DEVICE 8f82eaa000010000:
+	ORIGINAL_PATH                                      /dev/sdb
+	STORAGE_POOL_ID                                    46ac865800000001
+
+DEVICE 8f82eaa100020000:
+	ORIGINAL_PATH                                      /dev/sdb
+	STORAGE_POOL_ID                                    46ac865800000001
+
+DEVICE 8f82eaa300020000:
+	ORIGINAL_PATH                                      /dev/sdc
+	STORAGE_POOL_ID                                    46ac865800000001
+
