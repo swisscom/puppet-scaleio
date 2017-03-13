@@ -1,7 +1,7 @@
 ---
 scaleio::bootstrap_mdm_name: myMDM1
 #scaleio::version: '2.0-10000.2072.el7'    # must correspond to binaries available
-scaleio::components: [sds, lia]           # mdm/tb will be auto installed
+scaleio::components: [sds, lia, xcache]           # mdm/tb will be auto installed
 scaleio::system_name: sysname
 
 # example 5-node cluster, separate storage and managent network

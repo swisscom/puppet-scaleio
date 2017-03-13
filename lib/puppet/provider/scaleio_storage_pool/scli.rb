@@ -58,7 +58,7 @@ Puppet::Type.type(:scaleio_storage_pool).provide(:scli) do
     end
 
     if @resource[:rfcache] != 'disabled'
-      scli("--set_rfcache_usage", "--protection_domain_name", @resource[:protection_domain], "--storage_pool_name", @resource[:pool_name], "--use_rfcache",)
+      scli("--set_rfcache_usage", "--protection_domain_name", @resource[:protection_domain], "--storage_pool_name", @resource[:pool_name], "--use_rfcache")
     end
 
     # Should zero padding be enabled?
