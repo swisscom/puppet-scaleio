@@ -1,5 +1,8 @@
 # Changelog
 
+## 3.2.0 (2017-03-13)
+* Add support for rfcache devices
+
 ## 3.1.2 (2017-02-08)
 * improvements on the README and stack example - thanks @Boran
 * read device scanner settings using --query_properties

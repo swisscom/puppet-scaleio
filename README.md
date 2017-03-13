@@ -120,6 +120,7 @@ Besides creating a storage pool, the module supports managing,
 - the spare policy,
 - the background device scanner,
 - enabling/disabling RAM cache on a per-pool basis,
+- enabling/disabling rfcache on a per-pool basis,
 - Activating/deactivating zeropadding
 
 ```yaml
@@ -127,12 +128,14 @@ scaleio::storage_pools:
   'pdo:pool1':                  # ${protection domain}:${pool name}
     spare_policy: 34%
     ramcache: 'enabled'
+    rfcache: 'enabled'
     zeropadding: true
     device_scanner_mode: device_only
     device_scanner_bandwidth: 512
   'pdo:pool2':
     spare_policy: 34%
     ramcache: 'disabled'
+    rfcache: 'disabled'
     zeropadding: false
     device_scanner_mode: disabled
 ```
@@ -143,6 +146,7 @@ On a SDS level the following setting are manageable:
 - What device belongs to what pool.
 - The IPs of the SDS (only one SDS per server supported).
 - Size of the RAM cache
+- rfcache devices
 - What fault set is the SDS part of? (optional)
 
 To end up with less configuration, there can be defaults specified over all SDS.
@@ -159,6 +163,8 @@ scaleio::sds_defaults:
   pool_devices:   
     'pool1':
       - '/dev/sdb'
+  rfcache_devices:
+    - '/dev/sdc'
 
 scaleio::sds:
   'sds-1':
@@ -168,6 +174,7 @@ scaleio::sds:
     fault_set: FaultSetTwo # optional
     ramcache_size: 1024
     ips: ['192.168.56.122']
+    use_rfcache: false
   'sds-3':
     fault_set: FaultSetThree # optional
     ips: ['192.168.56.123']
@@ -175,6 +182,8 @@ scaleio::sds:
     pool_devices:   
       'pool2':
         - '/dev/sdb'
+    rfcache_devices:
+      - '/dev/sdd'
 ```
 
 ### SDC

@@ -17,15 +17,20 @@ describe Puppet::Type.type(:scaleio_sds) do
         :port              => 2342,
         :ramcache_size     => -1,
         :useconsul         => true,
-        :fault_set    => 'faultset1',
+        :fault_set         => 'faultset1',
         :ensure            => :present,
+        :rfcache_devices   => ['/dev/sdc', '/dev/sdd'],
+        :use_rfcache       => true,
       })
     expect(@sds[:name]).to eq('mySDS')
     expect(@sds[:protection_domain]).to eq('myPDomain')
     expect(@sds[:ips]).to eq(['172.17.121.10'])
     expect(@sds[:pool_devices]).to eq({'myPool' => ['/dev/sda', '/dev/sdb']})
     expect(@sds[:port]).to eq(2342)
+    expect(@sds[:useconsul]).to eq(true)
     expect(@sds[:fault_set]).to eq('faultset1')
+    expect(@sds[:rfcache_devices]).to eq(['/dev/sdc', '/dev/sdd'])
+    expect(@sds[:use_rfcache]).to eq(true)
   end
 
   it 'should not accept name with whitespaces' do

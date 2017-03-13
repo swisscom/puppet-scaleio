@@ -19,12 +19,15 @@ Puppet::Type.type(:scaleio_sds).provide(:scli) do
     # get devices to lookup the path by the id
     devices = scli_query_properties('--object_type', 'DEVICE', '--all_objects', '--properties', 'ORIGINAL_PATH,STORAGE_POOL_ID')
 
+    # get rfcache devices to lookup the path by the id
+    rfcache_devices = scli_query_properties('--object_type', 'RFCACHE_DEVICE', '--all_objects', '--properties', 'ORIGINAL_PATH,SDS_ID')
+
     # get fault sets to lookup the path by the id
     fault_sets = scli_query_properties('--object_type', 'FAULT_SET', '--all_objects', '--properties', 'NAME')
 
     sds_instances = []
 
-    sdss = scli_query_properties('--object_type', 'SDS', '--all_objects', '--properties', 'NAME,IPS,DEVICE_ID_LIST,PORT,RMCACHE_ENABLED,RMCACHE_SIZE,PROTECTION_DOMAIN_ID,FAULT_SET_ID')
+    sdss = scli_query_properties('--object_type', 'SDS', '--all_objects', '--properties', 'NAME,IPS,DEVICE_ID_LIST,PORT,RMCACHE_ENABLED,RMCACHE_SIZE,PROTECTION_DOMAIN_ID,FAULT_SET_ID,RFCACHE_ENABLED')
     sdss.each do |sds_id, sds|
 
       # create a hash with all devices of the SDS grouped by the storage pool they are in
@@ -34,6 +37,13 @@ Puppet::Type.type(:scaleio_sds).provide(:scli) do
           device = devices[device_id]
           device_pool = pools[device['STORAGE_POOL_ID']]['NAME']
           pool_devices[device_pool] << device['ORIGINAL_PATH']
+        end
+      end
+
+      rfcache_sds_devices = []
+      rfcache_devices.each do | rf_id, rf_device |
+        if sds_id == rf_device['SDS_ID']
+          rfcache_sds_devices << rf_device['ORIGINAL_PATH']
         end
       end
 
@@ -56,6 +66,8 @@ Puppet::Type.type(:scaleio_sds).provide(:scli) do
                                :pool_devices => pool_devices,
                                :ramcache_size => ramcache_size,
                                :fault_set => fault_set_name,
+                               :rfcache_devices => rfcache_sds_devices,
+                               :use_rfcache => sds['RFCACHE_ENABLED'] =~ /Yes/i ? true : false,
                            })
     end
 
@@ -109,6 +121,9 @@ Puppet::Type.type(:scaleio_sds).provide(:scli) do
           scli("--add_sds_device", "--sds_name", @resource[:name], "--device_path", device, "--storage_pool_name", storage_pool)
         end
       end
+    end
+    @resource[:rfcache_devices].each do |rfcache_device|
+      scli("--add_sds_rfcache_device", "--sds_name", @resource[:name], "--rfcache_device_path", rfcache_device)
     end
     @property_hash[:ensure] = :present
   end
@@ -193,6 +208,33 @@ Puppet::Type.type(:scaleio_sds).provide(:scli) do
   def addSDSDevices(storage_pool, devices)
     devices.each do |device|
       scli("--add_sds_device", "--sds_name", @resource[:name], "--storage_pool_name", storage_pool, "--device_path", device)
+    end
+  end
+
+  def rfcache_devices=(value)
+    # Add new rfcache devices
+    add_devices = value - @property_hash[:rfcache_devices]
+    add_devices.each do |device|
+      Puppet.debug("Adding SDS rfcache device #{device} to SDS #{@resource[:name]}")
+      scli("--add_sds_rfcache_device", "--sds_name", @resource[:name], "--rfcache_device_path", device)
+    end
+
+    # Remove obsolete rfcache devices
+    remove_devices = @property_hash[:rfcache_devices] - value
+    remove_devices.each do |device|
+      Puppet.debug("Removing SDS rfcache device #{device} from SDS #{@resource[:name]}")
+      scli("--remove_sds_rfcache_device", "--sds_name", @resource[:name], "--rfcache_device_path", device)
+    end
+    @property_hash[:ensure] = :present
+  end
+
+  def use_rfcache=(value)
+    if value
+      Puppet.debug("Enabling SDS rf cache")
+      scli("--enable_sds_rfcache", "--sds_name", @resource[:name])
+    else
+      Puppet.debug("Disabling SDS rf cache")
+      scli("--disable_sds_rfcache", "--sds_name", @resource[:name])
     end
   end
 

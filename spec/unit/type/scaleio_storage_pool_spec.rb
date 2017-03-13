@@ -16,6 +16,7 @@ describe Puppet::Type.type(:scaleio_storage_pool) do
         :ramcache                 => 'enabled',
         :device_scanner_mode      => 'device_only',
         :device_scanner_bandwidth => 10240,
+        :rfcache                  => 'enabled',
       })
     expect(@pool[:name]).to eq('test-PDO:myPool')
   end
@@ -78,5 +79,15 @@ describe Puppet::Type.type(:scaleio_storage_pool) do
           :ensure       => 'present',
         })
     }.to raise_error Puppet::ResourceError, /RAM cache for storage pool can either be enabled or disabled/
+  end
+
+  it 'should validate rfcache' do
+    expect {
+      Puppet::Type.type(:scaleio_storage_pool).new({
+          :name         => 'test-PDO:myPool',
+          :rfcache      => 'xx',
+          :ensure       => 'present',
+        })
+    }.to raise_error Puppet::ResourceError, /rfcache for storage pool can either be enabled or disabled/
   end
 end
