@@ -95,7 +95,7 @@ Puppet::Type.newtype(:scaleio_sds) do
   newproperty(:rfcache) do
     desc "Use Rfcache on SDS"
 
-    defaultto false
+    defaultto 'disabled'
   end
 
   newproperty(:protection_domain) do
