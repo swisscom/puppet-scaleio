@@ -67,7 +67,7 @@ Puppet::Type.type(:scaleio_sds).provide(:scli) do
                                :ramcache_size => ramcache_size,
                                :fault_set => fault_set_name,
                                :rfcache_devices => rfcache_sds_devices,
-                               :use_rfcache => sds['RFCACHE_ENABLED'] =~ /Yes/i ? true : false,
+                               :rfcache => sds['RFCACHE_ENABLED'] =~ /Yes/i ? 'enabled' : 'disabled',
                            })
     end
 
@@ -228,12 +228,12 @@ Puppet::Type.type(:scaleio_sds).provide(:scli) do
     @property_hash[:ensure] = :present
   end
 
-  def use_rfcache=(value)
-    if value
-      Puppet.debug("Enabling SDS rf cache")
+  def rfcache=(value)
+    if value == 'enabled'
+      Puppet.debug("Enabling SDS rfcache")
       scli("--enable_sds_rfcache", "--sds_name", @resource[:name])
     else
-      Puppet.debug("Disabling SDS rf cache")
+      Puppet.debug("Disabling SDS rfcache")
       scli("--disable_sds_rfcache", "--sds_name", @resource[:name])
     end
   end

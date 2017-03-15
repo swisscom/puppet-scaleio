@@ -15,7 +15,7 @@ describe Puppet::Type.type(:scaleio_sds).provider(:scli) do
           :pool_devices => {'myPool' => ['/dev/sda', '/dev/sdb']},
           :fault_set => 'myFaultSet',
           :rfcache_devices   => ['/dev/sdc', '/dev/sdd'],
-          :use_rfcache       => true,
+          :rfcache => 'enabled',
       }
   ) }
 
@@ -97,8 +97,8 @@ describe Puppet::Type.type(:scaleio_sds).provider(:scli) do
         expect(@instances[2].rfcache_devices).to match_array(['/dev/sdj','/dev/sdi'])
       end
       it 'with rfcache enabled' do
-        expect(@instances[0].use_rfcache).to eql(true)
-        expect(@instances[1].use_rfcache).to eql(false)
+        expect(@instances[0].rfcache).to eql('enabled')
+        expect(@instances[1].rfcache).to eql('disabled')
       end
     end
     context 'with no SDS' do
@@ -231,11 +231,11 @@ describe Puppet::Type.type(:scaleio_sds).provider(:scli) do
   describe 'managing rf cache' do
     it 'enables the rf cache' do
       provider.expects(:scli).with('--enable_sds_rfcache', '--sds_name', 'mySDS').returns([])
-      provider.use_rfcache = true
+      provider.rfcache = 'enabled'
     end
     it 'disabled the rf cache' do
       provider.expects(:scli).with('--disable_sds_rfcache', '--sds_name', 'mySDS').returns([])
-      provider.use_rfcache = false
+      provider.rfcache = 'disabled'
     end
   end
 

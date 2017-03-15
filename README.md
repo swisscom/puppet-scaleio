@@ -147,6 +147,7 @@ On a SDS level the following setting are manageable:
 - The IPs of the SDS (only one SDS per server supported).
 - Size of the RAM cache
 - rfcache devices
+- enabling/disabling rfcache on a per-sds basis
 - What fault set is the SDS part of? (optional)
 
 To end up with less configuration, there can be defaults specified over all SDS.
@@ -165,6 +166,7 @@ scaleio::sds_defaults:
       - '/dev/sdb'
   rfcache_devices:
     - '/dev/sdc'
+  rfcache: 'enabled'
 
 scaleio::sds:
   'sds-1':
@@ -174,7 +176,7 @@ scaleio::sds:
     fault_set: FaultSetTwo # optional
     ramcache_size: 1024
     ips: ['192.168.56.122']
-    use_rfcache: false
+    rfcache: 'enabled'
   'sds-3':
     fault_set: FaultSetThree # optional
     ips: ['192.168.56.123']

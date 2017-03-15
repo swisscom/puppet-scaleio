@@ -1,5 +1,8 @@
 # Changelog
 
+## 3.2.1 (2017-03-15)
+* correct rfcache enabling/disabling function
+
 ## 3.2.0 (2017-03-13)
 * Add support for rfcache devices
 

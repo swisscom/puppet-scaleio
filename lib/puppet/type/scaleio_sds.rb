@@ -92,7 +92,7 @@ Puppet::Type.newtype(:scaleio_sds) do
     end
   end
 
-  newproperty(:use_rfcache) do
+  newproperty(:rfcache) do
     desc "Use Rfcache on SDS"
 
     defaultto false

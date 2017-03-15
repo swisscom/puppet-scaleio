@@ -20,7 +20,7 @@ describe Puppet::Type.type(:scaleio_sds) do
         :fault_set         => 'faultset1',
         :ensure            => :present,
         :rfcache_devices   => ['/dev/sdc', '/dev/sdd'],
-        :use_rfcache       => true,
+        :rfcache           => 'enabled',
       })
     expect(@sds[:name]).to eq('mySDS')
     expect(@sds[:protection_domain]).to eq('myPDomain')
@@ -30,7 +30,7 @@ describe Puppet::Type.type(:scaleio_sds) do
     expect(@sds[:useconsul]).to eq(true)
     expect(@sds[:fault_set]).to eq('faultset1')
     expect(@sds[:rfcache_devices]).to eq(['/dev/sdc', '/dev/sdd'])
-    expect(@sds[:use_rfcache]).to eq(true)
+    expect(@sds[:rfcache]).to eq('enabled')
   end
 
   it 'should not accept name with whitespaces' do
