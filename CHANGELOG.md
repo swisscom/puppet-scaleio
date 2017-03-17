@@ -1,5 +1,8 @@
 # Changelog
 
+## 3.2.2 (2017-03-17)
+* Allow disabling/enabling component authentication 
+
 ## 3.2.1 (2017-03-15)
 * correct rfcache enabling/disabling function
 

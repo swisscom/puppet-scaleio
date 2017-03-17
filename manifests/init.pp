@@ -53,37 +53,39 @@
 #    - to wait for tiebreak being ready for setup
 #    - to wait for SDSs being ready for adding to cluster
 # * restricted_sdc_mode: use restricted SDC mode (true/false)
+# * component authentication: (true/false)
 #
 class scaleio(
-  $version                  = 'installed',
-  $system_name              = 'my-sio-system',
-  $password                 = 'myS3cr3t',
-  $old_password             = 'admin',
+  $version                       = 'installed',
+  $system_name                   = 'my-sio-system',
+  $password                      = 'myS3cr3t',
+  $old_password                  = 'admin',
 
-  $mdms                     = { },
-  $tiebreakers              = { },
-  $bootstrap_mdm_name       = '',
+  $mdms                          = { },
+  $tiebreakers                   = { },
+  $bootstrap_mdm_name            = '',
 
-  $use_consul               = false,
+  $use_consul                    = false,
 
-  $users                    = { },
-  $protection_domains       = [ ],
-  $storage_pools            = { },
-  $fault_sets               = [ ],
-  $sds                      = { },
-  $sds_defaults             = { },
-  $sdcs                     = { },
-  $volumes                  = { },
-  $components               = [],
-  $purge                    = false,
+  $users                         = { },
+  $protection_domains            = [ ],
+  $storage_pools                 = { },
+  $fault_sets                    = [ ],
+  $sds                           = { },
+  $sds_defaults                  = { },
+  $sdcs                          = { },
+  $volumes                       = { },
+  $components                    = [],
+  $purge                         = false,
 
-  $restricted_sdc_mode      = true,
+  $restricted_sdc_mode           = true,
+  $component_authentication_mode = true,
 
-  $lvm                      = false,
-  $syslog_ip_port           = undef,
-  $monitoring_user          = 'monitoring',
-  $monitoring_passwd        = 'Monitor1',
-  $external_monitoring_user = false,
+  $lvm                           = false,
+  $syslog_ip_port                = undef,
+  $monitoring_user               = 'monitoring',
+  $monitoring_passwd             = 'Monitor1',
+  $external_monitoring_user      = false,
 ) {
 
   ensure_packages(['numactl'])

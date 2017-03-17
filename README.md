@@ -235,16 +235,17 @@ scaleio::users:
 
 ### General parameters
 ```yaml
-scaleio::version: '2.0-6035.0.el7'          # specific version to be installed
-scaleio::password: 'myS3cr3t'               # password of the admin user
-scaleio::old_password: 'admin'              # old password of the admin (only required for PW change)
-scaleio::use_consul: false                  # use consul for bootstrapping
-scaleio::purge: false                       # purge the resources if not defined in puppet parameter (for more granularity, see scaleio::mdm::resources)
-scaleio::restricted_sdc_mode: true          # use the restricted SDC mode
-scaleio::syslog_ip_port: undef              # syslog destination, eg: 'host:1245'
-scaleio::monitoring_user: 'monitoring'      # name of the ScaleIO monitoring user to be created
-scaleio::monitoring_passwd: 'Monitor1'      # password of the monitoring user
-scaleio::external_monitoring_user: false    # name of a linux user that shall get sudo permissions for scli_wrap_monitoring.sh
+scaleio::version: '2.0-6035.0.el7'             # specific version to be installed
+scaleio::password: 'myS3cr3t'                  # password of the admin user
+scaleio::old_password: 'admin'                 # old password of the admin (only required for PW change)
+scaleio::use_consul: false                     # use consul for bootstrapping
+scaleio::purge: false                          # purge the resources if not defined in puppet parameter (for more granularity, see scaleio::mdm::resources)
+scaleio::restricted_sdc_mode: true             # use the restricted SDC mode
+scaleio::component_authentication_mode: true   # use authentication between system components
+scaleio::syslog_ip_port: undef                 # syslog destination, eg: 'host:1245'
+scaleio::monitoring_user: 'monitoring'         # name of the ScaleIO monitoring user to be created
+scaleio::monitoring_passwd: 'Monitor1'         # password of the monitoring user
+scaleio::external_monitoring_user: false       # name of a linux user that shall get sudo permissions for scli_wrap_monitoring.sh
 ```
 
 ## Primary MDM switch
