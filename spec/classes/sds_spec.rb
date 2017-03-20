@@ -30,12 +30,20 @@ describe 'scaleio::sds', :type => 'class' do
 
     it { is_expected.to contain_class('scaleio') }
     it { is_expected.to contain_package_verifiable('EMC-ScaleIO-sds').with_version('installed') }
+    it { is_expected.to contain_package_verifiable('EMC-ScaleIO-xcache').with_version('installed') }
   end
 
   context 'should not update SIO packages' do
-    let(:facts) { facts_default.merge({:package_emc_scaleio_sds_version => '1'}) }
+    let(:facts) { facts_default.merge({
+      :package_emc_scaleio_sds_version => '1',
+      :package_emc_scaleio_xcache_version => '1'
+    })}
 
     it { is_expected.to contain_package_verifiable('EMC-ScaleIO-sds').with(
+        :version => 'installed',
+        :manage_package => false
+    ) }
+    it { is_expected.to contain_package_verifiable('EMC-ScaleIO-xcache').with(
         :version => 'installed',
         :manage_package => false
     ) }

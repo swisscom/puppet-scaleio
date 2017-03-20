@@ -85,6 +85,19 @@ Puppet::Type.newtype(:scaleio_sds) do
     end
   end
 
+  newproperty(:rfcache_devices, :array_matching => :all) do
+    desc "Rfcache devices of the SDS"
+    def insync?(is)
+      is.sort == should.sort
+    end
+  end
+
+  newproperty(:rfcache) do
+    desc "Use Rfcache on SDS"
+
+    defaultto 'disabled'
+  end
+
   newproperty(:protection_domain) do
     desc "The protection domain name"
   end

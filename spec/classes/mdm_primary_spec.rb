@@ -40,6 +40,11 @@ describe 'scaleio::mdm::primary', :type => 'class' do
         :unless => "/opt/emc/scaleio/scripts/scli_wrap.sh --query_all |grep -q 'MDM restricted SDC mode: enabled'"
     ) }
 
+    it { is_expected.to contain_exec('scaleio::mdm::primary::manage_component_authentication').with(
+        :command => '/opt/emc/scaleio/scripts/scli_wrap.sh --set_component_authentication_properties --use_authentication --i_am_sure',
+        :unless => "/opt/emc/scaleio/scripts/scli_wrap.sh --query_all |grep -q 'SDS connection authentication: Enabled'"
+    ) }
+
     it { is_expected.to contain_exec('scaleio::mdm::primary::rename_system').with(
         :command => '/opt/emc/scaleio/scripts/scli_wrap.sh --rename_system --new_name sysname',
         :unless => "/opt/emc/scaleio/scripts/scli_wrap.sh --query_cluster | grep -qE '^\\s*Name: sysname,?\\s*Mode'",
@@ -60,6 +65,15 @@ describe 'scaleio::mdm::primary', :type => 'class' do
     it { is_expected.to contain_exec('scaleio::mdm::primary::manage_sdc_access_restriction').with(
         :command => '/opt/emc/scaleio/scripts/scli_wrap.sh --set_restricted_sdc_mode --restricted_sdc_mode disabled',
         :unless => "/opt/emc/scaleio/scripts/scli_wrap.sh --query_all |grep -q 'MDM restricted SDC mode: disabled'"
+    ) }
+  end
+
+  context 'component authentication mode disabled' do
+    let(:facts) { facts_default.merge({:fqdn => 'no_component_authentication.example.com'}) }
+
+    it { is_expected.to contain_exec('scaleio::mdm::primary::manage_component_authentication').with(
+        :command => '/opt/emc/scaleio/scripts/scli_wrap.sh --set_component_authentication_properties --dont_use_authentication --i_am_sure',
+        :unless => "/opt/emc/scaleio/scripts/scli_wrap.sh --query_all |grep -q 'SDS connection authentication: Disabled'"
     ) }
   end
 end

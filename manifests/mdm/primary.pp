@@ -33,6 +33,22 @@ class scaleio::mdm::primary {
     before  => Class['scaleio::mdm::resources'],
   }
 
+  # manage component authentication mode
+  if $::scaleio::component_authentication_mode{
+    $component_authentication_mode_text = '--use_authentication'
+    $component_authentication_mode_result = 'Enabled'
+  } else{
+    $component_authentication_mode_text = '--dont_use_authentication'
+    $component_authentication_mode_result = 'Disabled'
+  }
+
+  exec{ 'scaleio::mdm::primary::manage_component_authentication':
+    command => "${scli_wrap} --set_component_authentication_properties ${component_authentication_mode_text} --i_am_sure",
+    unless  => "${scli_wrap} --query_all |grep -q 'SDS connection authentication: ${component_authentication_mode_result}'",
+    require => Class['scaleio::mdm::cluster_setup'],
+    before  => Class['scaleio::mdm::resources'],
+  }
+
   # Create a monitoring user
   if $scaleio::monitoring_user {
     scaleio_user{ $scaleio::monitoring_user:

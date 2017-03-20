@@ -16,7 +16,7 @@ Puppet::Type.type(:scaleio_storage_pool).provide(:scli) do
 
     pool_instances = []
 
-    pools = scli_query_properties('--object_type', 'STORAGE_POOL', '--all_objects', '--properties', 'NAME,SPARE_PERCENT,USE_RMCACHE,PROTECTION_DOMAIN_ID,DI_SCANNER_MODE,DI_SCANNER_BANDWIDTH_LIMIT')
+    pools = scli_query_properties('--object_type', 'STORAGE_POOL', '--all_objects', '--properties', 'NAME,SPARE_PERCENT,USE_RMCACHE,PROTECTION_DOMAIN_ID,DI_SCANNER_MODE,DI_SCANNER_BANDWIDTH_LIMIT,USE_RFCACHE')
     pools.each do |pool_id, pool|
       pdomain = pdos[pool['PROTECTION_DOMAIN_ID']]['NAME']
       
@@ -28,7 +28,8 @@ Puppet::Type.type(:scaleio_storage_pool).provide(:scli) do
                                 :spare_policy             => pool['SPARE_PERCENT'],
                                 :ramcache                 => pool['USE_RMCACHE'] =~ /^Yes$/i ? 'enabled' : 'disabled',
                                 :device_scanner_mode      => pool['DI_SCANNER_MODE'].downcase,
-                                :device_scanner_bandwidth => pool['DI_SCANNER_BANDWIDTH_LIMIT'].to_i
+                                :device_scanner_bandwidth => pool['DI_SCANNER_BANDWIDTH_LIMIT'].to_i,
+                                :rfcache                  => pool['USE_RFCACHE'] =~ /^Yes$/i ? 'enabled' : 'disabled'
                                })
     end
 
@@ -52,8 +53,12 @@ Puppet::Type.type(:scaleio_storage_pool).provide(:scli) do
     updateSparePolicy(@resource[:spare_policy])
     update_ramcache(@resource[:ramcache])
 
-    if device_scanner_mode != 'disabled'
+    if @resource[:device_scanner_mode] != 'disabled'
       enable_device_scanner(@resource[:device_scanner_mode], @resource[:device_scanner_bandwidth])
+    end
+
+    if @resource[:rfcache] != 'disabled'
+      scli("--set_rfcache_usage", "--protection_domain_name", @resource[:protection_domain], "--storage_pool_name", @resource[:pool_name], "--use_rfcache")
     end
 
     # Should zero padding be enabled?
@@ -110,6 +115,11 @@ Puppet::Type.type(:scaleio_storage_pool).provide(:scli) do
 
   def disable_device_scanner()
     scli("--disable_background_device_scanner", "--protection_domain_name", @resource[:protection_domain], "--storage_pool_name", @resource[:pool_name])
+  end
+
+  def rfcache=(value)
+    Puppet.debug("Updating rfcache pool #{@resource[:name]} to #{value}")
+    scli("--set_rfcache_usage", "--protection_domain_name", @resource[:protection_domain], "--storage_pool_name", @resource[:pool_name], if value == 'enabled' then "--use_rfcache" else "--dont_use_rfcache" end)
   end
 
   def exists?
