@@ -14,6 +14,8 @@ describe Puppet::Type.type(:scaleio_sds).provider(:scli) do
           :ramcache_size => 1024,
           :pool_devices => {'myPool' => ['/dev/sda', '/dev/sdb']},
           :fault_set => 'myFaultSet',
+          :rfcache_devices   => ['/dev/sdc', '/dev/sdd'],
+          :rfcache => 'enabled',
       }
   ) }
 
@@ -30,6 +32,7 @@ describe Puppet::Type.type(:scaleio_sds).provider(:scli) do
   let(:pools) { my_fixture_read('prop_pool_multiple.cli') }
   let(:devices) { my_fixture_read('prop_device_multiple.cli') }
   let(:fault_sets) { my_fixture_read('prop_fault_set_multiple.cli') }
+  let(:rfcache_devices) { my_fixture_read('prop_rfcache_devices.cli') }
 
 
   describe 'basics' do
@@ -56,6 +59,7 @@ describe Puppet::Type.type(:scaleio_sds).provider(:scli) do
         provider.class.stubs(:scli).with('--query_properties', '--object_type', 'DEVICE', any_parameters()).returns(devices)
         provider.class.stubs(:scli).with('--query_properties', '--object_type', 'FAULT_SET', any_parameters()).returns(fault_sets)
         provider.class.stubs(:scli).with('--query_properties', '--object_type', 'SDS', any_parameters()).returns(multiple_sds)
+        provider.class.stubs(:scli).with('--query_properties', '--object_type', 'RFCACHE_DEVICE', any_parameters()).returns(rfcache_devices)
         @instances = provider.class.instances
       end
       it 'detects all SDSs' do
@@ -87,6 +91,15 @@ describe Puppet::Type.type(:scaleio_sds).provider(:scli) do
       it 'with correct protection domain' do
         expect(@instances[0].protection_domain).to match('pdo')
       end
+      it 'with rfcache devices' do
+        expect(@instances[0].rfcache_devices).to match_array(['/dev/sdj'])
+        expect(@instances[1].rfcache_devices).to match_array(['/dev/sdj'])
+        expect(@instances[2].rfcache_devices).to match_array(['/dev/sdj','/dev/sdi'])
+      end
+      it 'with rfcache enabled' do
+        expect(@instances[0].rfcache).to eql('enabled')
+        expect(@instances[1].rfcache).to eql('disabled')
+      end
     end
     context 'with no SDS' do
       before :each do
@@ -106,6 +119,8 @@ describe Puppet::Type.type(:scaleio_sds).provider(:scli) do
       provider.expects(:scli).with('--add_sds_device', '--sds_name', 'mySDS', '--device_path', '/dev/sdb', '--storage_pool_name', 'myPool').returns([])
       provider.expects(:scli).with('--enable_sds_rmcache', '--sds_name', 'mySDS', '--i_am_sure').returns([])
       provider.expects(:scli).with('--set_sds_rmcache_size', '--sds_name', 'mySDS', '--rmcache_size_mb', 1024, '--i_am_sure').returns([])
+      provider.expects(:scli).with('--add_sds_rfcache_device', '--sds_name', 'mySDS', '--rfcache_device_path', '/dev/sdc').returns([])
+      provider.expects(:scli).with('--add_sds_rfcache_device', '--sds_name', 'mySDS', '--rfcache_device_path', '/dev/sdd').returns([])
       provider.create
     end
   end
@@ -128,6 +143,8 @@ describe Puppet::Type.type(:scaleio_sds).provider(:scli) do
       provider.expects(:scli).with('--add_sds_device', '--sds_name', 'mySDS', '--device_path', '/dev/sdb', '--storage_pool_name', 'myPool').returns([])
       provider.expects(:scli).with('--enable_sds_rmcache', '--sds_name', 'mySDS', '--i_am_sure').returns([])
       provider.expects(:scli).with('--set_sds_rmcache_size', '--sds_name', 'mySDS', '--rmcache_size_mb', 1024, '--i_am_sure').returns([])
+      provider.expects(:scli).with('--add_sds_rfcache_device', '--sds_name', 'mySDS', '--rfcache_device_path', '/dev/sdc').returns([])
+      provider.expects(:scli).with('--add_sds_rfcache_device', '--sds_name', 'mySDS', '--rfcache_device_path', '/dev/sdd').returns([])
       provider.create
     end
 
@@ -189,6 +206,36 @@ describe Puppet::Type.type(:scaleio_sds).provider(:scli) do
       expect {
         provider.pool_devices = {'myPool' => []}
       }.to raise_error Puppet::Error, /Cannot remove all SDS devices from SDS/
+    end
+  end
+
+  describe 'update rfcache_devices' do
+    it 'removes obsolte rfcache devices' do
+      provider.instance_variable_get(:@property_hash)[:rfcache_devices] = ['/dev/sdc', '/dev/sdd', '/dev/sde']
+      provider.expects(:scli).with('--remove_sds_rfcache_device', '--sds_name', 'mySDS', '--rfcache_device_path', '/dev/sde').returns([])
+      provider.rfcache_devices = ['/dev/sdc', '/dev/sdd']
+    end
+
+    it 'adds new rfcache devices' do
+      provider.instance_variable_get(:@property_hash)[:rfcache_devices] = ['/dev/sdc', '/dev/sdd']
+      provider.expects(:scli).with('--add_sds_rfcache_device', '--sds_name', 'mySDS', '--rfcache_device_path', '/dev/sde').returns([])
+      provider.rfcache_devices = ['/dev/sdc', '/dev/sdd', '/dev/sde']
+    end
+
+    it 'does nothing' do
+      provider.instance_variable_get(:@property_hash)[:rfcache_devices] = ['/dev/sdc', '/dev/sdd']
+      provider.rfcache_devices = ['/dev/sdc', '/dev/sdd']
+    end
+  end
+
+  describe 'managing rf cache' do
+    it 'enables the rf cache' do
+      provider.expects(:scli).with('--enable_sds_rfcache', '--sds_name', 'mySDS').returns([])
+      provider.rfcache = 'enabled'
+    end
+    it 'disabled the rf cache' do
+      provider.expects(:scli).with('--disable_sds_rfcache', '--sds_name', 'mySDS').returns([])
+      provider.rfcache = 'disabled'
     end
   end
 

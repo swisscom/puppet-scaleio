@@ -66,6 +66,14 @@ describe Puppet::Type.type(:scaleio_storage_pool).provider(:scli) do
         expect(@instances[0].device_scanner_mode).to match('device_only')
         expect(@instances[0].device_scanner_bandwidth).to match(1024)
       end
+
+      it 'with rf cache enabled' do
+        expect(@instances[0].rfcache).to match('enabled')
+      end
+
+      it 'with rf cache disabled ' do
+        expect(@instances[1].rfcache).to match('disabled')
+      end
     end
     context 'with device scanner disabled' do
       before :each do
@@ -128,6 +136,14 @@ describe Puppet::Type.type(:scaleio_storage_pool).provider(:scli) do
     it 'disables the device scanner' do
       provider.expects(:scli).with('--disable_background_device_scanner', '--protection_domain_name', 'myPDomain', '--storage_pool_name', 'myNewPool').returns([])
       provider.disable_device_scanner()
+    end
+    it 'disables the rfcache' do
+      provider.expects(:scli).with('--set_rfcache_usage', '--protection_domain_name', 'myPDomain', '--storage_pool_name', 'myNewPool', '--dont_use_rfcache').returns([])
+      provider.rfcache='disabled'
+    end
+    it 'enables the rfcache' do
+      provider.expects(:scli).with('--set_rfcache_usage', '--protection_domain_name', 'myPDomain', '--storage_pool_name', 'myNewPool', '--use_rfcache').returns([])
+      provider.rfcache='enabled'
     end
   end
 end

@@ -68,6 +68,14 @@ Puppet::Type.newtype(:scaleio_storage_pool) do
     defaultto true
   end
 
+  newproperty(:rfcache) do
+    desc "Enable rf read cache for this pool?"
+    validate do |value|
+      raise ArgumentError, "rfcache for storage pool can either be enabled or disabled (true/false)." unless value =~ /^enabled|disabled$/
+    end
+    defaultto 'disabled'
+  end
+
   # Our title_patterns method for mapping titles to namevars for supporting composite namevars.
   def self.title_patterns
     identity = lambda {|x| x}

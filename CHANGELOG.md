@@ -1,5 +1,14 @@
 # Changelog
 
+## 3.2.2 (2017-03-17)
+* Allow disabling/enabling component authentication 
+
+## 3.2.1 (2017-03-15)
+* correct rfcache enabling/disabling function
+
+## 3.2.0 (2017-03-13)
+* Add support for rfcache devices
+
 ## 3.1.2 (2017-02-08)
 * improvements on the README and stack example - thanks @Boran
 * read device scanner settings using --query_properties

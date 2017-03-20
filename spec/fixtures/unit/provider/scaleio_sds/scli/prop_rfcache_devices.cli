@@ -1,0 +1,15 @@
+RFCACHE_DEVICE fd5b64cb00020000:
+	ORIGINAL_PATH                                      /dev/sdj
+	SDS_ID                                             275ac7b900000000
+
+RFCACHE_DEVICE fd5a64cc00030000:
+	ORIGINAL_PATH                                      /dev/sdj
+	SDS_ID                                             275ac7ba00000001
+
+RFCACHE_DEVICE fd5a64ce00010000:
+	ORIGINAL_PATH                                      /dev/sdj
+	SDS_ID                                             275ac7bb00000002
+
+RFCACHE_DEVICE fd5a64cf00010001:
+	ORIGINAL_PATH                                      /dev/sdi
+	SDS_ID                                             275ac7bb00000002
