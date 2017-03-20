@@ -1,8 +1,8 @@
-spec/fixtures/manifests
-spec/fixtures/modules
+spec/fixtures/manifests/
+spec/fixtures/modules/
 .librarian
 .tmp
 *.lock
 .idea
 coverage
-vendor
+vendor/
