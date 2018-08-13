@@ -34,7 +34,7 @@ class scaleio::mdm::installation(
   } ~>
   exec{ 'scaleio::mdm::installation::restart_mdm':
     # give the mdm time to switch its role
-    command     => 'systemctl restart mdm.service; sleep 15',
+    command     => '/usr/bin/systemctl restart mdm.service; /usr/bin/sleep 15',
     refreshonly => true,
   }
 

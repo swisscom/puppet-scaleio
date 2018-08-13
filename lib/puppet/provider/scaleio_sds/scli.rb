@@ -122,8 +122,13 @@ Puppet::Type.type(:scaleio_sds).provide(:scli) do
         end
       end
     end
-    @resource[:rfcache_devices].each do |rfcache_device|
-      scli("--add_sds_rfcache_device", "--sds_name", @resource[:name], "--rfcache_device_path", rfcache_device)
+    Puppet.debug("Managing rfcache")
+    if @resource[:rfcache] == 'enabled'
+      @resource[:rfcache_devices].each do |rfcache_device|
+        scli("--add_sds_rfcache_device", "--sds_name", @resource[:name], "--rfcache_device_path", rfcache_device)
+      end
+    else
+      self.rfcache = @resource[:rfcache]
     end
     @property_hash[:ensure] = :present
   end

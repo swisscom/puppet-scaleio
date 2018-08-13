@@ -21,9 +21,9 @@ class scaleio::mdm::primary {
 
   # manage SDC restriction mode
   if $::scaleio::restricted_sdc_mode{
-    $restricted_sdc_mode_text = 'enabled'
+    $restricted_sdc_mode_text = 'guid'
   } else{
-    $restricted_sdc_mode_text = 'disabled'
+    $restricted_sdc_mode_text = 'none'
   }
 
   exec{ 'scaleio::mdm::primary::manage_sdc_access_restriction':
