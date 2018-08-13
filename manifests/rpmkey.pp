@@ -8,7 +8,7 @@ class scaleio::rpmkey {
       mode   => '0644',
   } ~>
   exec { 'scaleio::rpmkey::import' :
-    command     => 'rpm --import /etc/pki/rpm-gpg/RPM-GPG-KEY-ScaleIO',
+    command     => '/usr/bin/rpm --import /etc/pki/rpm-gpg/RPM-GPG-KEY-ScaleIO',
     refreshonly => true,
   }
 }
